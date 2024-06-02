@@ -1,9 +1,9 @@
-import WindowTreeView from './components/windowTreeView/WindowTreeView';
+import WindowContentIconView from './components/windowContent/WindowContenIconView';
 import './App.css';
 
 function App() {
   return (
-    <WindowTreeView />
+    <WindowContentIconView />
   );
 }
 
