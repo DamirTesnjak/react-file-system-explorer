@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import { v4 } from 'uuid';
 
@@ -6,7 +6,6 @@ import { getFolder, openFile } from '../../data/methods';
 
 const windowTreeItems = (folderData, itemId) => {
     if (itemId === 'computer') {
-        console.log('test');
         if (folderData && folderData.length > 0) {
             const items = folderData.map((diskItem) => {
                 return <WindowTreeItems
@@ -20,12 +19,22 @@ const windowTreeItems = (folderData, itemId) => {
         }
     } else {
         if (folderData && folderData.length > 0) {
+            const setType = (itemList) => {
+                if(itemList.name.includes('$')) {
+                    return 'folder';
+                }
+                if(itemList.name.includes('.')) {
+                    return 'file';
+                }
+            }
             const items = folderData.map((itemList) => {
+                console.log('itemList', itemList);
                 return (<WindowTreeItems
-                    type={itemList.name.includes('.') ? 'file' : 'folder'}
+                    type={setType(itemList)}
                     itemId={v4()}
                     name={itemList.name}
                     path={itemList.path} 
+                    itemCount={itemList.itemCount}
                 />)
             });
             return items;
@@ -39,17 +48,17 @@ function WindowTreeItems(props) {
         treeViewData,
         type,
         name,
-        path
+        path,
+        itemCount,
     } = props;
     const [folderData, setFolderData] = useState(treeViewData);
 
-    const getFolderContent = () => {
+    const getFolderContent = useCallback(() => {
         getFolder({ folderPath: path })
         .then((res) => {
-            console.log('res', res);
             setFolderData(res.data.folderContent)
         });
-    }
+    }, [path]);
 
     const openSelectedFile = () => {
         openFile({ path:path })
@@ -58,13 +67,17 @@ function WindowTreeItems(props) {
         });
     }
 
-    useEffect(() => {}, [folderData])
+    useEffect(() => {
+        if (!folderData) {
+            getFolderContent();
+        }
+    }, [folderData, getFolderContent])
 
     return (
         <TreeItem
             itemId={itemId}
             label={name}
-            onClick={() => type === 'file' ? openSelectedFile() : getFolderContent()}
+            onClick={() => type === 'file' ? openSelectedFile() : null}
         >
             {windowTreeItems(folderData && folderData.length > 0 ? folderData : treeViewData, itemId)}
         </TreeItem>
