@@ -5,7 +5,6 @@ import FolderIcon from '@mui/icons-material/Folder';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 
 import { getFolder, openFile } from '../../data/methods';
-import { useContextApp } from '../../context/Context';
 
 function IconCard(props) {
     const { type, name, itemId, onClick } = props
@@ -49,29 +48,37 @@ function IconCard(props) {
     )
 }
 
-function WindowContentIconView() {
+function WindowContentIconView(props) {
     const [folderData, setFolderData] = useState()
     const {
-        actions,
-        dispatch, 
         visitedPaths,
         currentPosition,
         currentPath,
         itemId,
-    } = useContextApp();
+        state,
+        setState,
+    } = props;
 
     const getFolderContentCallBack = useCallback(() => {
-        getFolder({ folderPath: visitedPaths[currentPosition]?.replace('\\', '/') ||  currentPath.replace('\\', '/')})
+        getFolder({ folderPath: visitedPaths[currentPosition]})
         .then((res) => {
             setFolderData(res.data.folderContent);
         });
-    }, [currentPath, currentPosition, visitedPaths]);
+    }, [currentPath]);
 
     const getFolderContent = (path) => {
         getFolder({ folderPath: path })
         .then((res) => {
             setFolderData(res.data.folderContent);
-            dispatch(actions.addVisitedPath(path.replace('/', '\\')))
+            setState({
+                ...state,
+                visitedPaths: [
+                  ...state.visitedPaths,
+                  path,
+                ],
+                currentPosition: state.currentPosition + 1,
+                currentPath: path,
+              })
         });
     };
 

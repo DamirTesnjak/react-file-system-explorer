@@ -1,12 +1,12 @@
 import { Box } from '@mui/material'
-import { useContextApp } from '../../context/Context';
 
-function WindowTitle() {
-    const { visitedPaths, currentPosition } = useContextApp();
+function WindowTitle(props) {
+    const { currentPath } = props;
+    console.log('props', props);
 
     return (
         <Box>
-            {visitedPaths[currentPosition]}
+            {currentPath}
         </Box>
     )
 }

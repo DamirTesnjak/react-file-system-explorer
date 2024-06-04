@@ -1,29 +1,38 @@
 import React from 'react';
 import { Button, Box } from '@mui/material';
 
-import { useContextApp } from '../../context/Context';
-
-function WindowToolbar() {
-    const {
-        dispatch,
-        actions,
-        currentPath,
-    } = useContextApp();
+function WindowToolbar(props) {
+    const { currentPath, setState, state } = props;
 
     const btns = [
-        { name: "back", method: dispatch(actions.goBack()) },
-        { name: "next", method: dispatch(actions.goFoward()) },
-        { name: "up", method: () => {
-            dispatch(actions.goFoward());
-            dispatch(actions.addVisitedPath(currentPath.split('\\').pop().join('\\'))); 
-        }}
-    ]
+        { name: "back", method: {
+            ...state,
+            currentPosition: state.currentPosition > 0 ? state.currentPosition - 1 : 0,
+          }},
+        { name: "next", method: {
+            ...state,
+            currentPosition: state.currentPosition < state.visitedPaths.length
+                ? state.currentPosition + 1
+                : state.visitedPaths.length - 1,
+        }},
+        { name: "up", method: {
+                ...state,
+                visitedPaths: [
+                  ...state.visitedPaths,
+                  () => {
+                    const newCurrentPath = currentPath.split('/').pop().join('/');
+                    return newCurrentPath;
+                  },
+                ],
+                currentPosition: state.currentPosition + 1,
+            }}
+        ]
 
     const displayButtons = () => {
         const btnToDisplay = btns.map((button) => {
             return (<Button
                         variant='outlined'
-                        onClick={() => button.method}
+                        onClick={() => setState(button.method)}
                     >
                         {button.name}
                     </Button>);
@@ -32,7 +41,7 @@ function WindowToolbar() {
     };
     return (
         <Box>
-            {displayButtons}
+            {displayButtons()}
         </Box>
     );
 }

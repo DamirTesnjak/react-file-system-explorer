@@ -1,39 +1,46 @@
-import { useReducer, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import Window from './components/Window/Window';
-import { Provider } from './context/Context';
-import { reducer, init, actions } from './context/stateReducer';
 import { getUserHomeFolder } from './data/methods';
 
 import './App.css';
 
 function App() {
-  const [state, dispatch] = useReducer(reducer, {}, init);
+  const [state, setState ] = useState({
+    currentPath: '',
+    itemId: '',
+    visitedPaths: [],
+    currentPosition: 0,
+  });
 
-  const getHomeDir = () => {
+  const getHomeDir = useCallback(() => {
     getUserHomeFolder()
       .then((res) => {
-        dispatch(actions.setCurrentPath(res.data.homeFolder));
-    })
-  };
+        setState({
+          ...state,
+          currentPath: res.data.homeFolder,
+          visitedPaths: [...state.visitedPaths, res.data.homeFolder],
+        })
+      });
+  }, [state]);
 
   useEffect(() => {
-    if(state.currentPath.length === 0) {
+    if (state.currentPath.length === 0) {
       getHomeDir();
     }
-  }, [state.currentPath]);
+  }, [getHomeDir, state.currentPath]);
+
+  console.log('state', state);
 
   return (
-    <Provider
-      actions={actions}
-      dispatch={dispatch}
-      visitedPaths={state.visitedPaths}
-      currentPath={state.currentPath}
-      currentPosition={state.currentPosition}
-      itemId={state.itemId}
-    >
-      <Window />
-    </Provider>
+      <Window
+        visitedPaths={state.visitedPaths}
+        currentPath={state.currentPath}
+        currentPosition={state.currentPosition}
+        itemId={state.itemId}
+        setState={(s) => setState(s)}
+        state={state}
+      />
   );
 }
 
