@@ -5,6 +5,7 @@ import FolderIcon from '@mui/icons-material/Folder';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 
 import { getFolder, openFile } from '../../data/methods';
+import { useContextApp } from '../../context/Context';
 
 function IconCard(props) {
     const { type, name, itemId, onClick } = props
@@ -48,25 +49,33 @@ function IconCard(props) {
     )
 }
 
-function WindowContentIconView(props) {
-    const { folderPath, itemId } = props
-    const [folderData, setFolderData] = useState([]);
+function WindowContentIconView() {
+    const [folderData, setFolderData] = useState()
+    const {
+        actions,
+        dispatch, 
+        visitedPaths,
+        currentPosition,
+        currentPath,
+        itemId,
+    } = useContextApp();
 
     const getFolderContentCallBack = useCallback(() => {
-        getFolder({ folderPath: folderPath || 'C:/Users/Pifko' })
+        getFolder({ folderPath: visitedPaths[currentPosition]?.replace('\\', '/') ||  currentPath.replace('\\', '/')})
         .then((res) => {
-            setFolderData(res.data.folderContent)
+            setFolderData(res.data.folderContent);
         });
-    }, [folderPath]);
+    }, [currentPath, currentPosition, visitedPaths]);
 
     const getFolderContent = (path) => {
         getFolder({ folderPath: path })
         .then((res) => {
-            setFolderData(res.data.folderContent)
+            setFolderData(res.data.folderContent);
+            dispatch(actions.addVisitedPath(path.replace('/', '\\')))
         });
     };
 
-    useEffect(() => getFolderContentCallBack, [folderPath, getFolderContentCallBack])
+    useEffect(() => getFolderContentCallBack, [getFolderContentCallBack, visitedPaths])
 
     const openSelectedFile = (path) => {
         openFile({ path:path })

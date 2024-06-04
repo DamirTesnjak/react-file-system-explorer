@@ -12,6 +12,7 @@ import {
     getFolderUrl,
     openFileUrl,
     getHardDrivesUrl,
+    getUserHomeFolderUrl,
 } from './endpoints';
 
 export const copyFile = (request = {}) => axiosInstance
@@ -44,7 +45,10 @@ export const getFolder = (request = {}) => axiosInstance
     .post(getFolderUrl, request);
 
 export const openFile = (request = {}) => axiosInstance
-.post(openFileUrl, request);
+    .post(openFileUrl, request);
 
 export const getHardDrives = (request = {}) => axiosInstance
-.post(getHardDrivesUrl, request);
+    .post(getHardDrivesUrl, request);
+
+export const getUserHomeFolder = (request = {}) => axiosInstance
+    .post(getUserHomeFolderUrl, request);

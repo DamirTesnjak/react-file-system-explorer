@@ -28,7 +28,6 @@ const windowTreeItems = (folderData, itemId) => {
                 }
             }
             const items = folderData.map((itemList) => {
-                console.log('itemList', itemList);
                 return (<WindowTreeItems
                     type={setType(itemList)}
                     itemId={v4()}
@@ -49,9 +48,10 @@ function WindowTreeItems(props) {
         type,
         name,
         path,
-        itemCount,
     } = props;
     const [folderData, setFolderData] = useState(treeViewData);
+
+    console.log('folderData', folderData);
 
     const getFolderContent = useCallback(() => {
         getFolder({ folderPath: path })

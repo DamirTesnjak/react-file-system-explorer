@@ -13,6 +13,7 @@ const renameUrl = `${baseURL}/rename`;
 const getFolderUrl = `${baseURL}/getFolder`;
 const openFileUrl = `${baseURL}/openFile`;
 const getHardDrivesUrl = `${baseURL}/getHardDrives`;
+const getUserHomeFolderUrl = `${baseURL}/getUserHomeFolder`;
 
 export {
     copyFileUrl,
@@ -26,4 +27,5 @@ export {
     getFolderUrl,
     openFileUrl,
     getHardDrivesUrl,
+    getUserHomeFolderUrl,
 };

@@ -11,7 +11,6 @@ function WindowTreeView() {
     const getFolderContent = () => {
         getHardDrives()
             .then((res) => {
-                console.log('res', res);
                 setFdisksDatata(res.data.hardDrives)
             });
     }
