@@ -39,8 +39,6 @@ function WindowTreeView(props) {
                     treeViewData={disksData}
                     itemId="computer"
                     name="computer"
-                    state={state}
-                    setState={setState}
                     path='Computer'
                     onClick={() => setState({
                         ...state,

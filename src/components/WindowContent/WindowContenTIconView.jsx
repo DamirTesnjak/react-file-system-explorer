@@ -67,7 +67,6 @@ function IconCard(props) {
                         display: "-webkit-box",
                         WebkitLineClamp: "2",
                         WebkitBoxOrient: "vertical",
-                        width: '100px'
                     }}>
                     <span>{name}</span>
                 </Typography>

@@ -8,8 +8,6 @@ const windowTreeItems = (args) => {
     const {
         folderData,
         itemId,
-        state,
-        setState,
     } = args;
     if (itemId === 'computer') {
         if (folderData && folderData.length > 0) {
@@ -19,8 +17,6 @@ const windowTreeItems = (args) => {
                     itemId={v4()}
                     name={diskItem.filesystem + " " + diskItem.mounted}
                     path={diskItem.mounted + "/"}
-                    state={state}
-                    setState={setState}
                 />
             });
             return items;
@@ -42,8 +38,6 @@ const windowTreeItems = (args) => {
                     name={itemList.name}
                     path={itemList.path} 
                     itemCount={itemList.itemCount}
-                    state={state}
-                    setState={setState}
                 />)
             });
             console.log(items)
@@ -59,24 +53,15 @@ function WindowTreeItems(props) {
         type,
         name,
         path,
-        state,
-        setState,
     } = props;
     const [folderData, setFolderData] = useState(treeViewData);
-    console.log('folderData', folderData);
 
     const getFolderContent = useCallback(() => {
         getFolder({ folderPath: path })
             .then((res) => {
                 setFolderData(res.data.folderContent);
-                setState({
-                    ...state,
-                    visitedPaths: [...state.visitedPaths, path],
-                    currentPath: path,
-                    currentPosition: state.visitedPaths.length,
-                })
             });
-    }, [path, setState, state]);
+    }, [path]);
 
     const openSelectedFile = () => {
         openFile({ path:path })
@@ -90,7 +75,7 @@ function WindowTreeItems(props) {
             getFolder({ folderPath: path })
             .then((res) => {
                 setFolderData(res.data.folderContent);
-            });;
+            });
         }
     }, [folderData, getFolderContent, path]);
 
@@ -109,8 +94,6 @@ function WindowTreeItems(props) {
             {windowTreeItems({
                 folderData: folderData && folderData.length > 0 ? folderData : treeViewData,
                 itemId,
-                state,
-                setState,
             })}
         </TreeItem>
     );
