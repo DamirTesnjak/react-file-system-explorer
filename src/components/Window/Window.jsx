@@ -22,7 +22,10 @@ function Window(props) {
                 <WindowToolbar currentPath={currentPath} state={state} setState={setState}/>
             </Grid>
             <Grid item xs={3}>
-                <WindowTreeView />
+                <WindowTreeView
+                    state={state}
+                    setState={setState}
+                />
             </Grid>
             <Grid item xs={9}>
                 {<WindowContentIconView

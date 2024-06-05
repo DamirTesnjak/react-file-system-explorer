@@ -2,8 +2,11 @@ import { useState, useEffect, useCallback } from 'react';
 
 import Window from './components/Window/Window';
 import { getUserHomeFolder } from './data/methods';
+import { initializeFileTypeIcons } from "@fluentui/react-file-type-icons";
 
 import './App.css';
+
+initializeFileTypeIcons();
 
 function App() {
   const [state, setState ] = useState({
@@ -18,14 +21,14 @@ function App() {
       .then((res) => {
         setState({
           ...state,
-          currentPath: res.data.homeFolder,
-          visitedPaths: [...state.visitedPaths, res.data.homeFolder],
+          currentPath: res.data.homeFolder.replaceAll('\\', '/'),
+          visitedPaths: [...state.visitedPaths, res.data.homeFolder.replaceAll('\\', '/')],
         })
       });
   }, [state]);
 
   useEffect(() => {
-    if (state.currentPath.length === 0) {
+    if (state.currentPath?.length === 0) {
       getHomeDir();
     }
   }, [getHomeDir, state.currentPath]);

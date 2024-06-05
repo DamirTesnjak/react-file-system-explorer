@@ -4,27 +4,39 @@ import { Button, Box } from '@mui/material';
 function WindowToolbar(props) {
     const { currentPath, setState, state } = props;
 
+    const parentPath = () => {
+        const currentPathArray = currentPath?.split('/');
+        currentPathArray?.splice(currentPathArray.length - 1, 1);
+
+        const parentPath = currentPathArray?.join('/');
+        if (parentPath) {
+            return parentPath;
+        }
+    }
+
+    const btnBackCurrentPositionCondition = state.currentPosition > 0 ? state.currentPosition - 1 : 0;
+    const btnBackCurrentPathCondition = state.visitedPaths[state.currentPosition > 0 ? state.currentPosition - 1 : 0];
+
+    const btnNextCondition = state.currentPosition < state.visitedPaths.length - 1
+    ? state.currentPosition + 1
+    : state.visitedPaths.length - 1;
+
     const btns = [
         { name: "back", method: {
             ...state,
-            currentPosition: state.currentPosition > 0 ? state.currentPosition - 1 : 0,
+            currentPosition: btnBackCurrentPositionCondition,
+            currentPath: btnBackCurrentPathCondition,
           }},
         { name: "next", method: {
             ...state,
-            currentPosition: state.currentPosition < state.visitedPaths.length
-                ? state.currentPosition + 1
-                : state.visitedPaths.length - 1,
+            currentPosition: btnNextCondition,
+            currentPath: state.visitedPaths[btnNextCondition],
         }},
         { name: "up", method: {
                 ...state,
-                visitedPaths: [
-                  ...state.visitedPaths,
-                  () => {
-                    const newCurrentPath = currentPath.split('/').pop().join('/');
-                    return newCurrentPath;
-                  },
-                ],
-                currentPosition: state.currentPosition + 1,
+                visitedPaths: [...state.visitedPaths, parentPath()],
+                currentPath: parentPath(),
+                currentPosition: state.visitedPaths.length,
             }}
         ]
 

@@ -1,10 +1,19 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import { v4 } from 'uuid';
-import { Grid, IconButton, Box } from '@mui/material';
+import { 
+    Grid,
+    IconButton,
+    Box,
+    Paper,
+    Typography
+} from '@mui/material';
 import FolderIcon from '@mui/icons-material/Folder';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import { getFileTypeIconProps } from '@fluentui/react-file-type-icons';
+import { Icon } from '@fluentui/react/lib/Icon';
 
 import { getFolder, openFile } from '../../data/methods';
+import { getHardDrives } from '../../data/methods';
 
 function IconCard(props) {
     const { type, name, itemId, onClick } = props
@@ -12,17 +21,22 @@ function IconCard(props) {
     const displayIcon = () => {
         if (type === 'folder') {
             return (
-                <IconButton
-                    color="highlight"
-                    size='large'
-                >
-                    <FolderIcon />
+                <IconButton disableRipple>
+                    <FolderIcon sx={{ fontSize: 64, color: 'orange'}}/>
+                </IconButton>
+            );
+        }
+        if (type === 'file') {
+            return (
+                <IconButton disableRipple>
+                    <Icon {...getFileTypeIconProps({ extension: name.split('.')[1], size: 64 })} />
                 </IconButton>
             );
         }
         return (
             <IconButton
                 color="highlight"
+                disableRipple
             >
                 <InsertDriveFileIcon />
             </IconButton>
@@ -35,54 +49,62 @@ function IconCard(props) {
             item 
             xs={2}
             key={itemId}
-            sx={{margin: '10px'}}
+            sx={{margin: '10px', cursor: 'pointer'}}
             onClick={onClick}
         >
-            <Grid item>
+            <Paper elevation={2}>
                 {displayIcon()}
-            </Grid>
-            <Grid item>
-                {name}
-            </Grid>
+                <Typography
+                    variant="subtitle2"
+                    component="span"
+                    sx={{
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        display: "-webkit-box",
+                        WebkitLineClamp: "2",
+                        WebkitBoxOrient: "vertical",
+                    }}>
+                    {name}
+                </Typography>
+            </Paper>
         </Grid>
     )
 }
 
 function WindowContentIconView(props) {
     const [folderData, setFolderData] = useState()
+    const [disksData, setFdisksDatata] = useState([]);
     const {
         visitedPaths,
         currentPosition,
-        currentPath,
         itemId,
         state,
         setState,
     } = props;
+
+    console.log('state', state);
 
     const getFolderContentCallBack = useCallback(() => {
         getFolder({ folderPath: visitedPaths[currentPosition]})
         .then((res) => {
             setFolderData(res.data.folderContent);
         });
-    }, [currentPath]);
+    }, [currentPosition, visitedPaths]);
 
-    const getFolderContent = (path) => {
-        getFolder({ folderPath: path })
-        .then((res) => {
-            setFolderData(res.data.folderContent);
-            setState({
-                ...state,
-                visitedPaths: [
-                  ...state.visitedPaths,
-                  path,
-                ],
-                currentPosition: state.currentPosition + 1,
-                currentPath: path,
-              })
-        });
-    };
+    const getHardDrivesFolderContent = () => {
+        getHardDrives()
+            .then((res) => {
+                setFdisksDatata(res.data.hardDrives)
+            });
+    }
 
-    useEffect(() => getFolderContentCallBack, [getFolderContentCallBack, visitedPaths])
+    useEffect(() => {
+        if (disksData.length === 0 && state.currentPath === 'Computer') {
+            getHardDrivesFolderContent()
+        }
+    }, [disksData.length, state.currentPath])
+
+    useEffect(() => getFolderContentCallBack(), [getFolderContentCallBack])
 
     const openSelectedFile = (path) => {
         openFile({ path:path })
@@ -93,19 +115,22 @@ function WindowContentIconView(props) {
 
 
     const displayItemsAsIcons = () => {
-        if (itemId === 'computer') {
-            if (folderData && folderData.length > 0) {
-                const items = folderData.map((diskItem) => {
+        if (disksData && disksData.length > 0) {
+                const items = disksData.map((diskItem) => {
                     return <IconCard
                         type="folder"
                         itemId={v4()}
                         name={diskItem.filesystem + " " + diskItem.mounted}
                         path={diskItem.mounted + "/"}
-                        onClick={() => getFolderContent(diskItem.mounted + "/")}
+                        onClick={() => setState({
+                            ...state,
+                            visitedPaths: [...state.visitedPaths, diskItem.mounted + "/"],
+                            currentPath: diskItem.mounted + "/",
+                            currentPosition: state.visitedPaths.length,
+                        })}
                     />
                 });
                 return items;
-            }
         } else {
             if (folderData && folderData.length > 0) {
                 const setType = (itemList) => {
@@ -124,7 +149,14 @@ function WindowContentIconView(props) {
                         name={itemList.name}
                         path={itemList.path} 
                         itemCount={itemList.itemCount}
-                        onClick={() => setType(itemList) === 'file' ? openSelectedFile(itemList.path) : getFolderContent(itemList.path)}
+                        onClick={() => setType(itemList) === 'file' 
+                            ? openSelectedFile(itemList.path)
+                            : setState({
+                                ...state,
+                                visitedPaths: [...state.visitedPaths, itemList.path],
+                                currentPath: itemList.path,
+                                currentPosition: state.visitedPaths.length,
+                            })}
                     />)
                 });
                 return items;
@@ -134,7 +166,7 @@ function WindowContentIconView(props) {
 
     return (
         <Box sx={{ flexGrow: 1 }}>
-            <Grid container spacing={{ xs: 2 }}>
+            <Grid container>
                 {displayItemsAsIcons()}
             </Grid>
         </Box>
