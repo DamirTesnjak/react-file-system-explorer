@@ -4,12 +4,13 @@ import { v4 } from 'uuid';
 
 import { getFolder, openFile } from '../../data/methods';
 
-const windowTreeItems = ({
-    folderData,
-    itemId,
-    state,
-    setState,
-}) => {
+const windowTreeItems = (args) => {
+    const {
+        folderData,
+        itemId,
+        state,
+        setState,
+    } = args;
     if (itemId === 'computer') {
         if (folderData && folderData.length > 0) {
             const items = folderData.map((diskItem) => {
@@ -45,6 +46,7 @@ const windowTreeItems = ({
                     setState={setState}
                 />)
             });
+            console.log(items)
             return items;
         }
     }
@@ -61,13 +63,20 @@ function WindowTreeItems(props) {
         setState,
     } = props;
     const [folderData, setFolderData] = useState(treeViewData);
+    console.log('folderData', folderData);
 
     const getFolderContent = useCallback(() => {
         getFolder({ folderPath: path })
-        .then((res) => {
-            setFolderData(res.data.folderContent)
-        });
-    }, [path]);
+            .then((res) => {
+                setFolderData(res.data.folderContent);
+                setState({
+                    ...state,
+                    visitedPaths: [...state.visitedPaths, path],
+                    currentPath: path,
+                    currentPosition: state.visitedPaths.length,
+                })
+            });
+    }, [path, setState, state]);
 
     const openSelectedFile = () => {
         openFile({ path:path })
@@ -78,9 +87,16 @@ function WindowTreeItems(props) {
 
     useEffect(() => {
         if (!folderData) {
-            getFolderContent();
+            getFolder({ folderPath: path })
+            .then((res) => {
+                setFolderData(res.data.folderContent);
+            });;
         }
-    }, [folderData, getFolderContent])
+    }, [folderData, getFolderContent, path]);
+
+    const expandItemList = () => {
+        getFolderContent();
+    }
 
     return (
         <TreeItem
@@ -88,12 +104,7 @@ function WindowTreeItems(props) {
             label={name}
             onClick={() => type === 'file'
                 ? openSelectedFile()
-                : setState({
-                    ...state,
-                    visitedPaths: [...state.visitedPaths, path],
-                    currentPath: path,
-                    currentPosition: state.visitedPaths.length,
-            })}
+                : expandItemList()}
         >
             {windowTreeItems({
                 folderData: folderData && folderData.length > 0 ? folderData : treeViewData,

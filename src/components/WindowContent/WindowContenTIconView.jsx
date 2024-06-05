@@ -8,7 +8,8 @@ import {
     Typography
 } from '@mui/material';
 import FolderIcon from '@mui/icons-material/Folder';
-import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import StorageOutlinedIcon from '@mui/icons-material/StorageOutlined';
+import Album from '@mui/icons-material/Album';
 import { getFileTypeIconProps } from '@fluentui/react-file-type-icons';
 import { Icon } from '@fluentui/react/lib/Icon';
 
@@ -38,7 +39,10 @@ function IconCard(props) {
                 color="highlight"
                 disableRipple
             >
-                <InsertDriveFileIcon />
+                {name.includes('CD-ROM') 
+                    ? <Album sx={{ fontSize: 64, color: 'grey'}}/>
+                    : <StorageOutlinedIcon sx={{ fontSize: 64, color: 'grey'}}/>
+                }
             </IconButton>
         );
     };
@@ -63,8 +67,9 @@ function IconCard(props) {
                         display: "-webkit-box",
                         WebkitLineClamp: "2",
                         WebkitBoxOrient: "vertical",
+                        width: '100px'
                     }}>
-                    {name}
+                    <span>{name}</span>
                 </Typography>
             </Paper>
         </Grid>
@@ -77,12 +82,9 @@ function WindowContentIconView(props) {
     const {
         visitedPaths,
         currentPosition,
-        itemId,
         state,
         setState,
     } = props;
-
-    console.log('state', state);
 
     const getFolderContentCallBack = useCallback(() => {
         getFolder({ folderPath: visitedPaths[currentPosition]})
@@ -115,10 +117,11 @@ function WindowContentIconView(props) {
 
 
     const displayItemsAsIcons = () => {
-        if (disksData && disksData.length > 0) {
+        if (state.currentPath === 'Computer') {
+            if (disksData && disksData.length > 0) {
                 const items = disksData.map((diskItem) => {
                     return <IconCard
-                        type="folder"
+                        type="hardDrive"
                         itemId={v4()}
                         name={diskItem.filesystem + " " + diskItem.mounted}
                         path={diskItem.mounted + "/"}
@@ -131,6 +134,7 @@ function WindowContentIconView(props) {
                     />
                 });
                 return items;
+            }
         } else {
             if (folderData && folderData.length > 0) {
                 const setType = (itemList) => {

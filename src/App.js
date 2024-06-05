@@ -33,8 +33,6 @@ function App() {
     }
   }, [getHomeDir, state.currentPath]);
 
-  console.log('state', state);
-
   return (
       <Window
         visitedPaths={state.visitedPaths}
