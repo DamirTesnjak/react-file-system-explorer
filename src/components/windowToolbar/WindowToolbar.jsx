@@ -24,6 +24,7 @@ function WindowToolbar(props) {
     const btns = [
         { name: "back", method: {
             ...state,
+            visitedPaths: [...state.visitedPaths, btnBackCurrentPathCondition],
             currentPosition: btnBackCurrentPositionCondition,
             currentPath: btnBackCurrentPathCondition,
           }},

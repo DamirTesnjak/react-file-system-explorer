@@ -55,35 +55,15 @@ function WindowTreeItems(props) {
         type,
         name,
         path,
-        state,
     } = props;
     const [folderData, setFolderData] = useState(treeViewData);
     
     const getFolderContent = useCallback(() => {
-        console.log('state', state);
         getFolder({ folderPath: path })
             .then((res) => {
                 setFolderData(res.data.folderContent);
             });
-            const value = JSON.stringify({
-                ...state,
-                currentPath: path,
-                visitedPaths: [...state.visitedPaths, path], 
-                selectedPathTreeView: path,
-                selectTreeViewItem: true,
-            })
-            localStorage.setItem('treeViewValues', value);
-            // Dispatch a custom event
-            window.dispatchEvent(
-                new CustomEvent(
-                    'localStorageChange', {
-                        detail: { 
-                            key: 'treeViewValues', value
-                        }
-                    }
-                )
-            );
-    }, [path, state]);
+    }, [path]);
 
     const openSelectedFile = () => {
         openFile({ path:path })
@@ -103,6 +83,23 @@ function WindowTreeItems(props) {
 
     const expandItemList = () => {
         getFolderContent();
+        console.log('path', path);
+        const value = JSON.stringify({
+            currentPath: path, 
+            selectedPathTreeView: path,
+            selectTreeViewItem: true,
+        })
+        localStorage.setItem('treeViewValues', value);
+        // Dispatch a custom event
+        window.dispatchEvent(
+            new CustomEvent(
+                'localStorageChange', {
+                    detail: { 
+                        key: 'treeViewValues', value
+                    }
+                }
+            )
+        );
     }
 
     return (
@@ -116,7 +113,6 @@ function WindowTreeItems(props) {
             {windowTreeItems({
                 folderData: folderData && folderData.length > 0 ? folderData : treeViewData,
                 itemId,
-                state,
             })}
         </TreeItem>
     );
