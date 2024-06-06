@@ -36,7 +36,8 @@ const windowTreeItems = (args) => {
                 }
             }
             const items = folderData.map((itemList) => {
-                return (<WindowTreeItems
+                return (
+                <WindowTreeItems
                     type={setType(itemList)}
                     itemId={itemList.path}
                     name={itemList.name}
@@ -105,6 +106,7 @@ function WindowTreeItems(props) {
         <TreeItem
             itemId={itemId}
             label={name}
+            sx={{ backgroundColor: type === 'file' ? '#e6e6e6' : '#f2f2f2'}}
             onClick={() => type === 'file'
                 ? openSelectedFile()
                 : expandItemList()}

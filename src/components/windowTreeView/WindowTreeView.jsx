@@ -29,7 +29,11 @@ function WindowTreeView(props) {
     }, [disksData])
 
     return (
-        <Box sx={{ minHeight: 352, minWidth: 250 }}>
+        <Box sx={{ 
+            height: 'calc(100vh - 120px)',
+            minWidth: 250,
+            overflow: 'scroll',
+        }}>
             <SimpleTreeView
                 expandedItems={state.expandedItems}
                 slots={{

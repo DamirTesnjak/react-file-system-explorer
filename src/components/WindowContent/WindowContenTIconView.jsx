@@ -22,14 +22,20 @@ function IconCard(props) {
     const displayIcon = () => {
         if (type === 'folder') {
             return (
-                <IconButton disableRipple>
+                <IconButton
+                    disableRipple
+                    sx={{ display: 'inline-block' }}
+                >
                     <FolderIcon sx={{ fontSize: 64, color: 'orange'}}/>
                 </IconButton>
             );
         }
         if (type === 'file') {
             return (
-                <IconButton disableRipple>
+                <IconButton
+                    disableRipple
+                    sx={{ display: 'inline-block' }}
+                >
                     <Icon {...getFileTypeIconProps({ extension: name.split('.')[1], size: 64 })} />
                 </IconButton>
             );
@@ -61,14 +67,19 @@ function IconCard(props) {
                 <Typography
                     variant="subtitle2"
                     component="span"
-                    sx={{
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        display: "-webkit-box",
-                        WebkitLineClamp: "2",
-                        WebkitBoxOrient: "vertical",
-                    }}>
-                    <span>{name}</span>
+                    sx={{ display: "inline-block" }}>
+                    <span
+                        style={{
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            display: "-webkit-box",
+                            WebkitLineClamp: "2",
+                            WebkitBoxOrient: "vertical",
+                            width: 150
+                        }}
+                    >
+                        {name}
+                    </span>
                 </Typography>
             </Paper>
         </Grid>
@@ -137,6 +148,7 @@ function WindowContentIconView(props) {
                 });
                 return items;
             }
+            return <h2>Folder does not have any elements!</h2>;
         } else {
             if (folderData && folderData.length > 0) {
                 const setType = (itemList) => {
@@ -171,11 +183,17 @@ function WindowContentIconView(props) {
                 });
                 return items;
             }
+            return <h2>Folder does not have any elements!</h2>;
         }
     }
 
     return (
-        <Box sx={{ flexGrow: 1 }}>
+        <Box sx={{
+            flexGrow: 1,
+            backgroundColor: '#ffffff',
+            height: 'calc(100vh - 120px)',
+            overflow: 'scroll',
+        }}>
             <Grid container>
                 {displayItemsAsIcons()}
             </Grid>

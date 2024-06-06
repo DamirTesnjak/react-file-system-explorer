@@ -1,5 +1,8 @@
 import React from 'react';
 import { Button, Box } from '@mui/material';
+import ArrowForwardIcon from '@mui/icons-material//ArrowForward';
+import ArrowBackIcon from '@mui/icons-material//ArrowBack';
+import ArrowUpwardIcon from '@mui/icons-material//ArrowUpward';
 
 function WindowToolbar(props) {
     const { currentPath, setState, state } = props;
@@ -27,17 +30,20 @@ function WindowToolbar(props) {
             visitedPaths: [...state.visitedPaths, btnBackCurrentPathCondition],
             currentPosition: btnBackCurrentPositionCondition,
             currentPath: btnBackCurrentPathCondition,
+            icon: <ArrowBackIcon />,
           }},
         { name: "next", method: {
             ...state,
             currentPosition: btnNextCondition,
             currentPath: state.visitedPaths[btnNextCondition],
+            icon: <ArrowForwardIcon />
         }},
         { name: "up", method: {
                 ...state,
                 visitedPaths: [...state.visitedPaths, parentPath()],
                 currentPath: parentPath(),
                 currentPosition: state.visitedPaths.length,
+                icon: <ArrowUpwardIcon />,
             }}
         ]
 
@@ -45,6 +51,7 @@ function WindowToolbar(props) {
         const btnToDisplay = btns.map((button) => {
             return (<Button
                         variant='outlined'
+                        startIcon={button.icon}
                         onClick={() => setState(button.method)}
                     >
                         {button.name}
@@ -53,7 +60,7 @@ function WindowToolbar(props) {
         return btnToDisplay;
     };
     return (
-        <Box>
+        <Box sx={{ backgroundColor: '#f2f2f2'}}>
             {displayButtons()}
         </Box>
     );

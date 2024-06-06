@@ -12,7 +12,7 @@ function Window(props) {
         state,
     } = props;
     return (
-        <Grid container spacing={2}>
+        <Grid container spacing={2} sx={{ backgroundColor: '#f2f2f2'}}>
             <Grid item xs={12}>
                 <WindowTitle currentPath={currentPath}/>
             </Grid>
