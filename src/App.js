@@ -14,6 +14,7 @@ function App() {
     itemId: '',
     visitedPaths: [],
     currentPosition: 0,
+    expandedItems: [],
   });
 
   const getHomeDir = useCallback(() => {
@@ -32,6 +33,8 @@ function App() {
       getHomeDir();
     }
   }, [getHomeDir, state.currentPath]);
+
+  console.log('state', state);
 
   return (
       <Window

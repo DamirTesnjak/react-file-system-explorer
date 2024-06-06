@@ -31,6 +31,7 @@ function WindowTreeView(props) {
     return (
         <Box sx={{ minHeight: 352, minWidth: 250 }}>
             <SimpleTreeView
+                expandedItems={state.expandedItems}
                 slots={{
                     expandIcon: AddBoxIcon,
                     collapseIcon: IndeterminateCheckBoxIcon,
@@ -41,6 +42,7 @@ function WindowTreeView(props) {
                     name="Computer"
                     path='Computer'
                     state={state}
+                    setState={setState}
                     onClick={() => setState({
                         ...state,
                         visitedPaths: [...state.visitedPaths, "Computer"],

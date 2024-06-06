@@ -6,8 +6,6 @@ import WindowToolbar from "../windowToolbar/WindowToolbar";
 
 function Window(props) {
     const {
-        visitedPaths,
-        currentPosition,
         currentPath,
         itemId,
         setState,
@@ -26,8 +24,6 @@ function Window(props) {
             </Grid>
             <Grid item xs={9}>
                 {<WindowContentIconView
-                    visitedPaths={visitedPaths}
-                    currentPosition={currentPosition}
                     currentPath={currentPath}
                     itemId={itemId}
                     state={state}
