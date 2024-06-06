@@ -77,6 +77,8 @@ function IconCard(props) {
 
 function WindowContentIconView(props) {
     const [folderData, setFolderData] = useState()
+    const [selectedTreeViewItem, setSelectedTreeViewItem] = useState('');
+    const [selectedPathTreeView, setSelectedPathTreeView] = useState('');
     const [disksData, setFdisksDatata] = useState([]);
     const {
         visitedPaths,
@@ -86,11 +88,11 @@ function WindowContentIconView(props) {
     } = props;
 
     const getFolderContentCallBack = useCallback(() => {
-        getFolder({ folderPath: visitedPaths[currentPosition]})
+        getFolder({ folderPath: selectedTreeViewItem ? selectedPathTreeView : visitedPaths[currentPosition]})
         .then((res) => {
             setFolderData(res.data.folderContent);
         });
-    }, [currentPosition, visitedPaths]);
+    }, [currentPosition, selectedPathTreeView, selectedTreeViewItem, visitedPaths]);
 
     const getHardDrivesFolderContent = () => {
         getHardDrives()
@@ -100,8 +102,23 @@ function WindowContentIconView(props) {
     }
 
     useEffect(() => {
+        function storageEventHandler(event){
+            const value = JSON.parse(event.detail.value);
+            if(event.detail.key === 'treeViewValues' && value.selectTreeViewItem) {
+                setSelectedTreeViewItem(value.selectTreeViewItem);
+                setSelectedPathTreeView(value.selectedPathTreeView);
+            }
+        }
+        window.addEventListener("localStorageChange", storageEventHandler);
+        return () => {
+            // Remove the handler when the component unmounts
+            window.removeEventListener("localStorageChange", storageEventHandler);
+        };
+    }, [])
+
+    useEffect(() => {
         if (disksData.length === 0 && state.currentPath === 'Computer') {
-            getHardDrivesFolderContent()
+            getHardDrivesFolderContent();
         }
     }, [disksData.length, state.currentPath])
 
@@ -111,7 +128,27 @@ function WindowContentIconView(props) {
         openFile({ path:path })
         .then((res) => {
             console.log(res);
+            setSelectedTreeViewItem(false);
         });
+    }
+
+    const updateLocalStorageValues = (newState, path) => {
+        const value = JSON.stringify({ 
+            ...newState,
+            selectedPathTreeView: path,
+            selectTreeViewItem: false,
+        })
+        localStorage.setItem('treeViewValues', value);
+        // Dispatch a custom event
+        window.dispatchEvent(
+            new CustomEvent(
+                'localStorageChange', {
+                    detail: { 
+                        key: 'treeViewValues', value
+                    }
+                }
+            )
+        );
     }
 
 
@@ -119,17 +156,24 @@ function WindowContentIconView(props) {
         if (state.currentPath === 'Computer') {
             if (disksData && disksData.length > 0) {
                 const items = disksData.map((diskItem) => {
+                    const newState = {
+                        ...state,
+                        visitedPaths: [...state.visitedPaths, diskItem.mounted + "/"],
+                        currentPath: diskItem.mounted + "/",
+                        currentPosition: state.visitedPaths.length,
+                    };
+                    const setValues = () => {
+                        setState(newState);
+                        setSelectedTreeViewItem(false);
+                        updateLocalStorageValues(newState, diskItem.mounted + "/");     
+                    }
+
                     return <IconCard
                         type="hardDrive"
                         itemId={v4()}
                         name={diskItem.filesystem + " " + diskItem.mounted}
                         path={diskItem.mounted + "/"}
-                        onClick={() => setState({
-                            ...state,
-                            visitedPaths: [...state.visitedPaths, diskItem.mounted + "/"],
-                            currentPath: diskItem.mounted + "/",
-                            currentPosition: state.visitedPaths.length,
-                        })}
+                        onClick={() => setValues()}
                     />
                 });
                 return items;
@@ -146,6 +190,17 @@ function WindowContentIconView(props) {
                     return "folder";
                 }
                 const items = folderData.map((itemList) => {
+                    const newState = {
+                        ...state,
+                        visitedPaths: [...state.visitedPaths, itemList.path],
+                        currentPath: itemList.path,
+                        currentPosition: state.visitedPaths.length,
+                    }
+                    const setValues = () => {
+                        setState(newState);
+                        setSelectedTreeViewItem(false);
+                        updateLocalStorageValues(itemList.path);
+                    }
                     return (<IconCard
                         type={setType(itemList)}
                         itemId={v4()}
@@ -154,12 +209,7 @@ function WindowContentIconView(props) {
                         itemCount={itemList.itemCount}
                         onClick={() => setType(itemList) === 'file' 
                             ? openSelectedFile(itemList.path)
-                            : setState({
-                                ...state,
-                                visitedPaths: [...state.visitedPaths, itemList.path],
-                                currentPath: itemList.path,
-                                currentPosition: state.visitedPaths.length,
-                            })}
+                            : setValues()}
                     />)
                 });
                 return items;

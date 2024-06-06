@@ -8,6 +8,7 @@ const windowTreeItems = (args) => {
     const {
         folderData,
         itemId,
+        state,
     } = args;
     if (itemId === 'computer') {
         if (folderData && folderData.length > 0) {
@@ -17,6 +18,7 @@ const windowTreeItems = (args) => {
                     itemId={v4()}
                     name={diskItem.filesystem + " " + diskItem.mounted}
                     path={diskItem.mounted + "/"}
+                    state={state}
                 />
             });
             return items;
@@ -38,9 +40,9 @@ const windowTreeItems = (args) => {
                     name={itemList.name}
                     path={itemList.path} 
                     itemCount={itemList.itemCount}
+                    state={state}
                 />)
             });
-            console.log(items)
             return items;
         }
     }
@@ -53,15 +55,35 @@ function WindowTreeItems(props) {
         type,
         name,
         path,
+        state,
     } = props;
     const [folderData, setFolderData] = useState(treeViewData);
-
+    
     const getFolderContent = useCallback(() => {
+        console.log('state', state);
         getFolder({ folderPath: path })
             .then((res) => {
                 setFolderData(res.data.folderContent);
             });
-    }, [path]);
+            const value = JSON.stringify({
+                ...state,
+                currentPath: path,
+                visitedPaths: [...state.visitedPaths, path], 
+                selectedPathTreeView: path,
+                selectTreeViewItem: true,
+            })
+            localStorage.setItem('treeViewValues', value);
+            // Dispatch a custom event
+            window.dispatchEvent(
+                new CustomEvent(
+                    'localStorageChange', {
+                        detail: { 
+                            key: 'treeViewValues', value
+                        }
+                    }
+                )
+            );
+    }, [path, state]);
 
     const openSelectedFile = () => {
         openFile({ path:path })
@@ -94,6 +116,7 @@ function WindowTreeItems(props) {
             {windowTreeItems({
                 folderData: folderData && folderData.length > 0 ? folderData : treeViewData,
                 itemId,
+                state,
             })}
         </TreeItem>
     );

@@ -38,8 +38,9 @@ function WindowTreeView(props) {
                 <WindowTreeItems 
                     treeViewData={disksData}
                     itemId="computer"
-                    name="computer"
+                    name="Computer"
                     path='Computer'
+                    state={state}
                     onClick={() => setState({
                         ...state,
                         visitedPaths: [...state.visitedPaths, "Computer"],
