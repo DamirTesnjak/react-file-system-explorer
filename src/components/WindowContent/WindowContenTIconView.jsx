@@ -8,9 +8,18 @@ import { Icon } from "@fluentui/react/lib/Icon";
 
 import { getFolder, openFile } from "../../data/methods";
 import { getHardDrives } from "../../data/methods";
+import { useOutsideClick } from '../../utils/outsideClick';
 
 function IconCard(props) {
-  const { state, type, name, itemId, onClick } = props;
+  const { state, type, name, itemId, onClick, setState } = props;
+
+  const ref = useOutsideClick(() => {
+    setState({
+      ...state,
+      selectedItem: null,
+      doubleClick: 0,
+    });
+  });
 
   const displayIcon = () => {
     if (type === "folder") {
@@ -45,6 +54,7 @@ function IconCard(props) {
 
   return (
     <Grid
+      ref={ref}
       id={itemId}
       item
       xs={2}
@@ -55,39 +65,39 @@ function IconCard(props) {
       }}
       onClick={onClick}
     >
-      <Paper
-        elevation={2}
-        sx={{
-          backgroundColor:
+        <Paper
+          elevation={2}
+          sx={{
+            backgroundColor:
             state.doubleClick >= 1 && state.selectedItem?.path === itemId
-              ? "#00134d"
-              : "#ffffff",
-          color:
+                ? "#00134d"
+                : "#ffffff",
+            color:
             state.doubleClick >= 1 && state.selectedItem?.path === itemId
-              ? "#ffffff"
-              : "#000000",
-        }}
-      >
-        {displayIcon()}
-        <Typography
-          variant="subtitle2"
-          component="span"
-          sx={{ display: "inline-block" }}
+                ? "#ffffff"
+                : "#000000",
+          }}
         >
-          <span
-            style={{
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              display: "-webkit-box",
-              WebkitLineClamp: "2",
-              WebkitBoxOrient: "vertical",
-              width: 150,
-            }}
+          {displayIcon()}
+          <Typography
+            variant="subtitle2"
+            component="span"
+            sx={{ display: "inline-block" }}
           >
-            {name}
-          </span>
-        </Typography>
-      </Paper>
+            <span
+              style={{
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                display: "-webkit-box",
+                WebkitLineClamp: "2",
+                WebkitBoxOrient: "vertical",
+                width: 150,
+              }}
+            >
+              {name}
+            </span>
+          </Typography>
+        </Paper>
     </Grid>
   );
 }
@@ -114,6 +124,7 @@ function WindowContentIconView(props) {
       setFdisksDatata(res.data.hardDrives);
     });
   };
+
 
   useEffect(() => {
     if (disksData.length === 0 && state.currentPath === "Computer") {
@@ -168,6 +179,7 @@ function WindowContentIconView(props) {
               name={diskItem.filesystem + " " + diskItem.mounted}
               path={diskItem.mounted + "/"}
               onClick={() => setValues()}
+              setState={setState}
             />
           );
         });
@@ -210,6 +222,7 @@ function WindowContentIconView(props) {
               if (setType(itemList) === "file") {
                 openSelectedFile(itemList.path);
               } else {
+                console.log('test4444');
                 setState(newState);
               }
             }
@@ -224,6 +237,7 @@ function WindowContentIconView(props) {
               path={itemList.path}
               itemCount={itemList.itemCount}
               onClick={() => onClick()}
+              setState={setState}
             />
           );
         });

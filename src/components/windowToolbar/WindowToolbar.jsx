@@ -103,7 +103,7 @@ function WindowToolbar(props) {
           variant="outlined"
           startIcon={button.icon}
           onClick={() => setState(button.method)}
-          disabled={state.action !== 'copy' && button.name === 'paste'}
+          disabled={state.action !== "copy" && button.name === "paste"}
         >
           {button.name}
         </Button>
