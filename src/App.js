@@ -15,6 +15,10 @@ function App() {
     visitedPaths: [],
     currentPosition: 0,
     expandedItems: [],
+    selectedItem: null,
+    doubleClick: 0,
+    folderData: [],
+    action: '',
   });
 
   const getHomeDir = useCallback(() => {
@@ -24,12 +28,14 @@ function App() {
           ...state,
           currentPath: res.data.homeFolder.replaceAll('\\', '/'),
           visitedPaths: [...state.visitedPaths, res.data.homeFolder.replaceAll('\\', '/')],
+          numOfItemsFolder: 1,
         })
       });
   }, [state]);
 
   useEffect(() => {
     if (state.currentPath?.length === 0) {
+      console.log('test');
       getHomeDir();
     }
   }, [getHomeDir, state.currentPath]);

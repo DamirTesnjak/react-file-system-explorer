@@ -77,6 +77,8 @@ function WindowTreeItems(props) {
                     expandedItems: duplicates > 0 ? uniq(filteredExpandedItems) : [...state.expandedItems, itemId],
                     currentPath: path,
                     visitedPaths: [...state.visitedPaths, path],
+                    folderData: [],
+                    numOfItemsFolder: 1,
                 })
             });
     }, [itemId, path, setState, state]);
