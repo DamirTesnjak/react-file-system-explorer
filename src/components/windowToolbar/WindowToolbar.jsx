@@ -4,7 +4,7 @@ import ArrowForwardIcon from "@mui/icons-material//ArrowForward";
 import ArrowBackIcon from "@mui/icons-material//ArrowBack";
 import ArrowUpwardIcon from "@mui/icons-material//ArrowUpward";
 
-import { copyFile } from "../../data/methods";
+import { copyFile, copyFolder } from "../../data/methods";
 import DeleteDialog from "./DeleteDialog";
 
 function WindowToolbar(props) {
@@ -114,18 +114,31 @@ function WindowToolbar(props) {
 
   useEffect(() => {
     if (state.action === "paste") {
-      const fileName = state.selectedItem?.path.split("/")[-1];
-      copyFile({
-        oldPath: state.selectedItem?.path,
-        newPath: `${state.currentPath}/${fileName}`,
+      const selecedItemPathArr = state.itemType === 'file' ? state.selectedItemFile?.path.split("/") : state.selectedFolder?.split("/");
+      const selectedItemFilename = selecedItemPathArr ? selecedItemPathArr[selecedItemPathArr.length - 1] : '';
+
+      const api = state.itemType ? copyFile : copyFolder
+
+      api({
+        oldPath: state.itemType === 'file' ? state.selectedItemFile?.path : state.selectedFolder,
+        newPath: `${state.currentPath}/${selectedItemFilename}`,
       }).then((res) => {
+        setState({
+          ...state,
+          selectedItemFile: null,
+          selectedItem: null,
+          selectedFolder: null,
+          action: '',
+          itemType: null,
+          folderData: [],
+        })
         console.log("res", res);
       });
     }
     if (state.action === "delete") {
       setOpenDeleteDialog(true);
     }
-  }, [state.action, state.currentPath, state.selectedItem]);
+  }, [setState, state, state.action, state.currentPath, state.itemType, state.selectedItem, state.selectedItemFile]);
 
   return (
     <Box sx={{ backgroundColor: "#f2f2f2" }}>

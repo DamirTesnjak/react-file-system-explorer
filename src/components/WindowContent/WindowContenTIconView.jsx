@@ -56,39 +56,34 @@ function IconCard(props) {
       onClick={onClick}
       onMouseLeave={onMouseLeave}
     >
-        <Paper
-          elevation={2}
-          sx={{
-            backgroundColor:
-            state.selectedItem?.path === itemId
-                ? "#00134d"
-                : "#ffffff",
-            color:
-            state.selectedItem?.path === itemId
-                ? "#ffffff"
-                : "#000000",
-          }}
+      <Paper
+        elevation={2}
+        sx={{
+          backgroundColor:
+            state.selectedItem?.path === itemId || state.selectedItemFile?.path === itemId ? "#00134d" : "#ffffff",
+          color: state.selectedItem?.path === itemId || state.selectedItemFile?.path === itemId ? "#ffffff" : "#000000",
+        }}
+      >
+        {displayIcon()}
+        <Typography
+          variant="subtitle2"
+          component="span"
+          sx={{ display: "inline-block" }}
         >
-          {displayIcon()}
-          <Typography
-            variant="subtitle2"
-            component="span"
-            sx={{ display: "inline-block" }}
+          <span
+            style={{
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              display: "-webkit-box",
+              WebkitLineClamp: "2",
+              WebkitBoxOrient: "vertical",
+              width: 150,
+            }}
           >
-            <span
-              style={{
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                display: "-webkit-box",
-                WebkitLineClamp: "2",
-                WebkitBoxOrient: "vertical",
-                width: 150,
-              }}
-            >
-              {name}
-            </span>
-          </Typography>
-        </Paper>
+            {name}
+          </span>
+        </Typography>
+      </Paper>
     </Grid>
   );
 }
@@ -102,7 +97,8 @@ const WindowContentIconView = (props) => {
     getFolder({ folderPath: state.currentPath }).then((res) => {
       setState({
         ...state,
-        selectedItem: null,
+        selectedItem: state.action === 'copy' ? state.selectedItem : null,
+        selectedItemFile: state.action === 'copy' ? state.selectedItemFile : null,
         doubleClick: 0,
         folderData: res.data.folderContent,
         numOfItemsFolder: res.data.numOfItemsFolder,
@@ -116,7 +112,6 @@ const WindowContentIconView = (props) => {
     });
   };
 
-
   useEffect(() => {
     if (disksData.length === 0 && state.currentPath === "Computer") {
       getHardDrivesFolderContent();
@@ -126,7 +121,6 @@ const WindowContentIconView = (props) => {
   useEffect(() => {
     if (
       state.folderData.length === 0 &&
-      state.numOfItemsFolder > 0 &&
       state.currentPath !== "Computer"
     ) {
       getFolderContentCallBack();
@@ -142,6 +136,7 @@ const WindowContentIconView = (props) => {
     if (
       state.selectedItem &&
       state.doubleClick === 2 &&
+      state.numOfItemsFolder > 0 &&
       state.currentPath !== "Computer"
     ) {
       getFolderContentCallBack();
@@ -181,20 +176,20 @@ const WindowContentIconView = (props) => {
                 selectedItem: {
                   path: diskItem.mounted + "/",
                 },
-                doubleClick: 1
+                doubleClick: 1,
               });
             }
             if (state.doubleClick >= 1) {
-                setState(newState);
-              }
-            };
-
-            const onMouseLeave = () => {
-              setState({
-                ...state,
-                doubleClick: 0
-              })
+              setState(newState);
             }
+          };
+
+          const onMouseLeave = () => {
+            setState({
+              ...state,
+              doubleClick: 0,
+            });
+          };
 
           return (
             <IconCard
@@ -237,25 +232,46 @@ const WindowContentIconView = (props) => {
           const onMouseLeave = () => {
             setState({
               ...state,
-              doubleClick: 0
-            })
-          }
+              doubleClick: 0,
+            });
+          };
 
           const onClick = () => {
             if (state.doubleClick === 0) {
-              setState({
-                ...state,
-                selectedItem: {
-                  path: itemList.path,
-                },
-                doubleClick: 1
-              });
+              if (setType(itemList) === "file") {
+                setState({
+                  ...state,
+                  selectedItemFile: {
+                    path: itemList.path,
+                  },
+                  doubleClick: 1,
+                  itemType: 'file'
+                });
+              } else {
+                if(!state.selectedFolder) {
+                  setState({
+                    ...state,
+                    selectedItem: {
+                      path: itemList.path,
+                    },
+                    selectedFolder: itemList.path,
+                    doubleClick: 1,
+                  })
+                } else {
+                  setState({
+                    ...state,
+                    selectedItem: {
+                      path: itemList.path,
+                    },
+                    doubleClick: 1,
+                  });
+                }
+              }
             }
             if (state.doubleClick >= 1) {
               if (setType(itemList) === "file") {
                 openSelectedFile(itemList.path);
               } else {
-                console.log('test4444');
                 setState(newState);
               }
             }

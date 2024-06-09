@@ -9,13 +9,16 @@ import './App.css';
 initializeFileTypeIcons();
 
 function App() {
-  const [state, setState ] = useState({
+  const [state, setState] = useState({
     currentPath: '',
     itemId: '',
     visitedPaths: [],
     currentPosition: 0,
     expandedItems: [],
     selectedItem: null,
+    selectedItemFile: null,
+    selectedFolder: null,
+    itemType: null,
     doubleClick: 0,
     folderData: [],
     action: '',
@@ -35,7 +38,6 @@ function App() {
 
   useEffect(() => {
     if (state.currentPath?.length === 0) {
-      console.log('test');
       getHomeDir();
     }
   }, [getHomeDir, state.currentPath]);

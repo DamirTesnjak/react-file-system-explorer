@@ -6,7 +6,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
-import { removeFile } from "../../data/methods";
+import { removeFile, deleteFolder } from "../../data/methods";
 
 function DeleteDialog(props) {
   const { open, setOpen, state, setState } = props;
@@ -20,14 +20,19 @@ function DeleteDialog(props) {
   };
 
   const handleConfirm = () => {
-    removeFile({
-      path: state.selectedItem?.path,
+    const api = state.itemType === 'file' ? removeFile : deleteFolder;
+    api({
+      path: state.itemType === 'file' ? state.selectedItemFile?.path : state.selectedItem?.path,
     }).then((res) => {
       setOpen(false);
       setState({
         ...state,
-        action: "",
-      });
+        selectedItemFile: null,
+        selectedItem: null,
+        action: '',
+        itemType: null,
+        folderData: [],
+      })
     });
   };
 
