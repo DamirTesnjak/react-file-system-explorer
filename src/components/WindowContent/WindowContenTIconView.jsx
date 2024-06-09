@@ -8,18 +8,9 @@ import { Icon } from "@fluentui/react/lib/Icon";
 
 import { getFolder, openFile } from "../../data/methods";
 import { getHardDrives } from "../../data/methods";
-import { useOutsideClick } from '../../utils/outsideClick';
 
 function IconCard(props) {
-  const { state, type, name, itemId, onClick, setState } = props;
-
-  const ref = useOutsideClick(() => {
-    setState({
-      ...state,
-      selectedItem: null,
-      doubleClick: 0,
-    });
-  });
+  const { state, type, name, itemId, onClick, onMouseLeave } = props;
 
   const displayIcon = () => {
     if (type === "folder") {
@@ -54,7 +45,6 @@ function IconCard(props) {
 
   return (
     <Grid
-      ref={ref}
       id={itemId}
       item
       xs={2}
@@ -64,16 +54,17 @@ function IconCard(props) {
         cursor: "pointer",
       }}
       onClick={onClick}
+      onMouseLeave={onMouseLeave}
     >
         <Paper
           elevation={2}
           sx={{
             backgroundColor:
-            state.doubleClick >= 1 && state.selectedItem?.path === itemId
+            state.selectedItem?.path === itemId
                 ? "#00134d"
                 : "#ffffff",
             color:
-            state.doubleClick >= 1 && state.selectedItem?.path === itemId
+            state.selectedItem?.path === itemId
                 ? "#ffffff"
                 : "#000000",
           }}
@@ -102,7 +93,7 @@ function IconCard(props) {
   );
 }
 
-function WindowContentIconView(props) {
+const WindowContentIconView = (props) => {
   const { state, setState } = props;
 
   const [disksData, setFdisksDatata] = useState([]);
@@ -147,13 +138,28 @@ function WindowContentIconView(props) {
     state.numOfItemsFolder,
   ]);
 
+  useEffect(() => {
+    if (
+      state.selectedItem &&
+      state.doubleClick === 2 &&
+      state.currentPath !== "Computer"
+    ) {
+      getFolderContentCallBack();
+    }
+  }, [
+    getFolderContentCallBack,
+    state.currentPath,
+    state.doubleClick,
+    state.folderData,
+    state.numOfItemsFolder,
+    state.selectedItem,
+  ]);
+
   const openSelectedFile = (path) => {
     openFile({ path: path }).then((res) => {
       console.log(res);
     });
   };
-
-  console.log("folderData", state.folderData);
 
   const displayItemsAsIcons = () => {
     if (state.currentPath === "Computer") {
@@ -167,9 +173,28 @@ function WindowContentIconView(props) {
             folderData: [],
             numOfItemsFolder: 1,
           };
-          const setValues = () => {
-            setState(newState);
-          };
+
+          const onClick = () => {
+            if (state.doubleClick === 0) {
+              setState({
+                ...state,
+                selectedItem: {
+                  path: diskItem.mounted + "/",
+                },
+                doubleClick: 1
+              });
+            }
+            if (state.doubleClick >= 1) {
+                setState(newState);
+              }
+            };
+
+            const onMouseLeave = () => {
+              setState({
+                ...state,
+                doubleClick: 0
+              })
+            }
 
           return (
             <IconCard
@@ -178,7 +203,8 @@ function WindowContentIconView(props) {
               itemId={diskItem.mounted + "/"}
               name={diskItem.filesystem + " " + diskItem.mounted}
               path={diskItem.mounted + "/"}
-              onClick={() => setValues()}
+              onClick={() => onClick()}
+              onMouseLeave={onMouseLeave}
               setState={setState}
             />
           );
@@ -203,10 +229,17 @@ function WindowContentIconView(props) {
             visitedPaths: [...state.visitedPaths, itemList.path],
             currentPath: itemList.path,
             currentPosition: state.visitedPaths.length,
-            doubleClick: 0,
+            doubleClick: 2,
             folderData: [],
             numOfItemsFolder: 1,
           };
+
+          const onMouseLeave = () => {
+            setState({
+              ...state,
+              doubleClick: 0
+            })
+          }
 
           const onClick = () => {
             if (state.doubleClick === 0) {
@@ -215,7 +248,7 @@ function WindowContentIconView(props) {
                 selectedItem: {
                   path: itemList.path,
                 },
-                doubleClick: 1,
+                doubleClick: 1
               });
             }
             if (state.doubleClick >= 1) {
@@ -237,6 +270,7 @@ function WindowContentIconView(props) {
               path={itemList.path}
               itemCount={itemList.itemCount}
               onClick={() => onClick()}
+              onMouseLeave={onMouseLeave}
               setState={setState}
             />
           );
@@ -259,5 +293,6 @@ function WindowContentIconView(props) {
       <Grid container>{displayItemsAsIcons()}</Grid>
     </Box>
   );
-}
+};
+
 export default WindowContentIconView;
