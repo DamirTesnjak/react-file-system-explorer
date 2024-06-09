@@ -94,7 +94,6 @@ function WindowTreeItems(props) {
   }, [folderData, itemId, path, setState, state]);
 
   const expandItemList = () => {
-    console.log("itemId", itemId);
     getFolderContent();
   };
 

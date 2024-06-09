@@ -1,5 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Grid, IconButton, Box, Paper, Typography } from "@mui/material";
+import {
+  Grid,
+  IconButton,
+  Box,
+  Paper,
+  Typography,
+  Menu,
+  MenuItem,
+} from "@mui/material";
 import FolderIcon from "@mui/icons-material/Folder";
 import StorageOutlinedIcon from "@mui/icons-material/StorageOutlined";
 import Album from "@mui/icons-material/Album";
@@ -10,7 +18,96 @@ import { getFolder, openFile } from "../../data/methods";
 import { getHardDrives } from "../../data/methods";
 
 function IconCard(props) {
-  const { state, type, name, itemId, onClick, onMouseLeave } = props;
+  const { state, type, name, itemId, onClick, onMouseLeave, setState, path } = props;
+
+  const [contextMenu, setContextMenu] = React.useState(null);
+
+  const handleClose = () => {
+    setContextMenu(null);
+  };
+
+  const handleContextMenu = (event) => {
+    event.preventDefault();
+    if (contextMenu === null) {
+      if (type === "file") {
+        setState({
+          ...state,
+          selectedItemFile: {
+            path: path,
+          },
+          doubleClick: 1,
+          itemType: "file",
+        });
+      } else {
+          setState({
+            ...state,
+            selectedItem: {
+              path: path,
+            },
+            selectedFolder: path,
+            doubleClick: 1,
+          });
+        }
+    };
+    setContextMenu(
+      contextMenu === null
+        ? {
+            mouseX: event.clientX + 2,
+            mouseY: event.clientY - 6,
+          }
+        : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
+          // Other native context menus might behave different.
+          // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
+          null
+    );
+  };
+
+  const handleOpen = () => {
+    if (type === "file") {
+      openFile({ path: path }).then((res) => {
+        console.log(res);
+      });
+    } else {
+      setState({
+        ...state,
+        visitedPaths: [...state.visitedPaths, path],
+        currentPath: path,
+        currentPosition: state.visitedPaths.length,
+        selectedItem: {
+          path: path,
+        },
+        selectedFolder: path,
+        doubleClick: 2,
+        folderData: [],
+        numOfItemsFolder: 1,
+      });
+    };
+    handleClose();
+  };
+
+  const handleCopy = () => {
+    setState( {
+      ...state,
+      action: "copy",
+    });
+    handleClose();
+  }
+
+  const handlePaste = () => {
+    setState({
+      ...state,
+      action: "paste",
+    });
+    handleClose();
+  }
+
+  const handleDelete = () => {
+    setState({
+      ...state,
+      action: "delete",
+    });
+    handleClose();
+  }
 
   const displayIcon = () => {
     if (type === "folder") {
@@ -52,17 +149,26 @@ function IconCard(props) {
       sx={{
         margin: "10px",
         cursor: "pointer",
+        visibility: name === "" ? "hidden" : "visible",
       }}
-      onClick={onClick}
+      onClick={!contextMenu ? onClick : null}
       onMouseLeave={onMouseLeave}
     >
       <Paper
         elevation={2}
         sx={{
           backgroundColor:
-            state.selectedItem?.path === itemId || state.selectedItemFile?.path === itemId ? "#00134d" : "#ffffff",
-          color: state.selectedItem?.path === itemId || state.selectedItemFile?.path === itemId ? "#ffffff" : "#000000",
+            state.selectedItem?.path === itemId ||
+            state.selectedItemFile?.path === itemId
+              ? "#00134d"
+              : "#ffffff",
+          color:
+            state.selectedItem?.path === itemId ||
+            state.selectedItemFile?.path === itemId
+              ? "#ffffff"
+              : "#000000",
         }}
+        onContextMenu={handleContextMenu}
       >
         {displayIcon()}
         <Typography
@@ -83,6 +189,21 @@ function IconCard(props) {
             {name}
           </span>
         </Typography>
+        <Menu
+          open={contextMenu !== null}
+          onClose={handleClose}
+          anchorReference="anchorPosition"
+          anchorPosition={
+            contextMenu !== null
+              ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+              : undefined
+          }
+        >
+          <MenuItem onClick={handleOpen}>Open</MenuItem>
+          <MenuItem onClick={handleCopy}>Copy</MenuItem>
+          <MenuItem onClick={handlePaste}>Paste</MenuItem>
+          <MenuItem onClick={handleDelete}>Delete</MenuItem>
+        </Menu>
       </Paper>
     </Grid>
   );
@@ -97,11 +218,19 @@ const WindowContentIconView = (props) => {
     getFolder({ folderPath: state.currentPath }).then((res) => {
       setState({
         ...state,
-        selectedItem: state.action === 'copy' ? state.selectedItem : null,
-        selectedItemFile: state.action === 'copy' ? state.selectedItemFile : null,
+        selectedItem: state.action === "copy" ? state.selectedItem : null,
+        selectedItemFile:
+          state.action === "copy" ? state.selectedItemFile : null,
         doubleClick: 0,
-        folderData: res.data.folderContent,
-        numOfItemsFolder: res.data.numOfItemsFolder,
+        folderData:
+          res.data.folderContent.length === 0
+            ? [
+                {
+                  name: "",
+                },
+              ]
+            : res.data.folderContent,
+        numOfItemsFolder: 1,
       });
     });
   }, [setState, state]);
@@ -119,10 +248,7 @@ const WindowContentIconView = (props) => {
   }, [disksData.length, state.currentPath]);
 
   useEffect(() => {
-    if (
-      state.folderData.length === 0 &&
-      state.currentPath !== "Computer"
-    ) {
+    if (state.folderData.length === 0 && state.currentPath !== "Computer") {
       getFolderContentCallBack();
     }
   }, [
@@ -136,7 +262,6 @@ const WindowContentIconView = (props) => {
     if (
       state.selectedItem &&
       state.doubleClick === 2 &&
-      state.numOfItemsFolder > 0 &&
       state.currentPath !== "Computer"
     ) {
       getFolderContentCallBack();
@@ -245,10 +370,10 @@ const WindowContentIconView = (props) => {
                     path: itemList.path,
                   },
                   doubleClick: 1,
-                  itemType: 'file'
+                  itemType: "file",
                 });
               } else {
-                if(!state.selectedFolder) {
+                if (!state.selectedFolder) {
                   setState({
                     ...state,
                     selectedItem: {
@@ -256,7 +381,7 @@ const WindowContentIconView = (props) => {
                     },
                     selectedFolder: itemList.path,
                     doubleClick: 1,
-                  })
+                  });
                 } else {
                   setState({
                     ...state,

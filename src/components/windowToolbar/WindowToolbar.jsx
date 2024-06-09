@@ -96,6 +96,15 @@ function WindowToolbar(props) {
     },
   ];
 
+  const disableButton = (button) => {
+    if ((state.selectedFolder || state.selectedItemFile) && (button.name === 'copy' || button.name === 'paste' || button.name === 'delete')) {
+      return false
+    }
+    if (!(state.selectedFolder || state.selectedItemFile) && (button.name === 'copy' || button.name === 'paste' || button.name === 'delete')) {
+      return true
+    }
+  }
+
   const displayButtons = () => {
     const btnToDisplay = btns.map((button) => {
       return (
@@ -103,7 +112,7 @@ function WindowToolbar(props) {
           variant="outlined"
           startIcon={button.icon}
           onClick={() => setState(button.method)}
-          disabled={state.action !== "copy" && button.name === "paste"}
+          disabled={disableButton(button)}
         >
           {button.name}
         </Button>
