@@ -369,6 +369,7 @@ const WindowContentIconView = (props) => {
                   selectedItemFile: {
                     path: itemList.path,
                   },
+                  selectedFolder: null,
                   doubleClick: 1,
                   itemType: "file",
                 });
@@ -380,6 +381,7 @@ const WindowContentIconView = (props) => {
                       path: itemList.path,
                     },
                     selectedFolder: itemList.path,
+                    itemType: 'folder',
                     doubleClick: 1,
                   });
                 } else {
@@ -388,6 +390,7 @@ const WindowContentIconView = (props) => {
                     selectedItem: {
                       path: itemList.path,
                     },
+                    itemType: 'folder',
                     doubleClick: 1,
                   });
                 }

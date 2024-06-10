@@ -3,6 +3,7 @@ import WindowTreeView from "../WindowTreeView/WindowTreeView";
 import WindowContentIconView from "../WindowContent/WindowContenTIconView";
 import WindowTitle from "../WindowTitle/WindowTitle";
 import WindowToolbar from "../WindowToolbar/WindowToolbar";
+import WindowAddressBar from "../WindowAddressBar/WindowAddressBar";
 
 function Window(props) {
   const { currentPath, itemId, setState, state } = props;
@@ -14,6 +15,12 @@ function Window(props) {
       <Grid item xs={12}>
         <WindowToolbar
           currentPath={currentPath}
+          state={state}
+          setState={setState}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <WindowAddressBar
           state={state}
           setState={setState}
         />

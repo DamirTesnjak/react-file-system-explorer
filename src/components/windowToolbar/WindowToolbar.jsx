@@ -6,11 +6,13 @@ import ArrowUpwardIcon from "@mui/icons-material//ArrowUpward";
 
 import { copyFile, copyFolder } from "../../data/methods";
 import DeleteDialog from "./DeleteDialog";
+import CreateFolderDialog from "./CreateFolderDialog";
 
 function WindowToolbar(props) {
   const { currentPath, setState, state } = props;
 
   const [openDeleteDialog, setOpenDeleteDialog] = useState();
+  const [openCreateFolderDialog, setOpenCreateFolderDialog] = useState();
 
   const parentPath = () => {
     const currentPathArray = currentPath?.split("/");
@@ -94,6 +96,14 @@ function WindowToolbar(props) {
       },
       icon: <ArrowUpwardIcon />,
     },
+    {
+      name: "create folder",
+      method: {
+        ...state,
+        action: "createFolder",
+      },
+      icon: <ArrowUpwardIcon />,
+    },
   ];
 
   const disableButton = (button) => {
@@ -147,6 +157,9 @@ function WindowToolbar(props) {
     if (state.action === "delete") {
       setOpenDeleteDialog(true);
     }
+    if(state.action === "createFolder") {
+      setOpenCreateFolderDialog(true)
+    }
   }, [setState, state, state.action, state.currentPath, state.itemType, state.selectedItem, state.selectedItemFile]);
 
   return (
@@ -154,6 +167,12 @@ function WindowToolbar(props) {
       <DeleteDialog
         open={openDeleteDialog}
         setOpen={setOpenDeleteDialog}
+        state={state}
+        setState={setState}
+      />
+      <CreateFolderDialog
+        open={openCreateFolderDialog}
+        setOpen={setOpenCreateFolderDialog}
         state={state}
         setState={setState}
       />
