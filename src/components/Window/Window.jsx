@@ -8,27 +8,27 @@ import WindowAddressBar from "../WindowAddressBar/WindowAddressBar";
 function Window(props) {
   const { currentPath, itemId, setState, state } = props;
   return (
-    <Grid container spacing={2} sx={{ backgroundColor: "#f2f2f2" }}>
+    <Grid container spacing={2} sx={{ backgroundColor: "#c0c7c8" }}>
       <Grid item xs={12}>
         <WindowTitle currentPath={currentPath} />
       </Grid>
-      <Grid item xs={12}>
+      <Grid item xs={12} sx={{ paddingTop: "2px !important" }}>
         <WindowToolbar
           currentPath={currentPath}
           state={state}
           setState={setState}
         />
       </Grid>
-      <Grid item xs={12}>
+      <Grid item xs={12} sx={{ paddingTop: "0px !important" }}>
         <WindowAddressBar
           state={state}
           setState={setState}
         />
       </Grid>
-      <Grid item xs={3}>
+      <Grid item xs={2}>
         <WindowTreeView state={state} setState={setState} />
       </Grid>
-      <Grid item xs={9}>
+      <Grid item xs={10}>
         <WindowContentIconView
           currentPath={currentPath}
           itemId={itemId}

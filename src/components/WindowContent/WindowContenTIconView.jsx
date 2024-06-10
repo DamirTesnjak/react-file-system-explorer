@@ -428,9 +428,12 @@ const WindowContentIconView = (props) => {
   return (
     <Box
       sx={{
-        flexGrow: 1,
         backgroundColor: "#ffffff",
-        height: "calc(100vh - 120px)",
+        borderTop: "2px solid #020102",
+        borderLeft: "2px solid #020102",
+        borderBottom: "2px solid #808080",
+        borderRight: "2px solid #808080",
+        height: "calc(100vh - 161px)",
         overflow: "scroll",
       }}
     >

@@ -101,7 +101,6 @@ function WindowTreeItems(props) {
     <TreeItem
       itemId={itemId}
       label={name}
-      sx={{ backgroundColor: type === "file" ? "#e6e6e6" : "#f2f2f2" }}
       onClick={() => (type === "file" ? openSelectedFile() : expandItemList())}
     >
       {windowTreeItems({

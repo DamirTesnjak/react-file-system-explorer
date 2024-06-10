@@ -163,7 +163,7 @@ function WindowToolbar(props) {
   }, [setState, state, state.action, state.currentPath, state.itemType, state.selectedItem, state.selectedItemFile]);
 
   return (
-    <Box sx={{ backgroundColor: "#f2f2f2" }}>
+    <Box sx={{ backgroundColor: "#c0c7c8f2" }}>
       <DeleteDialog
         open={openDeleteDialog}
         setOpen={setOpenDeleteDialog}

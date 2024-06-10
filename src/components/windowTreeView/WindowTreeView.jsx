@@ -27,8 +27,12 @@ function WindowTreeView(props) {
   return (
     <Box
       sx={{
-        height: "calc(100vh - 120px)",
-        minWidth: 250,
+        backgroundColor: '#ffffff',
+        borderTop: "2px solid #020102",
+        borderLeft: "2px solid #020102",
+        borderBottom: "2px solid #808080",
+        borderRight: "2px solid #808080",
+        height: "calc(100vh - 161px)",
         overflow: "scroll",
       }}
     >

@@ -3,8 +3,13 @@ import { useState, useEffect, useCallback } from 'react';
 import Window from './components/Window/Window';
 import { getUserHomeFolder } from './data/methods';
 import { initializeFileTypeIcons } from "@fluentui/react-file-type-icons";
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 
+import style from './style/style'
 import './App.css';
+
+
+const theme = createTheme(style);
 
 initializeFileTypeIcons();
 
@@ -45,6 +50,7 @@ function App() {
   console.log('state', state);
 
   return (
+    <ThemeProvider theme={theme}>
       <Window
         visitedPaths={state.visitedPaths}
         currentPath={state.currentPath}
@@ -53,6 +59,7 @@ function App() {
         setState={(s) => setState(s)}
         state={state}
       />
+      </ThemeProvider>
   );
 }
 

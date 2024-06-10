@@ -18,9 +18,13 @@ function WindowAddressBar(props) {
 
   return (
     <Box>
-      <Button sx={{ display: "inline-block" }} onClick={() => selectPath()}>
-        Go
-      </Button>
+      <Box sx={{ display: "inline-block" }}>
+        <Button
+          sx={{  marginTop: '12px'}} 
+          onClick={() => selectPath()}>
+          Go
+        </Button>
+      </Box>
       <Box sx={{
         display: "inline-block",
         width: '50%'
