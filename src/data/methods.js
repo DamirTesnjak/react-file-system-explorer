@@ -18,8 +18,6 @@ import {
 export const copyFile = (request = {}) => axiosInstance
   .post(copyFileUrl, request);
 
-
-
 export const copyFolder = (request = {}) => axiosInstance
     .post(copyFolderUrl, request);
 

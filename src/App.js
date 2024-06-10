@@ -9,12 +9,19 @@ import './App.css';
 initializeFileTypeIcons();
 
 function App() {
-  const [state, setState ] = useState({
+  const [state, setState] = useState({
     currentPath: '',
     itemId: '',
     visitedPaths: [],
     currentPosition: 0,
     expandedItems: [],
+    selectedItem: null,
+    selectedItemFile: null,
+    selectedFolder: null,
+    itemType: null,
+    doubleClick: 0,
+    folderData: [],
+    action: '',
   });
 
   const getHomeDir = useCallback(() => {
@@ -24,6 +31,7 @@ function App() {
           ...state,
           currentPath: res.data.homeFolder.replaceAll('\\', '/'),
           visitedPaths: [...state.visitedPaths, res.data.homeFolder.replaceAll('\\', '/')],
+          numOfItemsFolder: 1,
         })
       });
   }, [state]);
