@@ -7,12 +7,17 @@ import {
   Typography,
   Menu,
   MenuItem,
+  ListItemIcon,
+  ListItemText,
 } from "@mui/material";
 import FolderIcon from "@mui/icons-material/Folder";
 import StorageOutlinedIcon from "@mui/icons-material/StorageOutlined";
 import Album from "@mui/icons-material/Album";
 import { getFileTypeIconProps } from "@fluentui/react-file-type-icons";
 import { Icon } from "@fluentui/react/lib/Icon";
+import ContentCopy from '@mui/icons-material/ContentCopy';
+import ContentPasteIcon from '@mui/icons-material/ContentPaste';
+import ClearIcon from '@mui/icons-material/Clear';
 
 import { getFolder, openFile } from "../../data/methods";
 import { getHardDrives } from "../../data/methods";
@@ -200,9 +205,24 @@ function IconCard(props) {
           }
         >
           <MenuItem onClick={handleOpen}>Open</MenuItem>
-          <MenuItem onClick={handleCopy}>Copy</MenuItem>
-          <MenuItem onClick={handlePaste}>Paste</MenuItem>
-          <MenuItem onClick={handleDelete}>Delete</MenuItem>
+          <MenuItem onClick={handleCopy}>
+            <ListItemIcon>
+              <ContentCopy fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Copy</ListItemText>
+          </MenuItem>
+          <MenuItem onClick={handlePaste}>
+            <ListItemIcon>
+              <ContentPasteIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Paste</ListItemText>
+          </MenuItem>
+          <MenuItem onClick={handleDelete}>
+            <ListItemIcon>
+              <ClearIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Delete</ListItemText>
+          </MenuItem>
         </Menu>
       </Paper>
     </Grid>
@@ -331,7 +351,7 @@ const WindowContentIconView = (props) => {
         });
         return items;
       }
-      return <h2>Folder does not have any elements!</h2>;
+      return <h2>Please wait...</h2>;
     } else {
       if (state.folderData && state.folderData.length > 0) {
         const setType = (itemList) => {
@@ -381,7 +401,6 @@ const WindowContentIconView = (props) => {
                       path: itemList.path,
                     },
                     selectedFolder: itemList.path,
-                    itemType: 'folder',
                     doubleClick: 1,
                   });
                 } else {
@@ -390,7 +409,6 @@ const WindowContentIconView = (props) => {
                     selectedItem: {
                       path: itemList.path,
                     },
-                    itemType: 'folder',
                     doubleClick: 1,
                   });
                 }
@@ -421,7 +439,7 @@ const WindowContentIconView = (props) => {
         });
         return items;
       }
-      return <h2>Folder does not have any elements!</h2>;
+      return <h2>Please wait...</h2>;
     }
   };
 

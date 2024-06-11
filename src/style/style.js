@@ -81,6 +81,26 @@ const style = {
                 }
             }
         }
+    },
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
+          ':hover': {
+            backgroundColor: '#00134d',
+            color: '#ffffff',
+          },
+        }
+      }
+    },
+    MuiTreeItemContent: {
+      styleOverrides: {
+        root: {
+          ':hover': {
+            backgroundColor: '#00134d',
+            color: '#ffffff',
+          },
+        }
+      }
     }
   },
 };

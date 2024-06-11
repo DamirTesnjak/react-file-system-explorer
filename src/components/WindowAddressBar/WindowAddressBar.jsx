@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Autocomplete, Box, Button, TextField } from "@mui/material";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { uniq } from "lodash";
 
 function WindowAddressBar(props) {
@@ -20,7 +21,8 @@ function WindowAddressBar(props) {
     <Box>
       <Box sx={{ display: "inline-block" }}>
         <Button
-          sx={{  marginTop: '12px'}} 
+          sx={{ marginTop: '12px'}}
+          endIcon={<ArrowForwardIcon sx={{ color: "#66ffff" }}/>} 
           onClick={() => selectPath()}>
           Go
         </Button>
