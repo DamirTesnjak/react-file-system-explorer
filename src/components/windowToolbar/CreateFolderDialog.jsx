@@ -27,15 +27,24 @@ function CreateFolderDialog(props) {
         folderPath: `${state.currentPath}/${folderName}`,
       }).then((res) => {
         setOpen(false);
-        setState({
-          ...state,
-          selectedItemFile: null,
-          selectedItem: null,
-          selectedFolder: null,
-          action: "",
-          itemType: null,
-          folderData: [],
-        });
+        if (!res.data.err) {
+          setState({
+            ...state,
+            selectedItemFile: null,
+            selectedItem: null,
+            selectedFolder: null,
+            action: "",
+            itemType: null,
+            folderData: [],
+          });
+        } else {
+          setState({
+            ...state,
+            error: res.data.err,
+            action: "",
+          });
+        }
+        setOpen(false);
         setFolderName("");
       });
     }

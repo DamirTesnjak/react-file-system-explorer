@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Button, Box } from "@mui/material";
-import ArrowForwardIcon from "@mui/icons-material//ArrowForward";
-import ArrowBackIcon from "@mui/icons-material//ArrowBack";
-import ArrowUpwardIcon from "@mui/icons-material//ArrowUpward";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ContentPasteIcon from '@mui/icons-material/ContentPaste';
+import ClearIcon from '@mui/icons-material/Clear';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 
 import { copyFile, copyFolder } from "../../data/methods";
 import DeleteDialog from "./DeleteDialog";
+import ErrorDialog from './ErrorDialog';
 import CreateFolderDialog from "./CreateFolderDialog";
 
 function WindowToolbar(props) {
@@ -47,7 +52,7 @@ function WindowToolbar(props) {
         folderData: [],
         numOfItemsFolder: 1,
       },
-      icon: <ArrowBackIcon />,
+      icon: <ArrowBackIcon sx={{ color: "#66ffff" }}/>,
     },
     {
       name: "next",
@@ -58,7 +63,7 @@ function WindowToolbar(props) {
         folderData: [],
         numOfItemsFolder: 1,
       },
-      icon: <ArrowForwardIcon />,
+      icon: <ArrowForwardIcon sx={{ color: "#66ffff" }}/>,
     },
     {
       name: "up",
@@ -70,7 +75,7 @@ function WindowToolbar(props) {
         folderData: [],
         numOfItemsFolder: 1,
       },
-      icon: <ArrowUpwardIcon />,
+      icon: <ArrowUpwardIcon sx={{ color: "#66ffff" }}/>,
     },
     {
       name: "copy",
@@ -78,7 +83,7 @@ function WindowToolbar(props) {
         ...state,
         action: "copy",
       },
-      icon: <ArrowUpwardIcon />,
+      icon: <ContentCopyIcon/>,
     },
     {
       name: "paste",
@@ -86,7 +91,7 @@ function WindowToolbar(props) {
         ...state,
         action: "paste",
       },
-      icon: <ArrowUpwardIcon />,
+      icon: <ContentPasteIcon sx={{ color: "#993333" }}/>,
     },
     {
       name: "delete",
@@ -94,7 +99,7 @@ function WindowToolbar(props) {
         ...state,
         action: "delete",
       },
-      icon: <ArrowUpwardIcon />,
+      icon: <ClearIcon sx={{ color: "#ff3300" }}/>,
     },
     {
       name: "create folder",
@@ -102,7 +107,7 @@ function WindowToolbar(props) {
         ...state,
         action: "createFolder",
       },
-      icon: <ArrowUpwardIcon />,
+      icon: <CreateNewFolderIcon sx={{ color: "#cc6600" }}/>,
     },
   ];
 
@@ -142,6 +147,7 @@ function WindowToolbar(props) {
         oldPath: state.itemType === 'file' ? state.selectedItemFile?.path : state.selectedFolder,
         newPath: `${state.currentPath}/${selectedItemFilename}`,
       }).then((res) => {
+        if (!res.data.err) {
         setState({
           ...state,
           selectedItemFile: null,
@@ -151,8 +157,18 @@ function WindowToolbar(props) {
           itemType: null,
           folderData: [],
         })
+      } else {
+        setState({
+          ...state,
+          error: res.data.err,
+          action: "",
+        });
+      }
         console.log("res", res);
-      });
+      })
+        .catch((e) => {
+          console.log('err', e);
+        });
     }
     if (state.action === "delete") {
       setOpenDeleteDialog(true);
@@ -173,6 +189,11 @@ function WindowToolbar(props) {
       <CreateFolderDialog
         open={openCreateFolderDialog}
         setOpen={setOpenCreateFolderDialog}
+        state={state}
+        setState={setState}
+      />
+      <ErrorDialog
+        open={state.error?.code.length > 0}
         state={state}
         setState={setState}
       />

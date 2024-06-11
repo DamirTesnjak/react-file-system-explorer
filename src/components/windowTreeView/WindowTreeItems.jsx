@@ -64,6 +64,7 @@ function WindowTreeItems(props) {
       );
       console.log("duplicates", duplicates);
       setFolderData(res.data.folderContent);
+      if (!res.data.err) {
       setState({
         ...state,
         itemId,
@@ -75,9 +76,14 @@ function WindowTreeItems(props) {
         visitedPaths: [...state.visitedPaths, path],
         folderData: [],
         numOfItemsFolder: 1,
+      })} else {
+      setState({
+        ...state,
+        error: res.data.err,
+        action: "",
       });
-    });
-  }, [itemId, path, setState, state]);
+    };
+  })}, [itemId, path, setState, state]);
 
   const openSelectedFile = () => {
     openFile({ path: path }).then((res) => {

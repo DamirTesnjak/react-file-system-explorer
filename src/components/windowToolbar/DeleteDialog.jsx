@@ -20,20 +20,30 @@ function DeleteDialog(props) {
   };
 
   const handleConfirm = () => {
-    const api = state.itemType === 'file' ? removeFile : deleteFolder;
+    const api = state.itemType === "file" ? removeFile : deleteFolder;
     api({
-      path: state.itemType === 'file' ? state.selectedItemFile?.path : state.selectedItem?.path,
+      path:
+        state.itemType === "file"
+          ? state.selectedItemFile?.path
+          : state.selectedItem?.path,
     }).then((res) => {
-      setOpen(false);
-      setState({
-        ...state,
-        selectedItemFile: null,
-        selectedItem: null,
-        action: '',
-        itemType: null,
-        folderData: [],
-      })
-    });
+      if (!res.data.err) {
+        setOpen(false);
+        setState({
+          ...state,
+          selectedItemFile: null,
+          selectedItem: null,
+          action: "",
+          itemType: null,
+          folderData: [],
+        });
+      } else {
+        setState({
+          ...state,
+          error: res.data.err,
+          action: "",
+        });
+      }})
   };
 
   return (

@@ -14,8 +14,15 @@ function WindowTreeView(props) {
 
   const getFolderContent = () => {
     getHardDrives().then((res) => {
+      if (!res.data.err) {
       setFdisksDatata(res.data.hardDrives);
-    });
+    }else {
+      setState({
+        ...state,
+        error: res.data.err,
+        action: "",
+      });
+    }});
   };
 
   useEffect(() => {

@@ -27,6 +27,7 @@ function App() {
     doubleClick: 0,
     folderData: [],
     action: '',
+    error: null,
   });
 
   const getHomeDir = useCallback(() => {
