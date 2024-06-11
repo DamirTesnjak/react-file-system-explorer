@@ -9,3 +9,5 @@ This repository is the part of my personal project of writing the React app - Fi
 To successfuly run the application you must download the backend part,
 <br> which you can find here: https://github.com/DamirTesnjak/react-file-system-explorer-server
 <br> and follow the instruction described in the link above.
+
+**Both backend and frontend must be running to use the application**
