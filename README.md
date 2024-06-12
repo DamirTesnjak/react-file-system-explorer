@@ -2,7 +2,7 @@
 This repository is the part of my personal project, **an experiment** of writing the React app - File Explorer,
 <br> and you must regard it as such. Do not expect a clone of File Explorer in Windows, because it is not!!!
 <br>
-<br>**App is very buggy but you can have a fun playing with it!**
+<br>**Have a fun playing with it!**
 <br>
 <br>
 <br>Installation: download repository and run the command ```npm i``` in command prompt terminal
