@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import PropTypes from 'prop-types';
 import { Button, Box } from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -14,7 +15,18 @@ import ErrorDialog from './ErrorDialog';
 import CreateFolderDialog from "./CreateFolderDialog";
 
 function WindowToolbar(props) {
-  const { currentPath, setState, state } = props;
+  const { setState, state } = props;
+  const { 
+    currentPath,
+    currentPosition,
+    visitedPaths,
+    action,
+    error,
+    itemType,
+    selectedItem,
+    selectedItemFile,
+    selectedFolder,
+  } = state;
 
   const [openDeleteDialog, setOpenDeleteDialog] = useState();
   const [openCreateFolderDialog, setOpenCreateFolderDialog] = useState();
@@ -30,23 +42,23 @@ function WindowToolbar(props) {
   };
 
   const btnBackCurrentPositionCondition =
-    state.currentPosition > 0 ? state.currentPosition - 1 : 0;
+    currentPosition > 0 ? currentPosition - 1 : 0;
   const btnBackCurrentPathCondition =
-    state.visitedPaths[
-      state.currentPosition > 0 ? state.currentPosition - 1 : 0
+    visitedPaths[
+      currentPosition > 0 ? currentPosition - 1 : 0
     ];
 
   const btnNextCondition =
-    state.currentPosition < state.visitedPaths.length - 1
-      ? state.currentPosition + 1
-      : state.visitedPaths.length - 1;
+    currentPosition < visitedPaths.length - 1
+      ? currentPosition + 1
+      : visitedPaths.length - 1;
 
   const btns = [
     {
       name: "back",
       method: {
         ...state,
-        visitedPaths: [...state.visitedPaths, btnBackCurrentPathCondition],
+        visitedPaths: [...visitedPaths, btnBackCurrentPathCondition],
         currentPosition: btnBackCurrentPositionCondition,
         currentPath: btnBackCurrentPathCondition,
         folderData: [],
@@ -59,7 +71,7 @@ function WindowToolbar(props) {
       method: {
         ...state,
         currentPosition: btnNextCondition,
-        currentPath: state.visitedPaths[btnNextCondition],
+        currentPath: visitedPaths[btnNextCondition],
         folderData: [],
         numOfItemsFolder: 1,
       },
@@ -69,9 +81,9 @@ function WindowToolbar(props) {
       name: "up",
       method: {
         ...state,
-        visitedPaths: [...state.visitedPaths, parentPath()],
+        visitedPaths: [...visitedPaths, parentPath()],
         currentPath: parentPath(),
-        currentPosition: state.visitedPaths.length,
+        currentPosition: visitedPaths.length,
         folderData: [],
         numOfItemsFolder: 1,
       },
@@ -112,10 +124,10 @@ function WindowToolbar(props) {
   ];
 
   const disableButton = (button) => {
-    if ((state.selectedFolder || state.selectedItemFile) && (button.name === 'copy' || button.name === 'paste' || button.name === 'delete')) {
+    if ((selectedFolder || selectedItemFile) && (button.name === 'copy' || button.name === 'paste' || button.name === 'delete')) {
       return false
     }
-    if (!(state.selectedFolder || state.selectedItemFile) && (button.name === 'copy' || button.name === 'paste' || button.name === 'delete')) {
+    if (!(selectedFolder || selectedItemFile) && (button.name === 'copy' || button.name === 'paste' || button.name === 'delete')) {
       return true
     }
   }
@@ -124,6 +136,7 @@ function WindowToolbar(props) {
     const btnToDisplay = btns.map((button) => {
       return (
         <Button
+          key={button.name}
           variant="outlined"
           startIcon={button.icon}
           onClick={() => setState(button.method)}
@@ -137,14 +150,14 @@ function WindowToolbar(props) {
   };
 
   useEffect(() => {
-    if (state.action === "paste") {
-      const selecedItemPathArr = state.itemType === 'file' ? state.selectedItemFile?.path.split("/") : state.selectedFolder?.split("/");
+    if (action === "paste") {
+      const selecedItemPathArr = state.itemType === 'file' ? selectedItemFile?.path.split("/") : selectedFolder?.split("/");
       const selectedItemFilename = selecedItemPathArr ? selecedItemPathArr[selecedItemPathArr.length - 1] : '';
 
       const api = state.itemType ? copyFile : copyFolder
 
       api({
-        oldPath: state.itemType === 'file' ? state.selectedItemFile?.path : state.selectedFolder,
+        oldPath: state.itemType === 'file' ? selectedItemFile?.path : selectedFolder,
         newPath: `${state.currentPath}/${selectedItemFilename}`,
       }).then((res) => {
         if (!res.data.err) {
@@ -170,13 +183,13 @@ function WindowToolbar(props) {
           console.log('err', e);
         });
     }
-    if (state.action === "delete") {
+    if (action === "delete") {
       setOpenDeleteDialog(true);
     }
-    if(state.action === "createFolder") {
+    if(action === "createFolder") {
       setOpenCreateFolderDialog(true)
     }
-  }, [setState, state, state.action, state.currentPath, state.itemType, state.selectedItem, state.selectedItemFile]);
+  }, [setState, state, action, currentPath, itemType, selectedItem, selectedItemFile]);
 
   return (
     <Box sx={{ backgroundColor: "#c0c7c8f2" }}>
@@ -193,7 +206,7 @@ function WindowToolbar(props) {
         setState={setState}
       />
       <ErrorDialog
-        open={state.error?.code.length > 0}
+        open={error?.code.length > 0}
         state={state}
         setState={setState}
       />
@@ -203,3 +216,24 @@ function WindowToolbar(props) {
 }
 
 export default WindowToolbar;
+
+WindowToolbar.propTypes = {
+  state: PropTypes.shape({
+    currentPath: PropTypes.string,
+    currentPosition: PropTypes.number,
+    visitedPaths: PropTypes.arrayOf(PropTypes.string),
+    selectedItem: PropTypes.shape({
+      path: PropTypes.string,
+    }),
+    selectedItemFile: PropTypes.shape({
+      path: PropTypes.string,
+    }),
+    selectedFolder: PropTypes.string,
+    itemType: PropTypes.string,
+    action: PropTypes.string,
+    error: PropTypes.shape({
+        code: PropTypes.string,
+      }),
+  }).isRequired,
+  setState: PropTypes.func.isRequired,
+}

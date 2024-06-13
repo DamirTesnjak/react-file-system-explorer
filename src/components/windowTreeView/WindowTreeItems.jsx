@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import PropTypes from "prop-types";
 import { TreeItem } from "@mui/x-tree-view/TreeItem";
 import { uniq } from "lodash";
 
@@ -11,6 +12,7 @@ const windowTreeItems = (args) => {
       const items = folderData.map((diskItem) => {
         return (
           <WindowTreeItems
+            key={diskItem.mounted + "/"}
             type="folder"
             itemId={diskItem.mounted + "/"}
             name={diskItem.filesystem + " " + diskItem.mounted}
@@ -35,6 +37,7 @@ const windowTreeItems = (args) => {
       const items = folderData.map((itemList) => {
         return (
           <WindowTreeItems
+            key={itemList.path}
             type={setType(itemList)}
             itemId={itemList.path}
             name={itemList.name}
@@ -65,25 +68,27 @@ function WindowTreeItems(props) {
       console.log("duplicates", duplicates);
       setFolderData(res.data.folderContent);
       if (!res.data.err) {
-      setState({
-        ...state,
-        itemId,
-        expandedItems:
-          duplicates > 0
-            ? uniq(filteredExpandedItems)
-            : [...state.expandedItems, itemId],
-        currentPath: path,
-        visitedPaths: [...state.visitedPaths, path],
-        folderData: [],
-        numOfItemsFolder: 1,
-      })} else {
-      setState({
-        ...state,
-        error: res.data.err,
-        action: "",
-      });
-    };
-  })}, [itemId, path, setState, state]);
+        setState({
+          ...state,
+          itemId,
+          expandedItems:
+            duplicates > 0
+              ? uniq(filteredExpandedItems)
+              : [...state.expandedItems, itemId],
+          currentPath: path,
+          visitedPaths: [...state.visitedPaths, path],
+          folderData: [],
+          numOfItemsFolder: 1,
+        });
+      } else {
+        setState({
+          ...state,
+          error: res.data.err,
+          action: "",
+        });
+      }
+    });
+  }, [itemId, path, setState, state]);
 
   const openSelectedFile = () => {
     openFile({ path: path }).then((res) => {
@@ -121,3 +126,34 @@ function WindowTreeItems(props) {
 }
 
 export default WindowTreeItems;
+
+WindowTreeItems.propTypes = {
+  itemId: PropTypes.string.isRequired,
+  treeViewData: PropTypes.arrayOf({
+    type: PropTypes.string,
+    name: PropTypes.string,
+    parentPath: PropTypes.string,
+    path: PropTypes.string,
+    size: PropTypes.string,
+    itemCounts: PropTypes.string,
+    permission: PropTypes.bool,
+    filesystem: PropTypes.string,
+    blocks: PropTypes.number,
+    used: PropTypes.number,
+    available: PropTypes.number,
+    capacity: PropTypes.number,
+    mounted: PropTypes.number,
+  }),
+  type: PropTypes.string,
+  name: PropTypes.string.isRequired,
+  path: PropTypes.string.isRequired,
+  state: PropTypes.shape({
+    visitedPaths: PropTypes.arrayOf(PropTypes.string),
+    expandedItems: PropTypes.arrayOf(PropTypes.string),
+  }),
+  setState: PropTypes.func.isRequired,
+};
+
+WindowTreeItems.defaultProps = {
+  type: null,
+};

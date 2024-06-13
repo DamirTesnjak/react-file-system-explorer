@@ -1,11 +1,13 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import { Autocomplete, Box, Button, TextField } from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { uniq } from "lodash";
 
 function WindowAddressBar(props) {
   const { state, setState } = props;
-  const [selectedOption, selectOption] = useState(state.currentPath);
+  const { currentPath, visitedPaths } = state;
+  const [selectedOption, selectOption] = useState(currentPath);
 
   const selectPath = () => {
     setState({
@@ -15,7 +17,7 @@ function WindowAddressBar(props) {
     });
   };
 
-  useEffect(() => selectOption(state.currentPath), [state.currentPath]);
+  useEffect(() => selectOption(currentPath), [currentPath]);
 
   return (
     <Box>
@@ -35,7 +37,7 @@ function WindowAddressBar(props) {
           freeSolo
           value={selectedOption}
           onChange={(event, newValue) => selectOption(newValue)}
-          options={uniq(state.visitedPaths)}
+          options={uniq(visitedPaths)}
           renderInput={(params) => <TextField {...params} />}
         />
       </Box>
@@ -44,3 +46,11 @@ function WindowAddressBar(props) {
 }
 
 export default WindowAddressBar;
+
+WindowAddressBar.propTypes = {
+  state: PropTypes.shape({
+    currentPath: PropTypes.string,
+    visitedPaths: PropTypes.arrayOf(PropTypes.string),
+  }).isRequired,
+  setState: PropTypes.func.isRequired,
+}

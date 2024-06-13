@@ -1,4 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
+import React, { 
+  useState,
+  useEffect,
+  useCallback,
+} from 'react';
 
 import Window from './components/Window/Window';
 import { getUserHomeFolder } from './data/methods';
@@ -11,25 +15,31 @@ import './App.css';
 
 const theme = createTheme(style);
 
+// used to initialite icons to be displayed based on type of an item
 initializeFileTypeIcons();
 
 function App() {
+
+  // initial state of variables that control
+  // the content of folders to be displayed during
+  // navigation
   const [state, setState] = useState({
-    currentPath: '',
+    currentPath: '',        // holds the current path pf a visited folder
     itemId: '',
-    visitedPaths: [],
-    currentPosition: 0,
-    expandedItems: [],
-    selectedItem: null,
-    selectedItemFile: null,
-    selectedFolder: null,
-    itemType: null,
-    doubleClick: 0,
-    folderData: [],
-    action: '',
-    error: null,
+    visitedPaths: [],       // holds zhe array of visited paths during the session
+    currentPosition: 0,     // used as index in "visitedPaths" to get prevous visited path when navigating back in "history"
+    expandedItems: [],      // holds value of all expanded items in "TreeView"
+    selectedItem: null,     // holds the data of a selected item after one click
+    selectedItemFile: null, // holds the data of a selected file after one click
+    selectedFolder: null,   // holds the data of a selected folder after one click
+    itemType: null,         // type of selected item, "folder" or "file" as string
+    doubleClick: 0,         // used to detect when double click happens
+    folderData: [],         // contains array of item to be displayed in window
+    action: '',             // action "copy", "paste", "delete", "create"
+    error: null,            // hold any kind off error to be displayed on screen, when something goes wrong
   });
 
+  // gets the home directory of a user, based on OS
   const getHomeDir = useCallback(() => {
     getUserHomeFolder()
       .then((res) => {
@@ -42,21 +52,16 @@ function App() {
       });
   }, [state]);
 
+
   useEffect(() => {
     if (state.currentPath?.length === 0) {
       getHomeDir();
     }
   }, [getHomeDir, state.currentPath]);
 
-  console.log('state', state);
-
   return (
     <ThemeProvider theme={theme}>
       <Window
-        visitedPaths={state.visitedPaths}
-        currentPath={state.currentPath}
-        currentPosition={state.currentPosition}
-        itemId={state.itemId}
         setState={(s) => setState(s)}
         state={state}
       />

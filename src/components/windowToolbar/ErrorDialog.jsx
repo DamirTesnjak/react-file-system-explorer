@@ -1,4 +1,5 @@
 import * as React from "react";
+import PropTypes from "prop-types";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -40,3 +41,16 @@ function ErrorDialog(props) {
 }
 
 export default ErrorDialog;
+
+ErrorDialog.propTypes = {
+  open: PropTypes.bool.isRequired,
+  state: PropTypes.shape({
+    error: PropTypes.shape({
+      errno: PropTypes.number,
+      code: PropTypes.string,
+      syscall: PropTypes.string,
+      path: PropTypes.string,
+    }),
+  }).isRequired,
+  setState: PropTypes.func.isRequired,
+}

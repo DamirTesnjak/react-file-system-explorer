@@ -1,4 +1,5 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import PropTypes from "prop-types";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -11,6 +12,8 @@ import { Input } from "@mui/material";
 
 function CreateFolderDialog(props) {
   const { open, setOpen, state, setState } = props;
+  const { currentPath } = state;
+
   const [folderName, setFolderName] = useState("");
 
   const handleClose = () => {
@@ -24,7 +27,7 @@ function CreateFolderDialog(props) {
   const handleConfirm = () => {
     if (folderName.length > 0) {
       createFolder({
-        folderPath: `${state.currentPath}/${folderName}`,
+        folderPath: `${currentPath}/${folderName}`,
       }).then((res) => {
         setOpen(false);
         if (!res.data.err) {
@@ -76,3 +79,12 @@ function CreateFolderDialog(props) {
 }
 
 export default CreateFolderDialog;
+
+CreateFolderDialog.propTypes = {
+  open: PropTypes.bool,
+  setOpen: PropTypes.func,
+  state: PropTypes.shape({
+    currentPath: PropTypes.string,
+  }),
+  setState: PropTypes.func.isRequired,
+}

@@ -1,23 +1,30 @@
+import React from "react";
+import PropTypes from 'prop-types';
 import { Box } from "@mui/material";
 
 function WindowTitle(props) {
-  const { currentPath } = props;
+  const { state } = props;
 
   return (
     <Box
       sx={{
         background:
           "linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(228,245,255,1) 98%)",
-        height: 45,
+        height: "45px",
         color: "#ffffff",
-        fontSize: 25,
+        fontSize: "25px",
         fontWeight: 600,
         paddingLeft: "20px",
       }}
     >
-      {currentPath}
+      {state.currentPath}
     </Box>
   );
 }
 
 export default WindowTitle;
+WindowTitle.propTypes = {
+  state: PropTypes.shape({
+    currentPath: PropTypes.string
+  }).isRequired
+}

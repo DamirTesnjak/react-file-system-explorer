@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import Box from "@mui/material/Box";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import IndeterminateCheckBoxIcon from "@mui/icons-material/IndeterminateCheckBox";
@@ -72,3 +73,11 @@ function WindowTreeView(props) {
 }
 
 export default WindowTreeView;
+
+WindowTreeView.propTypes = {
+  state: PropTypes.shape({
+    expandedItems: PropTypes.arrayOf(PropTypes.string),
+    visitedPaths: PropTypes.arrayOf(PropTypes.string),
+  }).isRequired,
+  setState: PropTypes.func.isRequired,
+}
