@@ -116,7 +116,7 @@ const WindowContentIconView = (props) => {
             <IconCard
               key={diskItem.mounted + "/"}
               state={state}
-              type="hardDrive"
+              isDisk
               itemId={diskItem.mounted + "/"}
               name={diskItem.filesystem + " " + diskItem.mounted}
               path={diskItem.mounted + "/"}
@@ -204,7 +204,8 @@ const WindowContentIconView = (props) => {
             <IconCard
               key={itemList.path}
               state={state}
-              type={setType(itemList)}
+              isFolder={itemList.isFolder}
+              isDisk={false}
               itemId={itemList.path}
               name={itemList.name}
               path={itemList.path}
@@ -229,7 +230,7 @@ const WindowContentIconView = (props) => {
         borderLeft: "2px solid #020102",
         borderBottom: "2px solid #808080",
         borderRight: "2px solid #808080",
-        height: "calc(100vh - 161px)",
+        height: "calc(100vh - 127px)",
         overflow: "scroll",
       }}
     >

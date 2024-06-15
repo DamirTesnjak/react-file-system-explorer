@@ -22,7 +22,7 @@ import ClearIcon from "@mui/icons-material/Clear";
 import { openFile } from "../../data/methods";
 
 function IconCard(props) {
-  const { state, type, name, itemId, onClick, onMouseLeave, setState, path } =
+  const { state, isFolder, isDisk, name, itemId, onClick, onMouseLeave, setState, path } =
     props;
   const { visitedPaths, selectedItem, selectedItemFile } = state;
 
@@ -35,7 +35,7 @@ function IconCard(props) {
   const handleContextMenu = (event) => {
     event.preventDefault();
     if (contextMenu === null) {
-      if (type === "file") {
+      if (!isFolder) {
         setState({
           ...state,
           selectedItemFile: {
@@ -69,7 +69,7 @@ function IconCard(props) {
   };
 
   const handleOpen = () => {
-    if (type === "file") {
+    if (!isFolder) {
       openFile({ path: path }).then((res) => {
         console.log(res);
       });
@@ -116,14 +116,14 @@ function IconCard(props) {
   };
 
   const displayIcon = () => {
-    if (type === "folder") {
+    if (isFolder && !isDisk) {
       return (
         <IconButton disableRipple sx={{ display: "inline-block" }}>
           <FolderIcon sx={{ fontSize: 64, color: "orange" }} />
         </IconButton>
       );
     }
-    if (type === "file") {
+    if (!isFolder && !isDisk) {
       return (
         <IconButton disableRipple sx={{ display: "inline-block" }}>
           <Icon
@@ -241,7 +241,8 @@ IconCard.propTypes = {
       path: PropTypes.string,
     }),
   }),
-  type: PropTypes.string.isRequired,
+  isFolder: PropTypes.bool.isRequired,
+  isDisk: PropTypes.bool.isRequired,
   name: PropTypes.string.isRequired,
   itemId: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired,

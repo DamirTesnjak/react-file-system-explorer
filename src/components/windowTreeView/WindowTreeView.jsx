@@ -40,7 +40,7 @@ function WindowTreeView(props) {
         borderLeft: "2px solid #020102",
         borderBottom: "2px solid #808080",
         borderRight: "2px solid #808080",
-        height: "calc(100vh - 161px)",
+        height: "calc(100vh - 127px)",
         overflow: "scroll",
       }}
     >
@@ -56,6 +56,7 @@ function WindowTreeView(props) {
           itemId="computer"
           name="Computer"
           path="Computer"
+          isFolder
           state={state}
           setState={setState}
           onClick={() =>

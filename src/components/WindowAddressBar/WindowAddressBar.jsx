@@ -31,7 +31,7 @@ function WindowAddressBar(props) {
       </Box>
       <Box sx={{
         display: "inline-block",
-        width: '50%'
+        width: 'calc(100% - 70px)'
     }}>
         <Autocomplete
           freeSolo

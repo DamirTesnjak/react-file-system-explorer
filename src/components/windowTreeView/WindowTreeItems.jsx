@@ -13,7 +13,7 @@ const windowTreeItems = (args) => {
         return (
           <WindowTreeItems
             key={diskItem.mounted + "/"}
-            type="folder"
+            isFolder
             itemId={diskItem.mounted + "/"}
             name={diskItem.filesystem + " " + diskItem.mounted}
             path={diskItem.mounted + "/"}
@@ -26,19 +26,11 @@ const windowTreeItems = (args) => {
     }
   } else {
     if (folderData && folderData.length > 0) {
-      const setType = (itemList) => {
-        if (itemList.name.includes("$")) {
-          return "folder";
-        }
-        if (itemList.name.includes(".")) {
-          return "file";
-        }
-      };
       const items = folderData.map((itemList) => {
         return (
           <WindowTreeItems
             key={itemList.path}
-            type={setType(itemList)}
+            isFolder={itemList.isFolder}
             itemId={itemList.path}
             name={itemList.name}
             path={itemList.path}
@@ -54,7 +46,7 @@ const windowTreeItems = (args) => {
 };
 
 function WindowTreeItems(props) {
-  const { itemId, treeViewData, type, name, path, state, setState } = props;
+  const { itemId, treeViewData, isFolder, name, path, state, setState } = props;
   const [folderData, setFolderData] = useState(treeViewData);
 
   const getFolderContent = useCallback(() => {
@@ -65,7 +57,6 @@ function WindowTreeItems(props) {
       const filteredExpandedItems = [...state.expandedItems].filter(
         (e) => e !== itemId
       );
-      console.log("duplicates", duplicates);
       setFolderData(res.data.folderContent);
       if (!res.data.err) {
         setState({
@@ -112,7 +103,7 @@ function WindowTreeItems(props) {
     <TreeItem
       itemId={itemId}
       label={name}
-      onClick={() => (type === "file" ? openSelectedFile() : expandItemList())}
+      onClick={() => (!isFolder ? openSelectedFile() : expandItemList())}
     >
       {windowTreeItems({
         folderData:
@@ -144,7 +135,7 @@ WindowTreeItems.propTypes = {
     capacity: PropTypes.number,
     mounted: PropTypes.number,
   }),
-  type: PropTypes.string,
+  isFolder: PropTypes.bool,
   name: PropTypes.string.isRequired,
   path: PropTypes.string.isRequired,
   state: PropTypes.shape({

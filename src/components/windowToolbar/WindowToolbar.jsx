@@ -8,11 +8,13 @@ import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import ClearIcon from '@mui/icons-material/Clear';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
+import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 
 import { copyFile, copyFolder } from "../../data/methods";
 import DeleteDialog from "./DeleteDialog";
 import ErrorDialog from './ErrorDialog';
 import CreateFolderDialog from "./CreateFolderDialog";
+import WindowMoveTo from './WindowMoveTo';
 
 function WindowToolbar(props) {
   const { setState, state } = props;
@@ -30,6 +32,7 @@ function WindowToolbar(props) {
 
   const [openDeleteDialog, setOpenDeleteDialog] = useState();
   const [openCreateFolderDialog, setOpenCreateFolderDialog] = useState();
+  const [openMoveToDialog, setOpenMoveToDialog] = useState();
 
   const parentPath = () => {
     const currentPathArray = currentPath?.split("/");
@@ -121,13 +124,21 @@ function WindowToolbar(props) {
       },
       icon: <CreateNewFolderIcon sx={{ color: "#cc6600" }}/>,
     },
+    {
+      name: "Move to",
+      method: {
+        ...state,
+        action: "MoveTo",
+      },
+      icon: <DriveFileMoveIcon sx={{ color: "#cc6600" }}/>,
+    },
   ];
 
   const disableButton = (button) => {
-    if ((selectedFolder || selectedItemFile) && (button.name === 'copy' || button.name === 'paste' || button.name === 'delete')) {
+    if ((selectedFolder || selectedItemFile) && (button.name === 'copy' || button.name === 'paste' || button.name === 'delete' || button.name === 'Move to')) {
       return false
     }
-    if (!(selectedFolder || selectedItemFile) && (button.name === 'copy' || button.name === 'paste' || button.name === 'delete')) {
+    if (!(selectedFolder || selectedItemFile) && (button.name === 'copy' || button.name === 'paste' || button.name === 'delete' || button.name === 'Move to')) {
       return true
     }
   }
@@ -189,27 +200,36 @@ function WindowToolbar(props) {
     if(action === "createFolder") {
       setOpenCreateFolderDialog(true)
     }
+    if(action === "MoveTo") {
+      setOpenMoveToDialog(true)
+    }
   }, [setState, state, action, currentPath, itemType, selectedItem, selectedItemFile]);
 
   return (
     <Box sx={{ backgroundColor: "#c0c7c8f2" }}>
-      <DeleteDialog
+      {openDeleteDialog && (<DeleteDialog
         open={openDeleteDialog}
         setOpen={setOpenDeleteDialog}
         state={state}
         setState={setState}
-      />
-      <CreateFolderDialog
+      />)}
+      {openCreateFolderDialog && (<CreateFolderDialog
         open={openCreateFolderDialog}
         setOpen={setOpenCreateFolderDialog}
         state={state}
         setState={setState}
-      />
-      <ErrorDialog
+      />)}
+      {error?.code.length > 0 && (<ErrorDialog
         open={error?.code.length > 0}
         state={state}
         setState={setState}
-      />
+      />)}
+      {openMoveToDialog && (<WindowMoveTo
+        open={openMoveToDialog}
+        setOpen={setOpenMoveToDialog}
+        state={state}
+        setState={setState}
+      />)}
       {displayButtons()}
     </Box>
   );
