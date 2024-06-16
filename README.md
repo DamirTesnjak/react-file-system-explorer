@@ -19,12 +19,12 @@ To successfuly run the application you must download the backend part,
 **Both backend and frontend must be running to use the application**
 
 **Implemented features on frontend & backend**
-<br>Browsing accross folders by double clicking
-<br>Copy, paste & delete folders or files
-<br>Tree view navigation
-<br>Address toolbar navigation
-<br>Moving files
-<br>Moving folders (in progress)
+- Browsing accross folders by double clicking
+- Copy, paste & delete folders or files
+- Tree view navigation
+- Address toolbar navigation
+- Moving files
+- Moving folders (in progress)
 
 
 
