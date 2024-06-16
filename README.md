@@ -26,6 +26,7 @@ Download repository and run the command ```npm i``` in command prompt terminal i
 
 ## TODO list
 - implement display of error messages if something goes wrong
+- some special directories are marked as files, need to correct this
 
 ## Screenshot
 
