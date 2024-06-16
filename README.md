@@ -8,7 +8,7 @@ This repository is the part of my personal project, **an experiment** of writing
 <br>
 
 ## Installation
-Download repository and run the command ```npm i``` in command prompt terminalin the root folder of a project.
+Download repository and run the command ```npm i``` in command prompt terminal in the root folder of a project.
 <br>To run the application you must run ```npm start``` in command prompt terminal in the root folder of a project.
 <br>To successfuly run the application you must download the backend part,
 <br> which you can find here: https://github.com/DamirTesnjak/react-file-system-explorer-server and follow the instructions there.
@@ -27,5 +27,6 @@ Download repository and run the command ```npm i``` in command prompt terminalin
 ## TODO list
 - implement display of error messages if something goes wrong
 
+## Screenshot
 
 ![sreenshot](https://github.com/DamirTesnjak/react-file-system-explorer/blob/main/Screenshot%202024-06-16%20at%2017-28-03%20React%20App.png)
