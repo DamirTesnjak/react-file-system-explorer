@@ -24,6 +24,8 @@ Download repository and run the command ```npm i``` in command prompt terminalin
 - Moving files
 - Moving folders (in progress)
 
+## TODO list
+- implement display of error messages if something goes wrong
 
 
 ![sreenshot](https://github.com/DamirTesnjak/react-file-system-explorer/blob/main/Screenshot%202024-06-16%20at%2017-28-03%20React%20App.png)
