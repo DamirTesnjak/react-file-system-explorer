@@ -26,4 +26,4 @@ Download repository and run the command ```npm i``` in command prompt terminalin
 
 
 
-![sreenshot](https://github.com/DamirTesnjak/react-file-system-explorer/blob/main/Posnetek%20zaslona%202024-06-11%20221907.png)
+![sreenshot](https://github.com/DamirTesnjak/react-file-system-explorer/blob/main/Screenshot%202024-06-16%20at%2017-28-03%20React%20App.png)
