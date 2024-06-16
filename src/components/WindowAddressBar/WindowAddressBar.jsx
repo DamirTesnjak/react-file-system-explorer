@@ -36,7 +36,7 @@ function WindowAddressBar(props) {
         <Autocomplete
           freeSolo
           value={selectedOption}
-          onChange={(event, newValue) => selectOption(newValue)}
+          onChange={(_event, newValue) => selectOption(newValue)}
           options={uniq(visitedPaths)}
           renderInput={(params) => <TextField {...params} />}
         />

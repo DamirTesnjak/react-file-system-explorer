@@ -106,8 +106,7 @@ function WindowTreeItems(props) {
       onClick={() => (!isFolder ? openSelectedFile() : expandItemList())}
     >
       {windowTreeItems({
-        folderData:
-          folderData && folderData.length > 0 ? folderData : treeViewData,
+        folderData: folderData && folderData.length > 0 ? folderData : treeViewData,
         itemId,
         state,
         setState,
@@ -146,5 +145,5 @@ WindowTreeItems.propTypes = {
 };
 
 WindowTreeItems.defaultProps = {
-  type: null,
+  isFolder: null,
 };

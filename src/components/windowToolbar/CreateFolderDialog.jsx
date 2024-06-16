@@ -1,14 +1,17 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Input,
+} from "@mui/material";
 
 import { createFolder } from "../../data/methods";
-import { Input } from "@mui/material";
+import { resetedValues } from '../../constants/constants';
 
 function CreateFolderDialog(props) {
   const { open, setOpen, state, setState } = props;
@@ -29,26 +32,22 @@ function CreateFolderDialog(props) {
       createFolder({
         folderPath: `${currentPath}/${folderName}`,
       }).then((res) => {
-        setOpen(false);
-        if (!res.data.err) {
+        const error = res.data.err;
+        console.log('error', error);
+        if (!error) {
+          setOpen(!open);
+          setFolderName("");
           setState({
             ...state,
-            selectedItemFile: null,
-            selectedItem: null,
-            selectedFolder: null,
-            action: "",
-            itemType: null,
-            folderData: [],
+            ...resetedValues,
           });
         } else {
           setState({
             ...state,
-            error: res.data.err,
+            error,
             action: "",
           });
         }
-        setOpen(false);
-        setFolderName("");
       });
     }
   };
@@ -87,4 +86,4 @@ CreateFolderDialog.propTypes = {
     currentPath: PropTypes.string,
   }),
   setState: PropTypes.func.isRequired,
-}
+};

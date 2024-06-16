@@ -1,34 +1,30 @@
 import React, { useState } from 'react';
-import { Grid } from "@mui/material";
+import { 
+  Button,
+  Grid,
+  Dialog,
+  DialogActions,
+  DialogContent,
+} from "@mui/material";
 import PropTypes from "prop-types";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
 
 import WindowTreeView from "../WindowTreeView/WindowTreeView";
 import WindowTitle from "../WindowTitle/WindowTitle";
 import { moveFile, moveFolder } from "../../data/methods";
+import { initialValues, resetedValues } from '../../constants/constants';
+import getItemNameFromPath from '../../utils/getItemNameFromPath';
+
 
 function WindowMoveTo(props) {
   const { state, open, setOpen, setState } = props;
   const { itemType, selectedItem, selectedItemFile } = state;
 
   const [stateDialog, setStateDialog] = useState({
+    ...initialValues,
     oldPath: selectedItem?.path || selectedItemFile?.path,
-    currentPath: '',        // holds the current path pf a visited folder
-    itemId: '',
-    visitedPaths: [],       // holds zhe array of visited paths during the session
-    currentPosition: 0,     // used as index in "visitedPaths" to get prevous visited path when navigating back in "history"
-    expandedItems: [],      // holds value of all expanded items in "TreeView"
-    selectedItem: null,     // holds the data of a selected item after one click
-    selectedFolder: null,   // holds the data of a selected folder after one click
-    itemType: null,         // type of selected item, "folder" or "file" as string
-    doubleClick: 0,         // used to detect when double click happens
-    folderData: [],         // contains array of item to be displayed in window
-    action: '',             // action "copy", "paste", "delete", "create"
-    error: null,            // hold any kind off error to be displayed on screen, when something goes wrong
   });
+
+  const { currentPath } = stateDialog;
 
   const handleClose = () => {
     setOpen(false);
@@ -39,50 +35,23 @@ function WindowMoveTo(props) {
   };
 
   const handleConfirm = () => {
-    const selecedItemPathArr = state.selectedItemFile?.path.split("/");
-    const selectedItemFilename = selecedItemPathArr ? selecedItemPathArr[selecedItemPathArr.length - 1] : '';
+    const itemName = getItemNameFromPath(state.itemType === "file" ? state.selectedItemFile : { path: state.selectedFolder})
     const api = itemType === "file" ? moveFile : moveFolder;
     api({
       oldPath: stateDialog.oldPath,
-      newPath:  itemType === "file" ? `${stateDialog.currentPath}/${selectedItemFilename}` : stateDialog.currentPath,
+      newPath:  `${currentPath}/${itemName}`,
     }).then((res) => {
-      if (!res.data.err) {
         setOpen(false);
         setStateDialog({
           ...state,
-          selectedItemFile: null,
-          selectedItem: null,
-          action: "",
-          itemType: null,
-          folderData: [],
-          moveToPath: null,
+          ...resetedValues,
         });
         setState({
           ...state,
-          selectedItemFile: null,
-          selectedItem: null,
-          action: "",
-          itemType: null,
-          folderData: [],
-          moveToPath: null,
+          ...resetedValues,
         });
-      } else {
-        setOpen(false);
-        setStateDialog({
-          ...state,
-          error: res.data.err,
-          action: "",
-        });
-        setState({
-          ...state,
-          error: res.data.err,
-          action: "",
-        });
-      }
     });
   };
-
-  console.log('stateDialog', stateDialog);
 
   return (
     <Dialog
@@ -105,7 +74,10 @@ function WindowMoveTo(props) {
             <WindowTitle state={stateDialog} />
           </Grid>
           <Grid item xs={12}>
-            <WindowTreeView state={stateDialog} setState={setStateDialog} />
+            <WindowTreeView
+              state={stateDialog}
+              setState={setStateDialog}
+            />
           </Grid>
         </Grid>
       </DialogContent>
@@ -130,6 +102,7 @@ WindowMoveTo.propTypes = {
     selectedItemFile: PropTypes.shape({
       path: PropTypes.string,
     }),
+    selectedFolder: PropTypes.string,
     itemType: PropTypes.string,
   }),
 };

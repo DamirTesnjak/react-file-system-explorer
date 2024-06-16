@@ -77,6 +77,13 @@ const WindowContentIconView = (props) => {
     });
   };
 
+  const onMouseLeave = () => {
+    setState({
+      ...state,
+      doubleClick: 0,
+    });
+  };
+
   const displayItemsAsIcons = () => {
     if (currentPath === "Computer") {
       if (disksData && disksData.length > 0) {
@@ -105,13 +112,6 @@ const WindowContentIconView = (props) => {
             }
           };
 
-          const onMouseLeave = () => {
-            setState({
-              ...state,
-              doubleClick: 0,
-            });
-          };
-
           return (
             <IconCard
               key={diskItem.mounted + "/"}
@@ -131,15 +131,6 @@ const WindowContentIconView = (props) => {
       return <h2>Please wait...</h2>;
     } else {
       if (folderData && folderData.length > 0) {
-        const setType = (itemList) => {
-          if (itemList.name.includes("$")) {
-            return "folder";
-          }
-          if (itemList.name.includes(".")) {
-            return "file";
-          }
-          return "folder";
-        };
         const items = folderData.map((itemList) => {
           const newState = {
             ...state,
@@ -151,16 +142,9 @@ const WindowContentIconView = (props) => {
             numOfItemsFolder: 1,
           };
 
-          const onMouseLeave = () => {
-            setState({
-              ...state,
-              doubleClick: 0,
-            });
-          };
-
           const onClick = () => {
             if (doubleClick === 0) {
-              if (setType(itemList) === "file") {
+              if (itemList.isFile) {
                 setState({
                   ...state,
                   selectedItemFile: {
@@ -170,29 +154,20 @@ const WindowContentIconView = (props) => {
                   doubleClick: 1,
                   itemType: "file",
                 });
-              } else {
-                if (!selectedFolder) {
-                  setState({
-                    ...state,
-                    selectedItem: {
-                      path: itemList.path,
-                    },
-                    selectedFolder: itemList.path,
-                    doubleClick: 1,
-                  });
-                } else {
-                  setState({
-                    ...state,
-                    selectedItem: {
-                      path: itemList.path,
-                    },
-                    doubleClick: 1,
-                  });
-                }
+              }
+              if (itemList.isFolder) {
+                setState({
+                  ...state,
+                  selectedItem: {
+                    path: itemList.path,
+                  },
+                  selectedFolder: !selectedFolder ? itemList.path : null,
+                  doubleClick: 1,
+                });
               }
             }
             if (doubleClick >= 1) {
-              if (setType(itemList) === "file") {
+              if (itemList.isFile) {
                 openSelectedFile(itemList.path);
               } else {
                 setState(newState);
@@ -251,21 +226,24 @@ WindowContentIconView.propTypes = {
     selectedItemFile: PropTypes.string,
     selectedFolder: PropTypes.string,
     doubleClick: PropTypes.number.isRequired,
-    folderData: PropTypes.arrayOf(PropTypes.objectOf({
-      type: PropTypes.string,
-      name: PropTypes.string,
-      parentPath: PropTypes.string,
-      path: PropTypes.string,
-      size: PropTypes.string,
-      itemCounts: PropTypes.string,
-      permission: PropTypes.bool,
-      filesystem: PropTypes.string,
-      blocks: PropTypes.number,
-      used: PropTypes.number,
-      available: PropTypes.number,
-      capacity: PropTypes.number,
-      mounted: PropTypes.number,
-    })),
+    folderData: PropTypes.arrayOf(
+      PropTypes.objectOf({
+        isFile: PropTypes.bool,
+        isFolder: PropTypes.bool,
+        name: PropTypes.string,
+        parentPath: PropTypes.string,
+        path: PropTypes.string,
+        size: PropTypes.string,
+        itemCounts: PropTypes.string,
+        permission: PropTypes.bool,
+        filesystem: PropTypes.string,
+        blocks: PropTypes.number,
+        used: PropTypes.number,
+        available: PropTypes.number,
+        capacity: PropTypes.number,
+        mounted: PropTypes.number,
+      })
+    ),
     action: PropTypes.string.isRequired,
   }),
   setState: PropTypes.func.isRequired,

@@ -1,20 +1,24 @@
 import * as React from "react";
 import PropTypes from "prop-types";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
 
 import { removeFile, deleteFolder } from "../../data/methods";
+import { resetedValues } from '../../constants/constants';
+import getItemNameFromPath from '../../utils/getItemNameFromPath';
 
 function DeleteDialog(props) {
   const { open, setOpen, state, setState } = props;
   const { itemType, selectedItem, selectedItemFile } = state;
 
-  const selecedItemPathArr = state.itemType === 'file' ? selectedItemFile?.path.split("/") : selectedItem?.path.split("/");
-  const selectedItemName = selecedItemPathArr ? selecedItemPathArr[selecedItemPathArr.length - 1] : '';
+  const itemName = getItemNameFromPath(state.selectedItemFile);
+  const itemTypeString = itemType === "file" ? 'file' : 'folder';
 
   const handleClose = () => {
     setOpen(false);
@@ -29,20 +33,17 @@ function DeleteDialog(props) {
     api({
       path: itemType === "file" ? selectedItemFile?.path : selectedItem?.path,
     }).then((res) => {
-      if (!res.data.err) {
+      const error = res.data.err;
+      if (!error) {
         setOpen(false);
         setState({
           ...state,
-          selectedItemFile: null,
-          selectedItem: null,
-          action: "",
-          itemType: null,
-          folderData: [],
+          ...resetedValues,
         });
       } else {
         setState({
           ...state,
-          error: res.data.err,
+          error,
           action: "",
         });
       }
@@ -59,7 +60,7 @@ function DeleteDialog(props) {
       <DialogTitle id="alert-dialog-title">{"Warning!"}</DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
-          Do you want to delete file {selectedItemName}?
+          {`Do you want to delete ${itemTypeString} ${itemName}?`}
         </DialogContentText>
       </DialogContent>
       <DialogActions>

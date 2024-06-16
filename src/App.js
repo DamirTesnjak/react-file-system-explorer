@@ -4,12 +4,14 @@ import React, {
   useCallback,
 } from 'react';
 
-import Window from './components/Window/Window';
-import { getUserHomeFolder } from './data/methods';
 import { initializeFileTypeIcons } from "@fluentui/react-file-type-icons";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
+import Window from './components/Window/Window';
+import { initialValues } from './constants/constants';
+import { getUserHomeFolder } from './data/methods';
 import style from './style/style'
+
 import './App.css';
 
 
@@ -23,30 +25,22 @@ function App() {
   // initial state of variables that control
   // the content of folders to be displayed during
   // navigation
-  const [state, setState] = useState({
-    currentPath: '',        // holds the current path pf a visited folder
-    itemId: '',
-    visitedPaths: [],       // holds zhe array of visited paths during the session
-    currentPosition: 0,     // used as index in "visitedPaths" to get prevous visited path when navigating back in "history"
-    expandedItems: [],      // holds value of all expanded items in "TreeView"
-    selectedItem: null,     // holds the data of a selected item after one click
-    selectedItemFile: null, // holds the data of a selected file after one click
-    selectedFolder: null,   // holds the data of a selected folder after one click
-    itemType: null,         // type of selected item, "folder" or "file" as string
-    doubleClick: 0,         // used to detect when double click happens
-    folderData: [],         // contains array of item to be displayed in window
-    action: '',             // action "copy", "paste", "delete", "create"
-    error: null,            // hold any kind off error to be displayed on screen, when something goes wrong
-  });
+  const [state, setState] = useState(initialValues);
+  const { visitedPaths, currentPath } = state;
 
   // gets the home directory of a user, based on OS
   const getHomeDir = useCallback(() => {
     getUserHomeFolder()
       .then((res) => {
+        const homeFolder = res
+          .data
+          .homeFolder
+          .replaceAll('\\', '/');
+
         setState({
           ...state,
-          currentPath: res.data.homeFolder.replaceAll('\\', '/'),
-          visitedPaths: [...state.visitedPaths, res.data.homeFolder.replaceAll('\\', '/')],
+          currentPath: homeFolder,
+          visitedPaths: [...visitedPaths, homeFolder],
           numOfItemsFolder: 1,
         })
       });
@@ -54,10 +48,10 @@ function App() {
 
 
   useEffect(() => {
-    if (state.currentPath?.length === 0) {
+    if (currentPath?.length === 0) {
       getHomeDir();
     }
-  }, [getHomeDir, state.currentPath]);
+  }, [getHomeDir, currentPath]);
 
   return (
     <ThemeProvider theme={theme}>
