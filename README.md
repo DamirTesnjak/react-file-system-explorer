@@ -19,6 +19,7 @@ Download repository and run the command ```npm i``` in command prompt terminal i
 - Browsing accross folders by double clicking
 - Copy, paste & delete folders or files
 - Copy. paste & delete folders or files with context menu (in progress)
+- Opening files & exe files
 - Tree view navigation
 - Address toolbar navigation
 - Moving files
