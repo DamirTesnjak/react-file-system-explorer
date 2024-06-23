@@ -14,7 +14,12 @@ import { resetedValues } from '../../constants/constants';
 import getItemNameFromPath from '../../utils/getItemNameFromPath';
 
 function DeleteDialog(props) {
-  const { open, setOpen, state, setState } = props;
+  const { 
+    open,
+    setOpen,
+    state,
+    setState
+  } = props;
   const { itemType, selectedItem, selectedItemFile } = state;
 
   const itemName = getItemNameFromPath(state.selectedItemFile);
