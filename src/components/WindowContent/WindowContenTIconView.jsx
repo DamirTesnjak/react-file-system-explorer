@@ -22,24 +22,26 @@ const WindowContentIconView = (props) => {
   const [disksData, setFdisksDatata] = useState([]);
 
   const getFolderContentCallBack = useCallback(() => {
-    getFolder({ folderPath: currentPath }).then((res) => {
-      setState({
-        ...state,
-        selectedItem: action === "copy" ? selectedItem : null,
-        selectedItemFile: action === "copy" ? selectedItemFile : null,
-        doubleClick: 0,
-        folderData:
-          res.data.folderContent.length === 0
-            ? [
-                {
-                  name: "",
-                },
-              ]
-            : res.data.folderContent,
-        numOfItemsFolder: 1,
+    getFolder({ folderPath: currentPath })
+      .then((res) => {
+        console.log('test');
+        setState({
+          ...state,
+          selectedItem: action === "copy" ? selectedItem : null,
+          selectedItemFile: action === "copy" ? selectedItemFile : null,
+          doubleClick: 0,
+          folderData:
+            res.data.folderContent.length === 0
+              ? [
+                  {
+                    name: "",
+                  },
+                ]
+              : res.data.folderContent,
+          numOfItemsFolder: 1,
+        });
       });
-    });
-  }, [setState, state]);
+    }, [setState, state]);
 
   const getHardDrivesFolderContent = () => {
     getHardDrives().then((res) => {
@@ -180,10 +182,12 @@ const WindowContentIconView = (props) => {
               key={itemList.path}
               state={state}
               isFolder={itemList.isFolder}
+              isFile={itemList.isFile}
               isDisk={false}
               itemId={itemList.path}
               name={itemList.name}
               path={itemList.path}
+              permission={itemList.permission}
               itemCount={itemList.itemCount}
               onClick={() => onClick()}
               onMouseLeave={onMouseLeave}

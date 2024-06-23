@@ -18,12 +18,24 @@ import { Icon } from "@fluentui/react/lib/Icon";
 import ContentCopy from "@mui/icons-material/ContentCopy";
 import ContentPasteIcon from "@mui/icons-material/ContentPaste";
 import ClearIcon from "@mui/icons-material/Clear";
+import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 
 import { openFile } from "../../data/methods";
 
 function IconCard(props) {
-  const { state, isFolder, isDisk, name, itemId, onClick, onMouseLeave, setState, path } =
-    props;
+  const {
+    state,
+    isFolder,
+    isFile,
+    isDisk,
+    name,
+    itemId,
+    onClick,
+    onMouseLeave,
+    setState,
+    path,
+    permission,
+  } = props;
   const { visitedPaths, selectedItem, selectedItemFile } = state;
 
   const [contextMenu, setContextMenu] = React.useState(null);
@@ -116,6 +128,25 @@ function IconCard(props) {
   };
 
   const displayIcon = () => {
+    if (!permission && state.currentPath !== 'Computer') {
+      return (
+        <IconButton disableRipple sx={{ display: "inline-block" }}>
+          <QuestionMarkIcon sx={{ fontSize: 64, color: "red" }} />
+        </IconButton>
+      );
+    }
+    if (isFile && !isDisk) {
+      return (
+        <IconButton disableRipple sx={{ display: "inline-block" }}>
+          <Icon
+            {...getFileTypeIconProps({
+              extension: name?.split(".")[1],
+              size: 64,
+            })}
+          />
+        </IconButton>
+      );
+    }
     if (isFolder && !isDisk) {
       return (
         <IconButton disableRipple sx={{ display: "inline-block" }}>
@@ -128,7 +159,7 @@ function IconCard(props) {
         <IconButton disableRipple sx={{ display: "inline-block" }}>
           <Icon
             {...getFileTypeIconProps({
-              extension: name.split(".")[1],
+              extension: name?.split(".")[1],
               size: 64,
             })}
           />
@@ -155,9 +186,9 @@ function IconCard(props) {
       sx={{
         margin: "10px",
         cursor: "pointer",
-        visibility: name === "" ? "hidden" : "visible",
+        visibility: !name ? "hidden" : "visible",
       }}
-      onClick={!contextMenu ? onClick : null}
+      onClick={!contextMenu && !(!permission && state.currentPath !== 'Computer') ? onClick : null}
       onMouseLeave={onMouseLeave}
     >
       <Paper
@@ -249,4 +280,6 @@ IconCard.propTypes = {
   onMouseLeave: PropTypes.func.isRequired,
   setState: PropTypes.func.isRequired,
   path: PropTypes.string.isRequired,
+  permission: PropTypes.bool.isRequired,
+  isFile: PropTypes.bool.isRequired,
 };
