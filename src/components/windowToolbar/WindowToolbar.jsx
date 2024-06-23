@@ -13,9 +13,9 @@ import DriveFileMoveIcon from "@mui/icons-material/DriveFileMove";
 import { copyFile, copyFolder } from "../../data/methods";
 import { resetedValues } from "../../constants/constants";
 import getItemNameFromPath from "../../utils/getItemNameFromPath";
-import DeleteDialog from "./DeleteDialog";
-import ErrorDialog from "./ErrorDialog";
-import CreateFolderDialog from "./CreateFolderDialog";
+import DeleteDialog from "../Dialogs/DeleteDialog";
+import ErrorDialog from "../Dialogs/ErrorDialog";
+import CreateFolderDialog from "../Dialogs/CreateFolderDialog";
 import WindowMoveTo from "./WindowMoveTo";
 
 function WindowToolbar(props) {
@@ -59,7 +59,7 @@ function WindowToolbar(props) {
   const btns = [
     {
       name: "back",
-      method: {
+      stateVar: {
         ...state,
         visitedPaths: [...visitedPaths, btnBackCurrentPathCondition],
         currentPosition: btnBackCurrentPositionCondition,
@@ -67,22 +67,24 @@ function WindowToolbar(props) {
         folderData: [],
         numOfItemsFolder: 1,
       },
+      disabled: currentPosition === 0,
       icon: <ArrowBackIcon sx={{ color: "#66ffff" }} />,
     },
     {
       name: "next",
-      method: {
+      stateVar: {
         ...state,
         currentPosition: btnNextCondition,
         currentPath: visitedPaths[btnNextCondition],
         folderData: [],
         numOfItemsFolder: 1,
       },
+      disabled: currentPosition === visitedPaths.length - 1,
       icon: <ArrowForwardIcon sx={{ color: "#66ffff" }} />,
     },
     {
       name: "up",
-      method: {
+      stateVar: {
         ...state,
         visitedPaths: [...visitedPaths, parentPath()],
         currentPath: parentPath(),
@@ -90,35 +92,39 @@ function WindowToolbar(props) {
         folderData: [],
         numOfItemsFolder: 1,
       },
+      disabled: visitedPaths.length === 0 && currentPath !== 'Computer',
       icon: <ArrowUpwardIcon sx={{ color: "#66ffff" }} />,
     },
     {
       name: "copy",
-      method: {
+      stateVar: {
         ...state,
         action: "copy",
       },
+      disabled: !(selectedItem || selectedItemFile),
       icon: <ContentCopyIcon />,
     },
     {
       name: "paste",
-      method: {
+      stateVar: {
         ...state,
         action: "paste",
       },
+      disabled: action !== 'copy',
       icon: <ContentPasteIcon sx={{ color: "#993333" }} />,
     },
     {
       name: "delete",
-      method: {
+      mestateVarthod: {
         ...state,
         action: "delete",
       },
+      disabled: !(selectedItem || selectedItemFile),
       icon: <ClearIcon sx={{ color: "#ff3300" }} />,
     },
     {
       name: "create folder",
-      method: {
+      stateVar: {
         ...state,
         action: "createFolder",
       },
@@ -126,34 +132,14 @@ function WindowToolbar(props) {
     },
     {
       name: "Move to",
-      method: {
+      stateVar: {
         ...state,
-        action: "MoveTo",
+        action: "moveTo",
       },
+      disabled: !(selectedItem || selectedItemFile),
       icon: <DriveFileMoveIcon sx={{ color: "#cc6600" }} />,
     },
   ];
-
-  const disableButton = (button) => {
-    if (
-      (selectedItem || selectedItemFile) &&
-      (button.name === "copy" ||
-        button.name === "paste" ||
-        button.name === "delete" ||
-        button.name === "Move to")
-    ) {
-      return false;
-    }
-    if (
-      !(selectedItem || selectedItemFile) &&
-      (button.name === "copy" ||
-        button.name === "paste" ||
-        button.name === "delete" ||
-        button.name === "Move to")
-    ) {
-      return true;
-    }
-  };
 
   const displayButtons = () => {
     const btnToDisplay = btns.map((button) => {
@@ -162,8 +148,8 @@ function WindowToolbar(props) {
           key={button.name}
           variant="outlined"
           startIcon={button.icon}
-          onClick={() => setState(button.method)}
-          disabled={disableButton(button)}
+          onClick={() => setState(button.stateVar)}
+          disabled={button.disabled}
         >
           {button.name}
         </Button>
@@ -206,7 +192,7 @@ function WindowToolbar(props) {
     if (action === "createFolder") {
       setOpenCreateFolderDialog(true);
     }
-    if (action === "MoveTo") {
+    if (action === "moveTo") {
       setOpenMoveToDialog(true);
     }
   }, [
