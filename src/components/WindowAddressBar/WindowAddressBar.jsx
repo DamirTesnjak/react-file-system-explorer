@@ -38,7 +38,12 @@ function WindowAddressBar(props) {
           value={selectedOption}
           onChange={(_event, newValue) => selectOption(newValue)}
           options={uniq(visitedPaths)}
-          renderInput={(params) => <TextField {...params} />}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              onChange={(e) => selectOption(e.target.value)}
+            />)
+          }
         />
       </Box>
     </Box>

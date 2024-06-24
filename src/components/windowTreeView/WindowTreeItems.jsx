@@ -68,6 +68,7 @@ function WindowTreeItems(props) {
               : [...state.expandedItems, itemId],
           currentPath: path,
           visitedPaths: [...state.visitedPaths, path],
+          currentPosition: state.visitedPaths.length,
           folderData: [],
           numOfItemsFolder: 1,
         });
