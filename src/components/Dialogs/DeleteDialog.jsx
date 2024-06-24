@@ -37,21 +37,18 @@ function DeleteDialog(props) {
     const api = itemType === "file" ? removeFile : deleteFolder;
     api({
       path: itemType === "file" ? selectedItemFile?.path : selectedItem?.path,
-    }).then((res) => {
-      const error = res.data.err;
-      if (!error) {
+    }).then(() => {
         setOpen(false);
         setState({
           ...state,
           ...resetedValues,
         });
-      } else {
-        setState({
-          ...state,
-          error,
-          action: "",
-        });
-      }
+    }).catch((error) => {
+      setState({
+        ...state,
+        error,
+        action: "",
+      });
     });
   };
 

@@ -40,7 +40,7 @@ function WindowMoveTo(props) {
     api({
       oldPath: stateDialog.oldPath,
       newPath:  `${currentPath}/${itemName}`,
-    }).then((res) => {
+    }).then(() => {
         setOpen(false);
         setStateDialog({
           ...state,
@@ -50,6 +50,12 @@ function WindowMoveTo(props) {
           ...state,
           ...resetedValues,
         });
+    }).catch((error) => {
+      setState({
+        ...state,
+        error,
+        action: "",
+      });
     });
   };
 

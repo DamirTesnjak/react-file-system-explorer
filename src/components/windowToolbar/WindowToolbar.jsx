@@ -167,23 +167,18 @@ function WindowToolbar(props) {
         oldPath: state.itemType === "file" ? selectedItemFile?.path : selectedFolder,
         newPath: `${state.currentPath}/${itemName}`,
       })
-        .then((res) => {
-          const error = res.data.err;
-          if (!error) {
+        .then(() => {
             setState({
               ...state,
               ...resetedValues,
             });
-          } else {
-            setState({
-              ...state,
-              error,
-              action: "",
-            });
-          }
         })
-        .catch((e) => {
-          console.log("err", e);
+        .catch((error) => {
+          setState({
+            ...state,
+            error,
+            action: "",
+          });
         });
     }
     if (action === ACTIONS.delete) {

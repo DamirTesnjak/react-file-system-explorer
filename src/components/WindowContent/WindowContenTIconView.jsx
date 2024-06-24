@@ -40,12 +40,26 @@ const WindowContentIconView = (props) => {
               : res.data.folderContent,
           numOfItemsFolder: 1,
         });
+      }).catch((error) => {
+        setState({
+          ...state,
+          error,
+          action: "",
+        });
       });
     }, [setState, state]);
 
   const getHardDrivesFolderContent = () => {
-    getHardDrives().then((res) => {
-      setFdisksDatata(res.data.hardDrives);
+    getHardDrives()
+      .then((res) => {
+        setFdisksDatata(res.data.hardDrives);
+        })
+      .catch((error) => {
+      setState({
+        ...state,
+        error,
+        action: "",
+      });
     });
   };
 

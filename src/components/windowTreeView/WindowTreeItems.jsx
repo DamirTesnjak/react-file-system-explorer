@@ -68,15 +68,15 @@ function WindowTreeItems(props) {
   const [folderData, setFolderData] = useState(treeViewData);
 
   const getFolderContent = useCallback(() => {
-    getFolder({ folderPath: path }).then((res) => {
-      const duplicates = [...state.expandedItems].filter(
-        (e) => e === itemId
-      ).length;
-      const filteredExpandedItems = [...state.expandedItems].filter(
-        (e) => e !== itemId
-      );
-      setFolderData(res.data.folderContent);
-      if (!res.data.err) {
+    getFolder({ folderPath: path })
+      .then((res) => {
+        const duplicates = [...state.expandedItems].filter(
+          (e) => e === itemId
+        ).length;
+        const filteredExpandedItems = [...state.expandedItems].filter(
+          (e) => e !== itemId
+        );
+        setFolderData(res.data.folderContent);
         setState({
           ...state,
           itemId,
@@ -90,14 +90,13 @@ function WindowTreeItems(props) {
           folderData: [],
           numOfItemsFolder: 1,
         });
-      } else {
-        setState({
-          ...state,
-          error: res.data.err,
-          action: "",
-        });
-      }
-    });
+    }).catch((error) => {
+      setState({
+        ...state,
+        error,
+        action: "",
+      });
+    });;
   }, [itemId, path, setState, state]);
 
   const openSelectedFile = () => {

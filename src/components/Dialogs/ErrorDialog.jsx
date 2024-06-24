@@ -26,13 +26,23 @@ function ErrorDialog(props) {
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >
-      <DialogTitle id="alert-dialog-title">{"Error"}</DialogTitle>
+      <DialogTitle
+        id="alert-dialog-title"
+        sx={{
+          background:
+            "linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(228,245,255,1) 98%)",
+          height: "25px",
+          color: "#ffffff",
+          fontSize: "15px",
+          fontWeight: 600,
+          paddingLeft: "20px",
+        }}
+      >{"Error"}</DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
-          <p>{`Errno: ${state.error?.errno}`}</p>
-          <p>{`Code: ${state.error?.code}`}</p>
-          <p>{`Syscall: ${state.error?.syscall}`}</p>
-          <p>{`Path: ${state.error?.path}`}</p>
+          <p>{`Name: ${state.error?.code}`}</p>
+          <p>{`Message: ${state.error?.message}`}</p>
+          <p>{`Name: ${state.error?.name}`}</p>
         </DialogContentText>
       </DialogContent>
       <DialogActions>
@@ -48,10 +58,9 @@ ErrorDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   state: PropTypes.shape({
     error: PropTypes.shape({
-      errno: PropTypes.number,
       code: PropTypes.string,
-      syscall: PropTypes.string,
-      path: PropTypes.string,
+      message: PropTypes.string,
+      name: PropTypes.string,
     }),
   }).isRequired,
   setState: PropTypes.func.isRequired,

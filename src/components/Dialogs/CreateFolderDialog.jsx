@@ -32,26 +32,23 @@ function CreateFolderDialog(props) {
     });
   };
 
+
   const handleConfirm = () => {
     if (folderName.length > 0) {
       createFolder({ folderPath: `${currentPath}/${folderName}` })
-        .then((res) => {
-          const error = res.data.err;
-          console.log('error', error);
-          if (!error) {
+        .then(() => {
             setOpen(!open);
             setFolderName("");
             setState({
               ...state,
               ...resetedValues,
             });
-          } else {
-            setState({
-              ...state,
-              error,
-              action: "",
-            });
-          }
+        }).catch((error) => {
+          setState({
+            ...state,
+            error,
+            action: "",
+          });
         });
     }
   };
