@@ -5,6 +5,7 @@ import { Grid, Box } from "@mui/material";
 import IconCard from "./IconCard";
 import { getFolder, openFile } from "../../data/methods";
 import { getHardDrives } from "../../data/methods";
+import { COMPUTER } from "../../constants/constants";
 
 const WindowContentIconView = (props) => {
   const { state, setState } = props;
@@ -24,7 +25,6 @@ const WindowContentIconView = (props) => {
   const getFolderContentCallBack = useCallback(() => {
     getFolder({ folderPath: currentPath })
       .then((res) => {
-        console.log('test');
         setState({
           ...state,
           selectedItem: action === "copy" ? selectedItem : null,
@@ -50,19 +50,19 @@ const WindowContentIconView = (props) => {
   };
 
   useEffect(() => {
-    if (disksData.length === 0 && currentPath === "Computer") {
+    if (disksData.length === 0 && currentPath === COMPUTER) {
       getHardDrivesFolderContent();
     }
   }, [disksData.length, currentPath]);
 
   useEffect(() => {
-    if (folderData.length === 0 && currentPath !== "Computer") {
+    if (folderData.length === 0 && currentPath !== COMPUTER) {
       getFolderContentCallBack();
     }
   }, [getFolderContentCallBack, currentPath, folderData.length]);
 
   useEffect(() => {
-    if (selectedItem && doubleClick === 2 && currentPath !== "Computer") {
+    if (selectedItem && doubleClick === 2 && currentPath !== COMPUTER) {
       getFolderContentCallBack();
     }
   }, [
@@ -87,7 +87,7 @@ const WindowContentIconView = (props) => {
   };
 
   const displayItemsAsIcons = () => {
-    if (currentPath === "Computer") {
+    if (currentPath === COMPUTER) {
       if (disksData && disksData.length > 0) {
         const items = disksData.map((diskItem) => {
           const newState = {

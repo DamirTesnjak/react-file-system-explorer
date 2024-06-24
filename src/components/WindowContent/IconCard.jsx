@@ -2,7 +2,6 @@ import React from "react";
 import PropTypes from "prop-types";
 import {
   Grid,
-  IconButton,
   Paper,
   Typography,
   Menu,
@@ -10,17 +9,13 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
-import FolderIcon from "@mui/icons-material/Folder";
-import StorageOutlinedIcon from "@mui/icons-material/StorageOutlined";
-import Album from "@mui/icons-material/Album";
-import { getFileTypeIconProps } from "@fluentui/react-file-type-icons";
-import { Icon } from "@fluentui/react/lib/Icon";
 import ContentCopy from "@mui/icons-material/ContentCopy";
 import ContentPasteIcon from "@mui/icons-material/ContentPaste";
 import ClearIcon from "@mui/icons-material/Clear";
-import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 
 import { openFile } from "../../data/methods";
+import { COMPUTER } from "../../constants/constants";
+import displayIcon from "../../utils/displayIcons";
 
 function IconCard(props) {
   const {
@@ -39,6 +34,45 @@ function IconCard(props) {
   const { visitedPaths, selectedItem, selectedItemFile } = state;
 
   const [contextMenu, setContextMenu] = React.useState(null);
+
+  const contextMenuItems = [
+    {
+      name: "Open",
+      method: handleOpen,
+    },
+    {
+      name: "Copy",
+      method: handleCopy,
+      icon: <ContentCopy fontSize="small" />
+    },
+    {
+      name: "Paste",
+      method: handlePaste,
+      icon:<ContentPasteIcon fontSize="small" />
+    },
+    {
+      name: "Delete",
+      method: handleDelete,
+      icon: <ClearIcon fontSize="small" />
+    },
+  ];
+
+  function displayContexMenuItems() {
+    const menuItems = contextMenuItems.map((item) => {
+      return (
+        <MenuItem
+          key={item.name}
+          onClick={item.method}
+        >
+          <ListItemIcon>
+            {item.icon}
+          </ListItemIcon>
+          <ListItemText>{item.name}</ListItemText>
+        </MenuItem>
+      );
+    });
+    return menuItems;
+  }
 
   const handleClose = () => {
     setContextMenu(null);
@@ -80,7 +114,7 @@ function IconCard(props) {
     );
   };
 
-  const handleOpen = () => {
+  function handleOpen() {
     if (!isFolder) {
       openFile({ path: path }).then((res) => {
         console.log(res);
@@ -103,7 +137,7 @@ function IconCard(props) {
     handleClose();
   };
 
-  const handleCopy = () => {
+  function handleCopy() {
     setState({
       ...state,
       action: "copy",
@@ -111,7 +145,7 @@ function IconCard(props) {
     handleClose();
   };
 
-  const handlePaste = () => {
+  function handlePaste() {
     setState({
       ...state,
       action: "paste",
@@ -119,62 +153,12 @@ function IconCard(props) {
     handleClose();
   };
 
-  const handleDelete = () => {
+  function handleDelete() {
     setState({
       ...state,
       action: "delete",
     });
     handleClose();
-  };
-
-  const displayIcon = () => {
-    if (!permission && state.currentPath !== 'Computer') {
-      return (
-        <IconButton disableRipple sx={{ display: "inline-block" }}>
-          <QuestionMarkIcon sx={{ fontSize: 64, color: "red" }} />
-        </IconButton>
-      );
-    }
-    if (isFile && !isDisk) {
-      return (
-        <IconButton disableRipple sx={{ display: "inline-block" }}>
-          <Icon
-            {...getFileTypeIconProps({
-              extension: name?.split(".")[1],
-              size: 64,
-            })}
-          />
-        </IconButton>
-      );
-    }
-    if (isFolder && !isDisk) {
-      return (
-        <IconButton disableRipple sx={{ display: "inline-block" }}>
-          <FolderIcon sx={{ fontSize: 64, color: "orange" }} />
-        </IconButton>
-      );
-    }
-    if (!isFolder && !isDisk) {
-      return (
-        <IconButton disableRipple sx={{ display: "inline-block" }}>
-          <Icon
-            {...getFileTypeIconProps({
-              extension: name?.split(".")[1],
-              size: 64,
-            })}
-          />
-        </IconButton>
-      );
-    }
-    return (
-      <IconButton color="highlight" disableRipple>
-        {name.includes("CD-ROM") ? (
-          <Album sx={{ fontSize: 64, color: "grey" }} />
-        ) : (
-          <StorageOutlinedIcon sx={{ fontSize: 64, color: "grey" }} />
-        )}
-      </IconButton>
-    );
   };
 
   return (
@@ -188,7 +172,7 @@ function IconCard(props) {
         cursor: "pointer",
         visibility: !name ? "hidden" : "visible",
       }}
-      onClick={!contextMenu && !(!permission && state.currentPath !== 'Computer') ? onClick : null}
+      onClick={!contextMenu && !(!permission && state.currentPath !== COMPUTER) ? onClick : null}
       onMouseLeave={onMouseLeave}
     >
       <Paper
@@ -205,7 +189,14 @@ function IconCard(props) {
         }}
         onContextMenu={handleContextMenu}
       >
-        {displayIcon()}
+        {displayIcon({
+          permission,
+          state,
+          isFolder,
+          isFile,
+          isDisk,
+          name,
+        })}
         <Typography
           variant="subtitle2"
           component="span"
@@ -223,7 +214,7 @@ function IconCard(props) {
           >
             {name}
             <br/>
-            {!permission && state.currentPath !== 'Computer' ? "No access" : ""}
+            {!permission && state.currentPath !== COMPUTER ? "No access" : ""}
           </span>
         </Typography>
         <Menu
@@ -236,25 +227,7 @@ function IconCard(props) {
               : undefined
           }
         >
-          <MenuItem onClick={handleOpen}>Open</MenuItem>
-          <MenuItem onClick={handleCopy}>
-            <ListItemIcon>
-              <ContentCopy fontSize="small" />
-            </ListItemIcon>
-            <ListItemText>Copy</ListItemText>
-          </MenuItem>
-          <MenuItem onClick={handlePaste}>
-            <ListItemIcon>
-              <ContentPasteIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText>Paste</ListItemText>
-          </MenuItem>
-          <MenuItem onClick={handleDelete}>
-            <ListItemIcon>
-              <ClearIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText>Delete</ListItemText>
-          </MenuItem>
+          {displayContexMenuItems()}
         </Menu>
       </Paper>
     </Grid>

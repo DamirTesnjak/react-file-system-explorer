@@ -6,6 +6,7 @@ import IndeterminateCheckBoxIcon from "@mui/icons-material/IndeterminateCheckBox
 import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
 
 import { getHardDrives } from "../../data/methods";
+import { COMPUTER } from "../../constants/constants";
 import WindowTreeItems from "./WindowTreeItems";
 
 function WindowTreeView(props) {
@@ -53,17 +54,17 @@ function WindowTreeView(props) {
       >
         <WindowTreeItems
           treeViewData={disksData}
-          itemId="computer"
-          name="Computer"
-          path="Computer"
+          itemId={COMPUTER}
+          name={COMPUTER}
+          path={COMPUTER}
           isFolder
           state={state}
           setState={setState}
           onClick={() =>
             setState({
               ...state,
-              visitedPaths: [...state.visitedPaths, "Computer"],
-              currentPath: "Computer",
+              visitedPaths: [...state.visitedPaths, COMPUTER],
+              currentPath: COMPUTER,
               currentPosition: state.visitedPaths.length,
             })
           }

@@ -11,7 +11,7 @@ import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 import DriveFileMoveIcon from "@mui/icons-material/DriveFileMove";
 
 import { copyFile, copyFolder } from "../../data/methods";
-import { resetedValues } from "../../constants/constants";
+import { resetedValues, ACTIONS, COMPUTER } from "../../constants/constants";
 import getItemNameFromPath from "../../utils/getItemNameFromPath";
 import DeleteDialog from "../Dialogs/DeleteDialog";
 import ErrorDialog from "../Dialogs/ErrorDialog";
@@ -92,14 +92,14 @@ function WindowToolbar(props) {
         folderData: [],
         numOfItemsFolder: 1,
       },
-      disabled: visitedPaths.length === 0 && currentPath !== 'Computer',
+      disabled: visitedPaths.length === 0 && currentPath !== COMPUTER,
       icon: <ArrowUpwardIcon sx={{ color: "#66ffff" }} />,
     },
     {
       name: "copy",
       stateVar: {
         ...state,
-        action: "copy",
+        action: ACTIONS.copy,
       },
       disabled: !(selectedItem || selectedItemFile),
       icon: <ContentCopyIcon />,
@@ -108,7 +108,7 @@ function WindowToolbar(props) {
       name: "paste",
       stateVar: {
         ...state,
-        action: "paste",
+        action: ACTIONS.paste,
       },
       disabled: action !== 'copy',
       icon: <ContentPasteIcon sx={{ color: "#993333" }} />,
@@ -117,7 +117,7 @@ function WindowToolbar(props) {
       name: "delete",
       mestateVarthod: {
         ...state,
-        action: "delete",
+        action: ACTIONS.delete,
       },
       disabled: !(selectedItem || selectedItemFile),
       icon: <ClearIcon sx={{ color: "#ff3300" }} />,
@@ -126,7 +126,7 @@ function WindowToolbar(props) {
       name: "create folder",
       stateVar: {
         ...state,
-        action: "createFolder",
+        action: ACTIONS.createFolder,
       },
       icon: <CreateNewFolderIcon sx={{ color: "#cc6600" }} />,
     },
@@ -134,7 +134,7 @@ function WindowToolbar(props) {
       name: "Move to",
       stateVar: {
         ...state,
-        action: "moveTo",
+        action: ACTIONS.moveTo,
       },
       disabled: !(selectedItem || selectedItemFile),
       icon: <DriveFileMoveIcon sx={{ color: "#cc6600" }} />,
@@ -159,7 +159,7 @@ function WindowToolbar(props) {
   };
 
   useEffect(() => {
-    if (action === "paste") {
+    if (action === ACTIONS.paste) {
       const itemName = getItemNameFromPath(state.itemType === "file" ? state.selectedItemFile : {path: state.selectedFolder})
       const api = state.itemType ? copyFile : copyFolder;
 
@@ -186,13 +186,13 @@ function WindowToolbar(props) {
           console.log("err", e);
         });
     }
-    if (action === "delete") {
+    if (action === ACTIONS.delete) {
       setOpenDeleteDialog(true);
     }
-    if (action === "createFolder") {
+    if (action === ACTIONS.createFolder) {
       setOpenCreateFolderDialog(true);
     }
-    if (action === "moveTo") {
+    if (action === ACTIONS.moveTo) {
       setOpenMoveToDialog(true);
     }
   }, [
@@ -204,8 +204,6 @@ function WindowToolbar(props) {
     selectedItem,
     selectedItemFile,
   ]);
-
-  console.log('state', state);
 
   return (
     <Box sx={{ backgroundColor: "#c0c7c8f2" }}>

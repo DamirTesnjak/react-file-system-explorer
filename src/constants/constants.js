@@ -20,9 +20,21 @@ const resetedValues = {
   itemType: null,
   folderData: [],
   moveToPath: null,
-}
+};
+
+const ACTIONS = {
+  copy: "copy",
+  paste: "paste",
+  delete: "delete",
+  moveTo: "moveTo",
+  createFolder: "createFolder",
+};
+
+const COMPUTER = 'Computer'
 
 export {
+  ACTIONS,
+  COMPUTER,
   initialValues,
   resetedValues,
-}
+};

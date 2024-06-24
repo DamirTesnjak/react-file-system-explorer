@@ -2,23 +2,28 @@ import React, { useState, useEffect, useCallback } from "react";
 import PropTypes from "prop-types";
 import { TreeItem } from "@mui/x-tree-view/TreeItem";
 import { uniq } from "lodash";
+import { Box } from "@mui/material";
 
 import { getFolder, openFile } from "../../data/methods";
+import { COMPUTER } from "../../constants/constants";
+import displayIcon from "../../utils/displayIcons";
 
 const windowTreeItems = (args) => {
   const { folderData, itemId, state, setState } = args;
-  if (itemId === "computer") {
+  if (itemId === COMPUTER) {
     if (folderData && folderData.length > 0) {
       const items = folderData.map((diskItem) => {
         return (
           <WindowTreeItems
             key={diskItem.mounted + "/"}
-            isFolder
+            isFolder={diskItem.isDisk}
+            isDisk={diskItem.isDisk}
             itemId={diskItem.mounted + "/"}
             name={diskItem.filesystem + " " + diskItem.mounted}
             path={diskItem.mounted + "/"}
             state={state}
             setState={setState}
+            permission={diskItem.permission}
           />
         );
       });
@@ -31,12 +36,14 @@ const windowTreeItems = (args) => {
           <WindowTreeItems
             key={itemList.path}
             isFolder={itemList.isFolder}
+            isFile={itemList.isFile}
             itemId={itemList.path}
             name={itemList.name}
             path={itemList.path}
             itemCount={itemList.itemCount}
             state={state}
             setState={setState}
+            permission={itemList.permission}
           />
         );
       });
@@ -46,7 +53,18 @@ const windowTreeItems = (args) => {
 };
 
 function WindowTreeItems(props) {
-  const { itemId, treeViewData, isFolder, name, path, state, setState } = props;
+  const {
+    itemId,
+    treeViewData,
+    isFolder,
+    isFile,
+    isDisk,
+    name,
+    path,
+    state,
+    setState,
+    permission,
+  } = props;
   const [folderData, setFolderData] = useState(treeViewData);
 
   const getFolderContent = useCallback(() => {
@@ -103,7 +121,18 @@ function WindowTreeItems(props) {
   return (
     <TreeItem
       itemId={itemId}
-      label={name}
+      label={<Box>
+        {displayIcon({
+          permission,
+          state,
+          isFolder,
+          isFile,
+          isDisk,
+          name,
+          itemId,
+        })}
+        {name}
+      </Box>}
       onClick={() => (!isFolder ? openSelectedFile() : expandItemList())}
     >
       {windowTreeItems({
@@ -136,6 +165,9 @@ WindowTreeItems.propTypes = {
     mounted: PropTypes.number,
   }),
   isFolder: PropTypes.bool,
+  isFile: PropTypes.bool,
+  isDisk: PropTypes.bool,
+  permission: PropTypes.bool,
   name: PropTypes.string.isRequired,
   path: PropTypes.string.isRequired,
   state: PropTypes.shape({
@@ -146,5 +178,7 @@ WindowTreeItems.propTypes = {
 };
 
 WindowTreeItems.defaultProps = {
-  isFolder: null,
+  isFolder: false,
+  isFile: false,
+  isDisk: false,
 };
