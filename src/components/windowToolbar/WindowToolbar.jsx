@@ -115,7 +115,7 @@ function WindowToolbar(props) {
     },
     {
       name: "delete",
-      mestateVarthod: {
+      stateVar: {
         ...state,
         action: ACTIONS.delete,
       },
