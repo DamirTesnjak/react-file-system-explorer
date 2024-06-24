@@ -222,6 +222,8 @@ function IconCard(props) {
             }}
           >
             {name}
+            <br/>
+            {!permission && state.currentPath !== 'Computer' ? "No access" : ""}
           </span>
         </Typography>
         <Menu
