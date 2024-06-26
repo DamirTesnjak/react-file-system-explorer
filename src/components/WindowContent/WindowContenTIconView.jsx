@@ -96,7 +96,7 @@ const WindowContentIconView = (props) => {
           const onClick = () => {
             if (doubleClick === 0) {
               if (itemList.isFile) {
-                setState((prevState) => {console.log('prevState', prevState); return ({
+                setState((prevState) => ({
                   ...prevState,
                   selectedItemFile: {
                     path: itemList.path,
@@ -105,10 +105,10 @@ const WindowContentIconView = (props) => {
                   doubleClick: 1,
                   itemId: itemList.path,
                   itemType: "file",
-                })});
+                }));
               }
               if (itemList.isFolder) {
-                setState((prevState) => {console.log('prevState', prevState); return ({
+                setState((prevState) => ({
                   ...prevState,
                   selectedItem: {
                     path: itemList.path,
@@ -116,17 +116,17 @@ const WindowContentIconView = (props) => {
                   itemId: itemList.path,
                   selectedFolder: !selectedFolder ? itemList.path : null,
                   doubleClick: 1,
-                })});
+                }));
               }
             }
             if (doubleClick >= 1) {
               if (itemList.isFile) {
                 openSelectedFile(itemList.path);
               } else {
-                setState((prevState) => {console.log('prevState', prevState); return ({
+                setState((prevState) => ({
                   ...prevState,
                   ...newState,
-                })});
+                }));
               }
             }
           };

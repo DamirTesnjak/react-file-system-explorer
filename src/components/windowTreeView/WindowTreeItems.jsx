@@ -79,7 +79,6 @@ function WindowTreeItems(props) {
   const getFolderContent = useCallback(() => {
     getFolder({ folderPath: path })
       .then((res) => {
-        console.log('path', path);
         const duplicates = [...expandedItems].filter(
           (e) => e === itemId
         ).length;
