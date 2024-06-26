@@ -10,13 +10,13 @@ import {
 } from "@mui/material";
 
 function ErrorDialog(props) {
-  const { open, state, setState } = props;
+  const { open, error, setState } = props;
 
   const handleClose = () => {
-    setState({
-      ...state,
+    setState((prevState) => ({
+      ...prevState,
       error: null,
-    });
+    }));
   };
 
   return (
@@ -40,9 +40,9 @@ function ErrorDialog(props) {
       >{"Error"}</DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
-          <p>{`Name: ${state.error?.code}`}</p>
-          <p>{`Message: ${state.error?.message}`}</p>
-          <p>{`Name: ${state.error?.name}`}</p>
+          <p>{`Name: ${error?.code}`}</p>
+          <p>{`Message: ${error?.message}`}</p>
+          <p>{`Name: ${error?.name}`}</p>
         </DialogContentText>
       </DialogContent>
       <DialogActions>
@@ -56,12 +56,10 @@ export default ErrorDialog;
 
 ErrorDialog.propTypes = {
   open: PropTypes.bool.isRequired,
-  state: PropTypes.shape({
-    error: PropTypes.shape({
-      code: PropTypes.string,
-      message: PropTypes.string,
-      name: PropTypes.string,
-    }),
+  error: PropTypes.shape({
+    code: PropTypes.string,
+    message: PropTypes.string,
+    name: PropTypes.string,
   }).isRequired,
   setState: PropTypes.func.isRequired,
 }

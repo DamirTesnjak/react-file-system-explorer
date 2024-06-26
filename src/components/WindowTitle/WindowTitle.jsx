@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Box } from "@mui/material";
 
 function WindowTitle(props) {
-  const { state } = props;
+  const { currentPath } = props;
 
   return (
     <Box
@@ -17,14 +17,12 @@ function WindowTitle(props) {
         paddingLeft: "20px",
       }}
     >
-      {state.currentPath}
+      {currentPath}
     </Box>
   );
 }
 
 export default WindowTitle;
 WindowTitle.propTypes = {
-  state: PropTypes.shape({
-    currentPath: PropTypes.string
-  }).isRequired
+  currentPath: PropTypes.string.isRequired,
 }

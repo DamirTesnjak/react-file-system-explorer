@@ -17,20 +17,20 @@ function DeleteDialog(props) {
   const { 
     open,
     setOpen,
-    state,
+    itemType,
+    selectedItem,
+    selectedItemFile,
     setState
   } = props;
-  const { itemType, selectedItem, selectedItemFile } = state;
-
-  const itemName = getItemNameFromPath(state.selectedItemFile);
+  const itemName = getItemNameFromPath(selectedItemFile);
   const itemTypeString = itemType === "file" ? 'file' : 'folder';
 
   const handleClose = () => {
     setOpen(false);
-    setState({
-      ...state,
+    setState((prevState) => ({
+      ...prevState,
       action: "",
-    });
+    }));
   };
 
   const handleConfirm = () => {
@@ -39,16 +39,16 @@ function DeleteDialog(props) {
       path: itemType === "file" ? selectedItemFile?.path : selectedItem?.path,
     }).then(() => {
         setOpen(false);
-        setState({
-          ...state,
+        setState((prevState) => ({
+          ...prevState,
           ...resetedValues,
-        });
+        }));
     }).catch((error) => {
-      setState({
-        ...state,
+      setState((prevState) => ({
+        ...prevState,
         error,
         action: "",
-      });
+      }));
     });
   };
 
@@ -71,7 +71,7 @@ function DeleteDialog(props) {
           paddingLeft: "20px",
         }}
       >
-        {"Create folder"}
+        {"Delete..."}
       </DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
@@ -91,14 +91,12 @@ export default DeleteDialog;
 DeleteDialog.propTypes = {
   open: PropTypes.bool,
   setOpen: PropTypes.func.isRequired,
-  state: PropTypes.shape({
-    itemType: PropTypes.string,
-    selectedItem: PropTypes.shape({
-      path: PropTypes.string,
-    }),
-    selectedItemFile: PropTypes.shape({
-      path: PropTypes.string,
-    }),
+  itemType: PropTypes.string.isRequired,
+  selectedItem: PropTypes.shape({
+    path: PropTypes.string,
+  }).isRequired,
+  selectedItemFile: PropTypes.shape({
+    path: PropTypes.string,
   }).isRequired,
   setState: PropTypes.func.isRequired,
 };

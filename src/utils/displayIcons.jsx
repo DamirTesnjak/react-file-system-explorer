@@ -13,12 +13,12 @@ import { COMPUTER } from "../constants/constants";
 const displayIcon = (args) => {
     const {
         permission,
-        state,
         isFolder,
         isFile,
         isDisk,
         name,
         itemId,
+        currentPath,
     } = args;
     if (itemId === COMPUTER) {
       return (
@@ -27,7 +27,7 @@ const displayIcon = (args) => {
         </IconButton>
       );
     }
-    if (!permission && (itemId || state.currentPath) !== COMPUTER) {
+    if (!permission && (itemId || currentPath) !== COMPUTER) {
       return (
         <IconButton disableRipple sx={{ display: "inline-block" }}>
           <QuestionMarkIcon sx={{ fontSize: !itemId ? 64 : 32, color: "#e6e6e6" }} />

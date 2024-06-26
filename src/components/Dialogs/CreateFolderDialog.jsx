@@ -17,19 +17,18 @@ function CreateFolderDialog(props) {
   const {
     open,
     setOpen,
-    state,
+    currentPath,
     setState,
   } = props;
-  const { currentPath } = state;
 
   const [folderName, setFolderName] = useState("");
 
   const handleClose = () => {
     setOpen(false);
-    setState({
-      ...state,
+    setState((prevState) => ({
+      ...prevState,
       action: "",
-    });
+    }));
   };
 
 
@@ -39,16 +38,16 @@ function CreateFolderDialog(props) {
         .then(() => {
             setOpen(!open);
             setFolderName("");
-            setState({
-              ...state,
+            setState((prevState) => ({
+              ...prevState,
               ...resetedValues,
-            });
+            }));
         }).catch((error) => {
-          setState({
-            ...state,
+          setState((prevState) => ({
+            ...prevState,
             error,
             action: "",
-          });
+          }));
         });
     }
   };
@@ -92,10 +91,8 @@ function CreateFolderDialog(props) {
 export default CreateFolderDialog;
 
 CreateFolderDialog.propTypes = {
-  open: PropTypes.bool,
-  setOpen: PropTypes.func,
-  state: PropTypes.shape({
-    currentPath: PropTypes.string,
-  }),
+  open: PropTypes.bool.isRequired,
+  setOpen: PropTypes.func.isRequired,
+  currentPath: PropTypes.string.isRequired,
   setState: PropTypes.func.isRequired,
 };

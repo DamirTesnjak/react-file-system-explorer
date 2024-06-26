@@ -16,46 +16,58 @@ import getItemNameFromPath from '../../utils/getItemNameFromPath';
 
 
 function WindowMoveTo(props) {
-  const { state, open, setOpen, setState } = props;
-  const { itemType, selectedItem, selectedItemFile } = state;
+  const { 
+    open,
+    setOpen,
+    itemType,
+    selectedItem,
+    selectedItemFile,
+    selectedFolder,
+    setState,
+  } = props;
 
   const [stateDialog, setStateDialog] = useState({
     ...initialValues,
     oldPath: selectedItem?.path || selectedItemFile?.path,
   });
 
-  const { currentPath } = stateDialog;
+  const { 
+    currentPath,
+    expandedItems,
+    visitedPaths,
+    diskData,
+  } = stateDialog;
 
   const handleClose = () => {
     setOpen(false);
-    setState({
-      ...state,
+    setState((prevState) => ({
+      ...prevState,
       action: "",
-    });
+    }));
   };
 
   const handleConfirm = () => {
-    const itemName = getItemNameFromPath(state.itemType === "file" ? state.selectedItemFile : { path: state.selectedFolder})
+    const itemName = getItemNameFromPath(itemType === "file" ? selectedItemFile : { path: selectedFolder})
     const api = itemType === "file" ? moveFile : moveFolder;
     api({
       oldPath: stateDialog.oldPath,
       newPath:  `${currentPath}/${itemName}`,
     }).then(() => {
         setOpen(false);
-        setStateDialog({
-          ...state,
+        setStateDialog((prevState) => ({
+          ...prevState,
           ...resetedValues,
-        });
-        setState({
-          ...state,
+        }));
+        setState((prevState) => ({
+          ...prevState,
           ...resetedValues,
-        });
+        }));
     }).catch((error) => {
-      setState({
-        ...state,
+      setState((prevState) => ({
+        ...prevState,
         error,
         action: "",
-      });
+      }));
     });
   };
 
@@ -77,11 +89,14 @@ function WindowMoveTo(props) {
       <DialogContent sx={{ padding: '2px' }}>
         <Grid container spacing={2} sx={{ backgroundColor: "#c0c7c8" }}>
           <Grid item xs={12}>
-            <WindowTitle state={stateDialog} />
+            <WindowTitle currentPath={currentPath} />
           </Grid>
           <Grid item xs={12}>
             <WindowTreeView
-              state={stateDialog}
+              dialogOpened={open}
+              expandedItems={expandedItems}
+              visitedPaths={visitedPaths}
+              disksData={diskData}
               setState={setStateDialog}
             />
           </Grid>
@@ -101,14 +116,12 @@ WindowMoveTo.propTypes = {
   open: PropTypes.bool.isRequired,
   setOpen: PropTypes.func.isRequired,
   setState: PropTypes.func.isRequired,
-  state: PropTypes.shape({
-    selectedItem: PropTypes.shape({
-      path: PropTypes.string,
-    }),
-    selectedItemFile: PropTypes.shape({
-      path: PropTypes.string,
-    }),
-    selectedFolder: PropTypes.string,
-    itemType: PropTypes.string,
+  selectedItem: PropTypes.shape({
+    path: PropTypes.string,
   }),
+  selectedItemFile: PropTypes.shape({
+    path: PropTypes.string,
+  }),
+  selectedFolder: PropTypes.string,
+  itemType: PropTypes.string,
 };

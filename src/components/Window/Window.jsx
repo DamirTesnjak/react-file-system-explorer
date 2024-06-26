@@ -9,6 +9,22 @@ import WindowAddressBar from "../WindowAddressBar/WindowAddressBar";
 
 function Window(props) {
   const { setState, state } = props;
+  const {
+    folderData,
+    diskData,
+    doubleClick,
+    currentPath,
+    currentPosition,
+    visitedPaths,
+    expandedItems,
+    action,
+    error,
+    itemType,
+    selectedItem,
+    selectedItemFile,
+    selectedFolder, 
+  } = state;
+
   return (
     <Grid
       container
@@ -16,26 +32,48 @@ function Window(props) {
       sx={{ backgroundColor: "#c0c7c8" }}
     >
       <Grid item xs={12}>
-        <WindowTitle state={state}/>
+        <WindowTitle currentPath={currentPath}/>
       </Grid>
       <Grid item xs={12} sx={{ paddingTop: "2px !important" }}>
         <WindowToolbar
-          state={state}
+          currentPath={currentPath}
+          currentPosition={currentPosition}
+          visitedPaths={visitedPaths}
+          action={action}
+          error={error}
+          itemType={itemType}
+          selectedItem={selectedItem}
+          selectedItemFile={selectedItemFile}
+          selectedFolder={selectedFolder}
           setState={setState}
         />
       </Grid>
       <Grid item xs={12} sx={{ paddingTop: "0px !important" }}>
         <WindowAddressBar
-          state={state}
+          currentPath={currentPath}
+          visitedPaths={visitedPaths}
           setState={setState}
         />
       </Grid>
       <Grid item xs={2}>
-        <WindowTreeView state={state} setState={setState} />
+        <WindowTreeView
+          expandedItems={expandedItems}
+          visitedPaths={visitedPaths}
+          disksData={diskData}
+          setState={setState}
+        />
       </Grid>
       <Grid item xs={10}>
         <WindowContentIconView
-          state={state}
+          currentPath={currentPath}
+          folderData={folderData}
+          disksData={diskData}
+          doubleClick={doubleClick}
+          visitedPaths={visitedPaths}
+          selectedFolder={selectedFolder}
+          selectedItem={selectedItem}
+          selectedItemFile={selectedItemFile}
+          action={action}
           setState={setState}
         />
       </Grid>
@@ -77,6 +115,15 @@ Window.propTypes = {
       capacity: PropTypes.number,
       mounted: PropTypes.number,
     }),
+    diskData: PropTypes.arrayOf({
+      permission: PropTypes.bool,
+      filesystem: PropTypes.string,
+      blocks: PropTypes.number,
+      used: PropTypes.number,
+      available: PropTypes.number,
+      capacity: PropTypes.number,
+      mounted: PropTypes.number,
+    }).isRequired,
     action: PropTypes.string.isRequired,
     error: PropTypes.shape({
       errno: PropTypes.number,

@@ -9,7 +9,13 @@ import { COMPUTER } from "../../constants/constants";
 import displayIcon from "../../utils/displayIcons";
 
 const windowTreeItems = (args) => {
-  const { folderData, itemId, state, setState } = args;
+  const {
+    folderData,
+    itemId,
+    expandedItems,
+    visitedPaths,
+    setState
+  } = args;
   if (itemId === COMPUTER) {
     if (folderData && folderData.length > 0) {
       const items = folderData.map((diskItem) => {
@@ -21,9 +27,10 @@ const windowTreeItems = (args) => {
             itemId={diskItem.mounted + "/"}
             name={diskItem.filesystem + " " + diskItem.mounted}
             path={diskItem.mounted + "/"}
-            state={state}
             setState={setState}
             permission={diskItem.permission}
+            expandedItems={expandedItems}
+            visitedPaths={visitedPaths}
           />
         );
       });
@@ -41,9 +48,10 @@ const windowTreeItems = (args) => {
             name={itemList.name}
             path={itemList.path}
             itemCount={itemList.itemCount}
-            state={state}
             setState={setState}
             permission={itemList.permission}
+            expandedItems={expandedItems}
+            visitedPaths={visitedPaths}
           />
         );
       });
@@ -61,43 +69,44 @@ function WindowTreeItems(props) {
     isDisk,
     name,
     path,
-    state,
     setState,
     permission,
+    expandedItems,
+    visitedPaths,
   } = props;
   const [folderData, setFolderData] = useState(treeViewData);
 
   const getFolderContent = useCallback(() => {
     getFolder({ folderPath: path })
       .then((res) => {
-        const duplicates = [...state.expandedItems].filter(
+        console.log('path', path);
+        const duplicates = [...expandedItems].filter(
           (e) => e === itemId
         ).length;
-        const filteredExpandedItems = [...state.expandedItems].filter(
+        const filteredExpandedItems = [...expandedItems].filter(
           (e) => e !== itemId
         );
         setFolderData(res.data.folderContent);
-        setState({
-          ...state,
+        setState((prevState) => ({
+          ...prevState,
           itemId,
           expandedItems:
             duplicates > 0
               ? uniq(filteredExpandedItems)
-              : [...state.expandedItems, itemId],
+              : [...expandedItems, itemId],
           currentPath: path,
-          visitedPaths: [...state.visitedPaths, path],
-          currentPosition: state.visitedPaths.length,
+          visitedPaths: [...visitedPaths, path],
+          currentPosition: visitedPaths.length,
           folderData: [],
-          numOfItemsFolder: 1,
-        });
+        }));
     }).catch((error) => {
-      setState({
-        ...state,
+      setState((prevState) =>({
+        ...prevState,
         error,
         action: "",
-      });
+      }));
     });;
-  }, [itemId, path, setState, state]);
+  }, [itemId, path, setState]);
 
   const openSelectedFile = () => {
     openFile({ path: path }).then((res) => {
@@ -111,11 +120,12 @@ function WindowTreeItems(props) {
         setFolderData(res.data.folderContent);
       });
     }
-  }, [folderData, itemId, path, setState, state]);
+  }, [folderData, itemId, path, setState]);
 
   const expandItemList = () => {
     getFolderContent();
   };
+
 
   return (
     <TreeItem
@@ -123,7 +133,6 @@ function WindowTreeItems(props) {
       label={<Box>
         {displayIcon({
           permission,
-          state,
           isFolder,
           isFile,
           isDisk,
@@ -137,7 +146,8 @@ function WindowTreeItems(props) {
       {windowTreeItems({
         folderData: folderData && folderData.length > 0 ? folderData : treeViewData,
         itemId,
-        state,
+        expandedItems,
+        visitedPaths,
         setState,
       })}
     </TreeItem>
@@ -169,10 +179,8 @@ WindowTreeItems.propTypes = {
   permission: PropTypes.bool,
   name: PropTypes.string.isRequired,
   path: PropTypes.string.isRequired,
-  state: PropTypes.shape({
-    visitedPaths: PropTypes.arrayOf(PropTypes.string),
-    expandedItems: PropTypes.arrayOf(PropTypes.string),
-  }),
+  visitedPaths: PropTypes.arrayOf(PropTypes.string).isRequired,
+  expandedItems: PropTypes.arrayOf(PropTypes.string).isRequired,
   setState: PropTypes.func.isRequired,
 };
 
@@ -180,4 +188,5 @@ WindowTreeItems.defaultProps = {
   isFolder: false,
   isFile: false,
   isDisk: false,
+  dialogOpened: false,
 };

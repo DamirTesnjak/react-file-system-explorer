@@ -19,7 +19,6 @@ import CreateFolderDialog from "../Dialogs/CreateFolderDialog";
 import WindowMoveTo from "./WindowMoveTo";
 
 function WindowToolbar(props) {
-  const { setState, state } = props;
   const {
     currentPath,
     currentPosition,
@@ -29,8 +28,9 @@ function WindowToolbar(props) {
     itemType,
     selectedItem,
     selectedItemFile,
-    selectedFolder,
-  } = state;
+    selectedFolder, 
+    setState,
+  } = props;
 
   const [openDeleteDialog, setOpenDeleteDialog] = useState();
   const [openCreateFolderDialog, setOpenCreateFolderDialog] = useState();
@@ -60,7 +60,6 @@ function WindowToolbar(props) {
     {
       name: "back",
       stateVar: {
-        ...state,
         visitedPaths: [...visitedPaths, btnBackCurrentPathCondition],
         currentPosition: btnBackCurrentPositionCondition,
         currentPath: btnBackCurrentPathCondition,
@@ -73,7 +72,6 @@ function WindowToolbar(props) {
     {
       name: "next",
       stateVar: {
-        ...state,
         currentPosition: btnNextCondition,
         currentPath: visitedPaths[btnNextCondition],
         folderData: [],
@@ -85,7 +83,6 @@ function WindowToolbar(props) {
     {
       name: "up",
       stateVar: {
-        ...state,
         visitedPaths: [...visitedPaths, parentPath()],
         currentPath: parentPath(),
         currentPosition: visitedPaths.length,
@@ -98,7 +95,6 @@ function WindowToolbar(props) {
     {
       name: "copy",
       stateVar: {
-        ...state,
         action: ACTIONS.copy,
       },
       disabled: !(selectedItem || selectedItemFile),
@@ -107,7 +103,6 @@ function WindowToolbar(props) {
     {
       name: "paste",
       stateVar: {
-        ...state,
         action: ACTIONS.paste,
       },
       disabled: action !== 'copy',
@@ -116,7 +111,6 @@ function WindowToolbar(props) {
     {
       name: "delete",
       stateVar: {
-        ...state,
         action: ACTIONS.delete,
       },
       disabled: !(selectedItem || selectedItemFile),
@@ -125,7 +119,6 @@ function WindowToolbar(props) {
     {
       name: "create folder",
       stateVar: {
-        ...state,
         action: ACTIONS.createFolder,
       },
       icon: <CreateNewFolderIcon sx={{ color: "#cc6600" }} />,
@@ -133,13 +126,19 @@ function WindowToolbar(props) {
     {
       name: "Move to",
       stateVar: {
-        ...state,
         action: ACTIONS.moveTo,
       },
       disabled: !(selectedItem || selectedItemFile),
       icon: <DriveFileMoveIcon sx={{ color: "#cc6600" }} />,
     },
   ];
+
+  const handleOnClick = (button) => {
+    setState((prevState) => ({
+      ...prevState,
+      ...button.stateVar,
+    }))
+  }
 
   const displayButtons = () => {
     const btnToDisplay = btns.map((button) => {
@@ -148,7 +147,7 @@ function WindowToolbar(props) {
           key={button.name}
           variant="outlined"
           startIcon={button.icon}
-          onClick={() => setState(button.stateVar)}
+          onClick={() => handleOnClick(button)}
           disabled={button.disabled}
         >
           {button.name}
@@ -160,25 +159,25 @@ function WindowToolbar(props) {
 
   useEffect(() => {
     if (action === ACTIONS.paste) {
-      const itemName = getItemNameFromPath(state.itemType === "file" ? state.selectedItemFile : {path: state.selectedFolder})
-      const api = state.itemType ? copyFile : copyFolder;
+      const itemName = getItemNameFromPath(itemType === "file" ? selectedItemFile : {path: selectedFolder})
+      const api = itemType ? copyFile : copyFolder;
 
       api({
-        oldPath: state.itemType === "file" ? selectedItemFile?.path : selectedFolder,
-        newPath: `${state.currentPath}/${itemName}`,
+        oldPath: itemType === "file" ? selectedItemFile?.path : selectedFolder,
+        newPath: `${currentPath}/${itemName}`,
       })
         .then(() => {
-            setState({
-              ...state,
+            setState((prevState) => ({
+              ...prevState,
               ...resetedValues,
-            });
+            }));
         })
         .catch((error) => {
-          setState({
-            ...state,
+          setState((prevState) => ({
+            ...prevState,
             error,
             action: "",
-          });
+          }));
         });
     }
     if (action === ACTIONS.delete) {
@@ -192,7 +191,6 @@ function WindowToolbar(props) {
     }
   }, [
     setState,
-    state,
     action,
     currentPath,
     itemType,
@@ -206,7 +204,9 @@ function WindowToolbar(props) {
         <DeleteDialog
           open={openDeleteDialog}
           setOpen={setOpenDeleteDialog}
-          state={state}
+          itemType={itemType}
+          selectedItem={selectedItem}
+          selectedItemFile={selectedItemFile}
           setState={setState}
         />
       )}
@@ -214,14 +214,14 @@ function WindowToolbar(props) {
         <CreateFolderDialog
           open={openCreateFolderDialog}
           setOpen={setOpenCreateFolderDialog}
-          state={state}
+          currentPath={currentPath}
           setState={setState}
         />
       )}
-      {error?.code.length > 0 && (
+      {error?.code?.length > 0 && (
         <ErrorDialog
-          open={error?.code.length > 0}
-          state={state}
+          open={error?.code?.length > 0}
+          error={error}
           setState={setState}
         />
       )}
@@ -229,7 +229,10 @@ function WindowToolbar(props) {
         <WindowMoveTo
           open={openMoveToDialog}
           setOpen={setOpenMoveToDialog}
-          state={state}
+          itemType={itemType}
+          selectedItem={selectedItem}
+          selectedItemFile={selectedItemFile}
+          selectedFolder={selectedFolder}
           setState={setState}
         />
       )}
@@ -241,22 +244,20 @@ function WindowToolbar(props) {
 export default WindowToolbar;
 
 WindowToolbar.propTypes = {
-  state: PropTypes.shape({
-    currentPath: PropTypes.string,
-    currentPosition: PropTypes.number,
-    visitedPaths: PropTypes.arrayOf(PropTypes.string),
-    selectedItem: PropTypes.shape({
-      path: PropTypes.string,
-    }),
-    selectedItemFile: PropTypes.shape({
-      path: PropTypes.string,
-    }),
-    selectedFolder: PropTypes.string,
-    itemType: PropTypes.string,
-    action: PropTypes.string,
-    error: PropTypes.shape({
-      code: PropTypes.string,
-    }),
+  currentPath: PropTypes.string.isRequired,
+  currentPosition: PropTypes.number.isRequired,
+  visitedPaths: PropTypes.arrayOf(PropTypes.string).isRequired,
+  selectedItem: PropTypes.shape({
+    path: PropTypes.string,
+  }).isRequired,
+  selectedItemFile: PropTypes.shape({
+    path: PropTypes.string,
+  }).isRequired,
+  selectedFolder: PropTypes.string.isRequired,
+  itemType: PropTypes.string.isRequired,
+  action: PropTypes.string.isRequired,
+  error: PropTypes.shape({
+    code: PropTypes.string,
   }).isRequired,
   setState: PropTypes.func.isRequired,
 };

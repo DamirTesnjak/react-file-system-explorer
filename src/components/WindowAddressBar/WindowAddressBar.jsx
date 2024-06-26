@@ -1,20 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Autocomplete, Box, Button, TextField } from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { uniq } from "lodash";
 
 function WindowAddressBar(props) {
-  const { state, setState } = props;
-  const { currentPath, visitedPaths } = state;
+  const { currentPath, visitedPaths, setState } = props;
   const [selectedOption, selectOption] = useState(currentPath);
 
   const selectPath = () => {
-    setState({
-      ...state,
+    setState((prevState) => ({
+      ...prevState,
       currentPath: selectedOption,
       folderData: [],
-    });
+    }));
   };
 
   useEffect(() => selectOption(currentPath), [currentPath]);
@@ -35,7 +34,7 @@ function WindowAddressBar(props) {
     }}>
         <Autocomplete
           freeSolo
-          value={selectedOption}
+          value={selectedOption || currentPath}
           onChange={(_event, newValue) => selectOption(newValue)}
           options={uniq(visitedPaths)}
           renderInput={(params) => (
@@ -53,9 +52,7 @@ function WindowAddressBar(props) {
 export default WindowAddressBar;
 
 WindowAddressBar.propTypes = {
-  state: PropTypes.shape({
-    currentPath: PropTypes.string,
-    visitedPaths: PropTypes.arrayOf(PropTypes.string),
-  }).isRequired,
+  currentPath: PropTypes.string.isRequired,
+  visitedPaths: PropTypes.arrayOf(PropTypes.string).isRequired,
   setState: PropTypes.func.isRequired,
 }
