@@ -1,7 +1,7 @@
 # react-file-system-explorer
 This repository is the part of my personal project, **an experiment** of writing the React app - File Explorer,
 <br> and you must regard it as such. Do not expect a clone of File Explorer in Windows, because it is not!!!
-<br>Keep in mind that application is still under development
+<br>Keep in mind that application is still under development, so bugs may occur!
 <br>
 <br>**Have a fun playing with it!**
 <br>
@@ -23,11 +23,8 @@ Download repository and run the command ```npm i``` in command prompt terminal i
 - Tree view navigation
 - Address toolbar navigation
 - Moving files
-- Moving folders (in progress)
-
-## TODO list
-- implement display of error messages if something goes wrong
-- some special directories are marked as files, need to correct this
+- Moving folders
+- Display of error messages if something goes wrong
 
 ## Screenshot
 
