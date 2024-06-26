@@ -31,4 +31,4 @@ Download repository and run the command ```npm i``` in command prompt terminal i
 
 ## Screenshot
 
-![sreenshot](https://github.com/DamirTesnjak/react-file-system-explorer/blob/main/Screenshot%202024-06-16%20at%2017-28-03%20React%20App.png)
+![sreenshot](https://github.com/DamirTesnjak/react-file-system-explorer/blob/main/Screenshot%202024-06-26%20at%2018-18-16%20React%20App.png)
