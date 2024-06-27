@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { JSX } from "react";
 import PropTypes from "prop-types";
 import {
   Button,
@@ -12,8 +12,9 @@ import {
 import { removeFile, deleteFolder } from "../../data/methods";
 import { resetedValues } from '../../constants/constants';
 import getItemNameFromPath from '../../utils/getItemNameFromPath';
+import { DeleteDialogProps } from "../../types/DeleteDialogProps";
 
-function DeleteDialog(props) {
+function DeleteDialog(props: DeleteDialogProps): JSX.Element {
   const { 
     open,
     setOpen,

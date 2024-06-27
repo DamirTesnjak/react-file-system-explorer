@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
+import React, { useEffect, useState, JSX } from "react";
 import { Button, Box } from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -17,8 +16,9 @@ import DeleteDialog from "../Dialogs/DeleteDialog";
 import ErrorDialog from "../Dialogs/ErrorDialog";
 import CreateFolderDialog from "../Dialogs/CreateFolderDialog";
 import WindowMoveTo from "./WindowMoveTo";
+import { WindowToolbarProps } from "../../types/WindowToolbarProps";
 
-function WindowToolbar(props) {
+function WindowToolbar(props: WindowToolbarProps) {
   const {
     currentPath,
     currentPosition,
@@ -32,9 +32,9 @@ function WindowToolbar(props) {
     setState,
   } = props;
 
-  const [openDeleteDialog, setOpenDeleteDialog] = useState();
-  const [openCreateFolderDialog, setOpenCreateFolderDialog] = useState();
-  const [openMoveToDialog, setOpenMoveToDialog] = useState();
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [openCreateFolderDialog, setOpenCreateFolderDialog] = useState(false);
+  const [openMoveToDialog, setOpenMoveToDialog] = useState(false);
 
   const parentPath = () => {
     const currentPathArray = currentPath?.split("/");
@@ -133,7 +133,7 @@ function WindowToolbar(props) {
     },
   ];
 
-  const handleOnClick = (button) => {
+  const handleOnClick = (button: any) => {
     setState((prevState) => ({
       ...prevState,
       ...button.stateVar,
@@ -218,7 +218,7 @@ function WindowToolbar(props) {
           setState={setState}
         />
       )}
-      {error?.code?.length > 0 && (
+      {error && error.code?.length > 0 && (
         <ErrorDialog
           open={error?.code?.length > 0}
           error={error}
@@ -242,22 +242,3 @@ function WindowToolbar(props) {
 }
 
 export default WindowToolbar;
-
-WindowToolbar.propTypes = {
-  currentPath: PropTypes.string.isRequired,
-  currentPosition: PropTypes.number.isRequired,
-  visitedPaths: PropTypes.arrayOf(PropTypes.string).isRequired,
-  selectedItem: PropTypes.shape({
-    path: PropTypes.string,
-  }).isRequired,
-  selectedItemFile: PropTypes.shape({
-    path: PropTypes.string,
-  }).isRequired,
-  selectedFolder: PropTypes.string.isRequired,
-  itemType: PropTypes.string.isRequired,
-  action: PropTypes.string.isRequired,
-  error: PropTypes.shape({
-    code: PropTypes.string,
-  }).isRequired,
-  setState: PropTypes.func.isRequired,
-};

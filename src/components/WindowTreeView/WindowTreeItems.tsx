@@ -1,5 +1,9 @@
-import React, { useState, useEffect, useCallback } from "react";
-import PropTypes from "prop-types";
+import React, { 
+  useState,
+  useEffect,
+  useCallback,
+  JSX,
+} from "react";
 import { TreeItem } from "@mui/x-tree-view/TreeItem";
 import { uniq } from "lodash";
 import { Box } from "@mui/material";
@@ -7,8 +11,10 @@ import { Box } from "@mui/material";
 import { getFolder, openFile } from "../../data/methods";
 import { COMPUTER } from "../../constants/constants";
 import displayIcon from "../../utils/displayIcons";
+import { WindowTreeItemsArgs } from "../../types/WindowTreeItemsArgs";
+import { WindowTreeItemsProps } from "../../types/WindowTreeItemsProps";
 
-const windowTreeItems = (args) => {
+const windowTreeItems = (args: WindowTreeItemsArgs): JSX.Element[] | undefined => {
   const {
     folderData,
     itemId,
@@ -47,7 +53,6 @@ const windowTreeItems = (args) => {
             itemId={itemList.path}
             name={itemList.name}
             path={itemList.path}
-            itemCount={itemList.itemCount}
             setState={setState}
             permission={itemList.permission}
             expandedItems={expandedItems}
@@ -58,9 +63,10 @@ const windowTreeItems = (args) => {
       return items;
     }
   }
+  return undefined;
 };
 
-function WindowTreeItems(props) {
+function WindowTreeItems(props: WindowTreeItemsProps) {
   const {
     itemId,
     treeViewData,
@@ -154,38 +160,3 @@ function WindowTreeItems(props) {
 }
 
 export default WindowTreeItems;
-
-WindowTreeItems.propTypes = {
-  itemId: PropTypes.string.isRequired,
-  treeViewData: PropTypes.arrayOf({
-    type: PropTypes.string,
-    name: PropTypes.string,
-    parentPath: PropTypes.string,
-    path: PropTypes.string,
-    size: PropTypes.string,
-    itemCounts: PropTypes.string,
-    permission: PropTypes.bool,
-    filesystem: PropTypes.string,
-    blocks: PropTypes.number,
-    used: PropTypes.number,
-    available: PropTypes.number,
-    capacity: PropTypes.number,
-    mounted: PropTypes.number,
-  }),
-  isFolder: PropTypes.bool,
-  isFile: PropTypes.bool,
-  isDisk: PropTypes.bool,
-  permission: PropTypes.bool,
-  name: PropTypes.string.isRequired,
-  path: PropTypes.string.isRequired,
-  visitedPaths: PropTypes.arrayOf(PropTypes.string).isRequired,
-  expandedItems: PropTypes.arrayOf(PropTypes.string).isRequired,
-  setState: PropTypes.func.isRequired,
-};
-
-WindowTreeItems.defaultProps = {
-  isFolder: false,
-  isFile: false,
-  isDisk: false,
-  dialogOpened: false,
-};

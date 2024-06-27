@@ -1,5 +1,4 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React, { useState, JSX } from "react";
 import {
   Grid,
   Paper,
@@ -8,6 +7,7 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
+  GridTypeMap,
 } from "@mui/material";
 import ContentCopy from "@mui/icons-material/ContentCopy";
 import ContentPasteIcon from "@mui/icons-material/ContentPaste";
@@ -16,8 +16,10 @@ import ClearIcon from "@mui/icons-material/Clear";
 import { openFile } from "../../data/methods";
 import { COMPUTER } from "../../constants/constants";
 import displayIcon from "../../utils/displayIcons";
+import { IconCardProps } from "../../types/IconCardProps";
+import { ContextMenuType } from "../../types/ContextMenuType";
 
-function IconCard(props) {
+function IconCard(props: IconCardProps): JSX.Element {
   const {
     isFolder,
     isFile,
@@ -35,7 +37,7 @@ function IconCard(props) {
     currentPath,
   } = props;
 
-  const [contextMenu, setContextMenu] = React.useState(null);
+  const [contextMenu, setContextMenu] = useState<ContextMenuType>(null);
 
   const contextMenuItems = [
     {
@@ -80,7 +82,7 @@ function IconCard(props) {
     setContextMenu(null);
   };
 
-  const handleContextMenu = (event) => {
+  const handleContextMenu = (event: { preventDefault: () => void; clientX: number; clientY: number; }) => {
     event.preventDefault();
     if (contextMenu === null) {
       if (!isFolder) {
@@ -124,9 +126,9 @@ function IconCard(props) {
     } else {
       setState((prevState) => ({
         ...prevState,
-        visitedPaths: [...visitedPaths, path],
+        visitedPaths: [...visitedPaths!, path],
         currentPath: path,
-        currentPosition: visitedPaths.length,
+        currentPosition: visitedPaths?.length || 0,
         selectedItem: {
           path: path,
         },
@@ -174,7 +176,7 @@ function IconCard(props) {
         cursor: "pointer",
         visibility: !name ? "hidden" : "visible",
       }}
-      onClick={!contextMenu && !(!permission && currentPath !== COMPUTER) ? onClick : null}
+      onClick={!contextMenu && !(!permission && currentPath !== COMPUTER) ? onClick : ()=> {}}
       onMouseLeave={onMouseLeave}
     >
       <Paper
@@ -224,9 +226,7 @@ function IconCard(props) {
           onClose={handleClose}
           anchorReference="anchorPosition"
           anchorPosition={
-            contextMenu !== null
-              ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
-              : undefined
+            contextMenu ? { top: contextMenu.mouseY, left: contextMenu.mouseX }: undefined
           }
         >
           {displayContexMenuItems()}
@@ -237,24 +237,3 @@ function IconCard(props) {
 }
 
 export default IconCard;
-
-IconCard.propTypes = {
-  currentPath: PropTypes.string.isRequired,
-  visitedPaths: PropTypes.arrayOf(PropTypes.string).isRequired,
-  selectedItem: PropTypes.shape({
-    path: PropTypes.string,
-  }).isRequired,
-  selectedItemFile: PropTypes.shape({
-    path: PropTypes.string,
-  }).isRequired,
-  isFolder: PropTypes.bool.isRequired,
-  isDisk: PropTypes.bool.isRequired,
-  name: PropTypes.string.isRequired,
-  itemId: PropTypes.string.isRequired,
-  onClick: PropTypes.func.isRequired,
-  onMouseLeave: PropTypes.func.isRequired,
-  setState: PropTypes.func.isRequired,
-  path: PropTypes.string.isRequired,
-  permission: PropTypes.bool.isRequired,
-  isFile: PropTypes.bool.isRequired,
-};

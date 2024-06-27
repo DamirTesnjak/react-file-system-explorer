@@ -6,16 +6,17 @@ import {
   DialogActions,
   DialogContent,
 } from "@mui/material";
-import PropTypes from "prop-types";
 
 import WindowTreeView from "../WindowTreeView/WindowTreeView";
 import WindowTitle from "../WindowTitle/WindowTitle";
 import { moveFile, moveFolder } from "../../data/methods";
 import { initialValues, resetedValues } from '../../constants/constants';
 import getItemNameFromPath from '../../utils/getItemNameFromPath';
+import { WindowMoveToProps } from '../../types/WindowMoveTo';
+import { StateApp } from '../../types/StateApp';
 
 
-function WindowMoveTo(props) {
+function WindowMoveTo(props: WindowMoveToProps) {
   const { 
     open,
     setOpen,
@@ -26,7 +27,7 @@ function WindowMoveTo(props) {
     setState,
   } = props;
 
-  const [stateDialog, setStateDialog] = useState({
+  const [stateDialog, setStateDialog] = useState<StateApp>({
     ...initialValues,
     oldPath: selectedItem?.path || selectedItemFile?.path,
   });
@@ -97,7 +98,7 @@ function WindowMoveTo(props) {
               expandedItems={expandedItems}
               visitedPaths={visitedPaths}
               disksData={diskData}
-              setState={setStateDialog}
+              setState={(s) => setStateDialog(s)}
             />
           </Grid>
         </Grid>
@@ -111,17 +112,3 @@ function WindowMoveTo(props) {
 }
 
 export default WindowMoveTo;
-
-WindowMoveTo.propTypes = {
-  open: PropTypes.bool.isRequired,
-  setOpen: PropTypes.func.isRequired,
-  setState: PropTypes.func.isRequired,
-  selectedItem: PropTypes.shape({
-    path: PropTypes.string,
-  }),
-  selectedItemFile: PropTypes.shape({
-    path: PropTypes.string,
-  }),
-  selectedFolder: PropTypes.string,
-  itemType: PropTypes.string,
-};

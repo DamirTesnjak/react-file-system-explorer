@@ -1,29 +1,34 @@
 import React, {
-  useState, useEffect, useCallback,
+  JSX,
+  useState,
+  useEffect,
+  useCallback,
 } from 'react';
 
 import { initializeFileTypeIcons } from "@fluentui/react-file-type-icons";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeOptions } from '@mui/material';
 
 import Window from './components/Window/Window';
 import { initialValues } from './constants/constants';
 import { getUserHomeFolder } from "./data/methods";
+import { StateApp } from './types/StateApp';
 import style from './style/style'
 
 import './App.css';
 
 
-const theme = createTheme(style);
+const theme = createTheme(style as ThemeOptions);
 
 // used to initialite icons to be displayed based on type of an item
 initializeFileTypeIcons();
 
-function App() {
+function App(): JSX.Element {
 
   // initial state of variables that control
   // the content of folders to be displayed during
   // navigation
-  const [state, setState] = useState(initialValues);
+  const [state, setState] = useState<StateApp>(initialValues);
   const {
     currentPath,
     selectedItemFile,
@@ -44,7 +49,6 @@ function App() {
           ...state,
           currentPath: homeFolder,
           visitedPaths: [...visitedPaths, homeFolder],
-          numOfItemsFolder: 1,
         })
       });
   }, [state]);
@@ -56,7 +60,7 @@ function App() {
   }, [selectedItem?.path, selectedItemFile?.path, currentPath, getHomeDir])
 
   useEffect(() => {
-    function handleClickIconCard(e) {
+    function handleClickIconCard(e: MouseEvent) {
       if (e.target === document.getElementById("contentWindow") || e.target === document.getElementById("contentWindowParent")) {
         setState({
           ...state,
@@ -64,8 +68,6 @@ function App() {
           selectedItem: null,
           action: "",
           itemType: null,
-          // folderData: [],
-          moveToPath: null,
           doubleClick: 0,
         })
       }

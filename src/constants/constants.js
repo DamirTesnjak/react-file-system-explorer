@@ -1,5 +1,7 @@
 const initialValues = {
-  currentPath: '',        // holds the current path of a visited folder
+  oldPath: '',
+  currentPath: '',
+  itemId: '',        // holds the current path of a visited folder
   visitedPaths: [],       // holds zhe array of visited paths during the session
   currentPosition: 0,     // used as index in "visitedPaths" to get prevous visited path when navigating back in "history"
   expandedItems: [],

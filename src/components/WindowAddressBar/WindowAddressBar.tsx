@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, JSX } from "react";
 import PropTypes from "prop-types";
 import { Autocomplete, Box, Button, TextField } from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { uniq } from "lodash";
+import { WindowAddressBarProps } from "../../types/WindowAddressBarProps";
 
-function WindowAddressBar(props) {
+function WindowAddressBar(props: WindowAddressBarProps): JSX.Element {
   const { currentPath, visitedPaths, setState } = props;
-  const [selectedOption, selectOption] = useState(currentPath);
+  const [selectedOption, selectOption] = useState<string | null>(currentPath);
 
   const selectPath = () => {
     setState((prevState) => ({

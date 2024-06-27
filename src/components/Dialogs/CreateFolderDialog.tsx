@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import PropTypes from "prop-types";
+import React, { useState, JSX } from "react";
 import {
   Button,
   Dialog,
@@ -12,8 +11,9 @@ import {
 
 import { createFolder } from "../../data/methods";
 import { resetedValues } from '../../constants/constants';
+import { CreateFolderDialogProps } from "../../types/CreateFolderDialogProps";
 
-function CreateFolderDialog(props) {
+function CreateFolderDialog(props: CreateFolderDialogProps): JSX.Element {
   const {
     open,
     setOpen,
@@ -89,10 +89,3 @@ function CreateFolderDialog(props) {
 }
 
 export default CreateFolderDialog;
-
-CreateFolderDialog.propTypes = {
-  open: PropTypes.bool.isRequired,
-  setOpen: PropTypes.func.isRequired,
-  currentPath: PropTypes.string.isRequired,
-  setState: PropTypes.func.isRequired,
-};

@@ -1,5 +1,4 @@
-import * as React from "react";
-import PropTypes from "prop-types";
+import React, { JSX } from "react";
 import {
   Button,
   Dialog,
@@ -8,8 +7,9 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
+import { ErrorDialogProps } from "../../types/ErrorDialogProps";
 
-function ErrorDialog(props) {
+function ErrorDialog(props: ErrorDialogProps): JSX.Element {
   const { open, error, setState } = props;
 
   const handleClose = () => {
@@ -53,13 +53,3 @@ function ErrorDialog(props) {
 }
 
 export default ErrorDialog;
-
-ErrorDialog.propTypes = {
-  open: PropTypes.bool.isRequired,
-  error: PropTypes.shape({
-    code: PropTypes.string,
-    message: PropTypes.string,
-    name: PropTypes.string,
-  }).isRequired,
-  setState: PropTypes.func.isRequired,
-}

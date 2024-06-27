@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
+import React, { useState, useEffect, JSX } from "react";
 import Box from "@mui/material/Box";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import IndeterminateCheckBoxIcon from "@mui/icons-material/IndeterminateCheckBox";
@@ -8,8 +7,9 @@ import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
 import { getHardDrives } from "../../data/methods";
 import { COMPUTER } from "../../constants/constants";
 import WindowTreeItems from "./WindowTreeItems";
+import { WindowTreeViewProps } from "../../types/WindowTreeViewProps";
 
-function WindowTreeView(props) {
+function WindowTreeView(props: WindowTreeViewProps): JSX.Element {
   const {
     dialogOpened, 
     expandedItems,
@@ -81,22 +81,3 @@ function WindowTreeView(props) {
 }
 
 export default WindowTreeView;
-
-WindowTreeView.propTypes = {
-  expandedItems: PropTypes.arrayOf(PropTypes.string).isRequired,
-  visitedPaths: PropTypes.arrayOf(PropTypes.string).isRequired,
-  disksData: PropTypes.arrayOf({
-    permission: PropTypes.bool,
-    filesystem: PropTypes.string,
-    blocks: PropTypes.number,
-    used: PropTypes.number,
-    available: PropTypes.number,
-    capacity: PropTypes.number,
-    mounted: PropTypes.number,
-  }).isRequired,
-  setState: PropTypes.func.isRequired,
-}
-
-WindowTreeItems.defaultProps = {
-  dialogOpened: false,
-}

@@ -1,8 +1,8 @@
 import React from "react";
-import PropTypes from 'prop-types';
 import { Box } from "@mui/material";
+import { WindowTitleProps } from "../../types/WindowTitleProps";
 
-function WindowTitle(props) {
+function WindowTitle(props: WindowTitleProps) {
   const { currentPath } = props;
 
   return (
@@ -23,6 +23,3 @@ function WindowTitle(props) {
 }
 
 export default WindowTitle;
-WindowTitle.propTypes = {
-  currentPath: PropTypes.string.isRequired,
-}

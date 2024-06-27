@@ -1,13 +1,14 @@
-import React, { useEffect, useCallback } from "react";
-import PropTypes from "prop-types";
+import React, { useEffect, useCallback, JSX } from "react";
 import { Grid, Box } from "@mui/material";
 
 import IconCard from "./IconCard";
 import { openFile } from "../../data/methods";
 import { COMPUTER } from "../../constants/constants";
 import { getFolder, getHardDrives, } from "../../data/methods";
+import { WindowContentIconViewProps } from "../../types/WindowContentIconViewProps";
+import { Path } from "../../types/Path";
 
-const WindowContentIconView = (props) => {
+const WindowContentIconView = (props: WindowContentIconViewProps): JSX.Element => {
   const {
     currentPath,
     folderData,
@@ -21,8 +22,8 @@ const WindowContentIconView = (props) => {
     setState,
   } = props;
 
-  const openSelectedFile = (path) => {
-    openFile({ path: path }).then((res) => {
+  const openSelectedFile = (path: Path["path"]) => {
+    openFile({ path }).then((res) => {
       console.log(res);
     });
   };
@@ -124,8 +125,8 @@ const WindowContentIconView = (props) => {
                 openSelectedFile(itemList.path);
               } else {
                 setState((prevState) => ({
-                  ...prevState,
-                  ...newState,
+                  ...prevState!,
+                  ...newState!,
                 }));
               }
             }
@@ -141,7 +142,6 @@ const WindowContentIconView = (props) => {
               name={itemList.name}
               path={itemList.path}
               permission={itemList.permission}
-              itemCount={itemList.itemCount}
               onClick={() => onClick()}
               onMouseLeave={onMouseLeave}
               setState={setState}
@@ -245,37 +245,3 @@ const WindowContentIconView = (props) => {
 };
 
 export default WindowContentIconView;
-
-WindowContentIconView.propTypes = {
-  currentPath: PropTypes.string.isRequired,
-  visitedPaths: PropTypes.arrayOf(PropTypes.string).isRequired,
-  selectedItem: PropTypes.shape({
-    path: PropTypes.string,
-  }).isRequired,
-  selectedItemFile: PropTypes.string.isRequired,
-  selectedFolder: PropTypes.string.isRequired,
-  doubleClick: PropTypes.number.isRequired,
-  folderData: PropTypes.arrayOf(
-    PropTypes.objectOf({
-      isFile: PropTypes.bool,
-      isFolder: PropTypes.bool,
-      name: PropTypes.string,
-      parentPath: PropTypes.string,
-      path: PropTypes.string,
-      size: PropTypes.string,
-      itemCounts: PropTypes.string,
-      permission: PropTypes.bool,
-    })
-  ).isRequired,
-  disksData: PropTypes.arrayOf({
-    permission: PropTypes.bool,
-    filesystem: PropTypes.string,
-    blocks: PropTypes.number,
-    used: PropTypes.number,
-    available: PropTypes.number,
-    capacity: PropTypes.number,
-    mounted: PropTypes.number,
-  }).isRequired,
-  action: PropTypes.string.isRequired,
-  setState: PropTypes.func.isRequired,
-};
