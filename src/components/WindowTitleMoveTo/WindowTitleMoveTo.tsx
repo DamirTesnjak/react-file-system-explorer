@@ -3,7 +3,7 @@ import { shallowEqual, useSelector } from 'react-redux'
 import { StateApp } from "../../types/StateApp";
 
 function WindowTitle() {
-  const currentPath = useSelector((state: { appState: StateApp }) => state.appState.currentPath, shallowEqual);
+  const currentPath = useSelector((state: { moveItemState: StateApp }) => state.moveItemState.currentPath, shallowEqual);
 
   return (
     <Box
@@ -17,7 +17,7 @@ function WindowTitle() {
         paddingLeft: "20px",
       }}
     >
-      { currentPath }
+      { `Move item to: ${currentPath}` }
     </Box>
   );
 }

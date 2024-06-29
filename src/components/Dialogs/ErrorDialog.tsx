@@ -1,4 +1,4 @@
-import React, { JSX } from "react";
+import { JSX } from "react";
 import {
   Button,
   Dialog,
@@ -7,14 +7,19 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
+import { useSelector, useDispatch, shallowEqual } from 'react-redux'
+
 import { ErrorDialogProps } from "../../types/ErrorDialogProps";
+import { setState } from "../../app/appSlice";
+import { StateApp } from "../../types/StateApp";
 
 function ErrorDialog(props: ErrorDialogProps): JSX.Element {
-  const { open, error, setState } = props;
+  const { open } = props;
+  const error = useSelector((state: { appState: StateApp }) => state.appState.error, shallowEqual);
+  const dispatch = useDispatch();
 
   const handleClose = () => {
-    setState((prevState) => ({
-      ...prevState,
+    dispatch(setState({
       error: null,
     }));
   };

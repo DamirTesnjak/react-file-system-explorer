@@ -1,22 +1,20 @@
-import React, {
+import {
   JSX,
-  useState,
   useEffect,
   useCallback,
 } from 'react';
+import { useSelector, useDispatch, shallowEqual } from 'react-redux'
 
 import { initializeFileTypeIcons } from "@fluentui/react-file-type-icons";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { ThemeOptions } from '@mui/material';
 
 import Window from './components/Window/Window';
-import { initialValues } from './constants/constants';
 import { getUserHomeFolder } from "./data/methods";
+import { setState } from "./app/appSlice";
+import style from './style/style';
 import { StateApp } from './types/StateApp';
-import style from './style/style'
-
 import './App.css';
-
 
 const theme = createTheme(style as ThemeOptions);
 
@@ -24,15 +22,17 @@ const theme = createTheme(style as ThemeOptions);
 initializeFileTypeIcons();
 
 function App(): JSX.Element {
+  const state = useSelector((state: { appState: StateApp }) => ({
+    currentPath: state.appState.currentPath,
+    selectedItemFile: state.appState.selectedItemFile,
+    selectedItem: state.appState.selectedItem,
+    visitedPaths: state.appState.visitedPaths,
+  }) , shallowEqual);
 
-  // initial state of variables that control
-  // the content of folders to be displayed during
-  // navigation
-  const [state, setState] = useState<StateApp>(initialValues);
+  const dispatch = useDispatch()
+
   const {
     currentPath,
-    selectedItemFile,
-    selectedItem,
     visitedPaths,
   } = state;
 
@@ -45,31 +45,29 @@ function App(): JSX.Element {
           .homeFolder
           .replaceAll('\\', '/');
 
-        setState({
-          ...state,
+        dispatch(setState({
           currentPath: homeFolder,
           visitedPaths: [...visitedPaths, homeFolder],
-        })
+        }))
       });
-  }, [state]);
+  }, []);
 
   useEffect(() => {
     if (currentPath?.length === 0) {
       getHomeDir();
     }
-  }, [selectedItem?.path, selectedItemFile?.path, currentPath, getHomeDir])
+  }, [currentPath, getHomeDir])
 
   useEffect(() => {
     function handleClickIconCard(e: MouseEvent) {
       if (e.target === document.getElementById("contentWindow") || e.target === document.getElementById("contentWindowParent")) {
-        setState({
-          ...state,
+        dispatch(setState({
           selectedItemFile: null,
           selectedItem: null,
           action: "",
           itemType: null,
           doubleClick: 0,
-        })
+        }))
       }
     }
     if (state.selectedItem?.path || state.selectedItemFile?.path) {
@@ -80,10 +78,7 @@ function App(): JSX.Element {
 
   return (
     <ThemeProvider theme={theme}>
-      <Window
-        setState={(s) => setState(s)}
-        state={state}
-      />
+      <Window />
     </ThemeProvider>
   );
 }

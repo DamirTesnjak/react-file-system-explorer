@@ -8,6 +8,7 @@ import ClearIcon from "@mui/icons-material/Clear";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 import DriveFileMoveIcon from "@mui/icons-material/DriveFileMove";
+import { useSelector, useDispatch, shallowEqual } from 'react-redux'
 
 import { copyFile, copyFolder } from "../../data/methods";
 import { resetedValues, ACTIONS, COMPUTER } from "../../constants/constants";
@@ -16,9 +17,23 @@ import DeleteDialog from "../Dialogs/DeleteDialog";
 import ErrorDialog from "../Dialogs/ErrorDialog";
 import CreateFolderDialog from "../Dialogs/CreateFolderDialog";
 import WindowMoveTo from "./WindowMoveTo";
-import { WindowToolbarProps } from "../../types/WindowToolbarProps";
+import { setState } from "../../app/appSlice";
+import { StateApp } from "../../types/StateApp";
 
-function WindowToolbar(props: WindowToolbarProps) {
+function WindowToolbar() {
+const state = useSelector((state: { appState: StateApp }) => ({
+  dialogOpened: state.appState.dialogOpened,
+  currentPath: state.appState.currentPath,
+  currentPosition: state.appState.currentPosition,
+  visitedPaths: state.appState.visitedPaths,
+  action: state.appState.action,
+  error: state.appState.error,
+  itemType: state.appState.itemType,
+  selectedItem: state.appState.selectedItem,
+  selectedItemFile: state.appState.selectedItemFile,
+  selectedFolder: state.appState.selectedFolder,
+  }), shallowEqual);
+  const dispatch = useDispatch();
   const {
     currentPath,
     currentPosition,
@@ -28,13 +43,12 @@ function WindowToolbar(props: WindowToolbarProps) {
     itemType,
     selectedItem,
     selectedItemFile,
-    selectedFolder, 
-    setState,
-  } = props;
+    selectedFolder,
+    dialogOpened, 
+  } = state;
 
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openCreateFolderDialog, setOpenCreateFolderDialog] = useState(false);
-  const [openMoveToDialog, setOpenMoveToDialog] = useState(false);
 
   const parentPath = () => {
     const currentPathArray = currentPath?.split("/");
@@ -134,8 +148,7 @@ function WindowToolbar(props: WindowToolbarProps) {
   ];
 
   const handleOnClick = (button: any) => {
-    setState((prevState) => ({
-      ...prevState,
+    dispatch(setState({
       ...button.stateVar,
     }))
   }
@@ -167,14 +180,12 @@ function WindowToolbar(props: WindowToolbarProps) {
         newPath: `${currentPath}/${itemName}`,
       })
         .then(() => {
-            setState((prevState) => ({
-              ...prevState,
+          dispatch(setState({
               ...resetedValues,
             }));
         })
         .catch((error) => {
-          setState((prevState) => ({
-            ...prevState,
+          dispatch(setState({
             error,
             action: "",
           }));
@@ -187,7 +198,9 @@ function WindowToolbar(props: WindowToolbarProps) {
       setOpenCreateFolderDialog(true);
     }
     if (action === ACTIONS.moveTo) {
-      setOpenMoveToDialog(true);
+      dispatch(setState({
+        dialogOpened: true,
+      }));
     }
   }, [
     setState,
@@ -204,37 +217,21 @@ function WindowToolbar(props: WindowToolbarProps) {
         <DeleteDialog
           open={openDeleteDialog}
           setOpen={setOpenDeleteDialog}
-          itemType={itemType}
-          selectedItem={selectedItem}
-          selectedItemFile={selectedItemFile}
-          setState={setState}
         />
       )}
       {openCreateFolderDialog && (
         <CreateFolderDialog
           open={openCreateFolderDialog}
           setOpen={setOpenCreateFolderDialog}
-          currentPath={currentPath}
-          setState={setState}
         />
       )}
       {error && error.code?.length > 0 && (
         <ErrorDialog
           open={error?.code?.length > 0}
-          error={error}
-          setState={setState}
         />
       )}
-      {openMoveToDialog && (
-        <WindowMoveTo
-          open={openMoveToDialog}
-          setOpen={setOpenMoveToDialog}
-          itemType={itemType}
-          selectedItem={selectedItem}
-          selectedItemFile={selectedItemFile}
-          selectedFolder={selectedFolder}
-          setState={setState}
-        />
+      {dialogOpened && (
+        <WindowMoveTo />
       )}
       {displayButtons()}
     </Box>

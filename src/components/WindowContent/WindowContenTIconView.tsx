@@ -1,26 +1,40 @@
-import React, { useEffect, useCallback, JSX } from "react";
+import { useEffect, useCallback, JSX, useMemo } from "react";
 import { Grid, Box } from "@mui/material";
+import { useSelector, useDispatch, shallowEqual } from 'react-redux'
 
 import IconCard from "./IconCard";
 import { openFile } from "../../data/methods";
 import { COMPUTER } from "../../constants/constants";
 import { getFolder, getHardDrives, } from "../../data/methods";
-import { WindowContentIconViewProps } from "../../types/WindowContentIconViewProps";
 import { Path } from "../../types/Path";
+import { setState } from "../../app/appSlice";
+import { StateApp } from "../../types/StateApp";
 
-const WindowContentIconView = (props: WindowContentIconViewProps): JSX.Element => {
+const WindowContentIconView = (): JSX.Element => {
+  const state = useSelector((state: { appState: StateApp }) => ({
+    folderData: state.appState.folderData,
+    diskData: state.appState.diskData,
+    doubleClick: state.appState.doubleClick,
+    selectedFolder: state.appState.selectedFolder,
+    visitedPaths: state.appState.visitedPaths,
+    selectedItem: state.appState.selectedItem,
+    selectedItemFile: state.appState.selectedItemFile,
+    currentPath: state.appState.currentPath,
+    action: state.appState.action,
+  }), shallowEqual);
+  const dispatch = useDispatch();
+
   const {
-    currentPath,
     folderData,
-    disksData,
+    diskData,
     doubleClick,
-    visitedPaths,
     selectedFolder,
+    visitedPaths,
     selectedItem,
     selectedItemFile,
+    currentPath,
     action,
-    setState,
-  } = props;
+  } = state;
 
   const openSelectedFile = (path: Path["path"]) => {
     openFile({ path }).then((res) => {
@@ -29,28 +43,25 @@ const WindowContentIconView = (props: WindowContentIconViewProps): JSX.Element =
   };
 
   const onMouseLeave = () => {
-    setState((prevState) => ({
-      ...prevState,
+    dispatch(setState({
       doubleClick: 0,
     }));
   };
 
   const displayItemsAsIcons = () => {
     if (currentPath === COMPUTER) {
-      if (disksData && disksData.length > 0) {
-        const items = disksData.map((diskItem) => {
+      if (diskData && diskData.length > 0) {
+        const items = diskData.map((diskItem) => {
           const newState = {
             visitedPaths: [...visitedPaths, diskItem.mounted + "/"],
             currentPath: diskItem.mounted + "/",
             currentPosition: visitedPaths.length,
             folderData: [],
-            numOfItemsFolder: 1,
           };
 
           const onClick = () => {
             if (doubleClick === 0) {
-              setState((prevState) => ({
-                ...prevState,
+              dispatch(setState({
                 selectedItem: {
                   path: diskItem.mounted + "/",
                 },
@@ -58,8 +69,7 @@ const WindowContentIconView = (props: WindowContentIconViewProps): JSX.Element =
               }));
             }
             if (doubleClick >= 1) {
-              setState((prevState) => ({
-                ...prevState,
+              dispatch(setState({
                 ...newState,
               }));
             }
@@ -74,7 +84,6 @@ const WindowContentIconView = (props: WindowContentIconViewProps): JSX.Element =
               path={diskItem.mounted + "/"}
               onClick={() => onClick()}
               onMouseLeave={onMouseLeave}
-              setState={setState}
               permission={diskItem.permission}
             />
           );
@@ -91,14 +100,12 @@ const WindowContentIconView = (props: WindowContentIconViewProps): JSX.Element =
             currentPosition: visitedPaths.length,
             doubleClick: 2,
             folderData: [],
-            numOfItemsFolder: 1,
           };
 
           const onClick = () => {
             if (doubleClick === 0) {
               if (itemList.isFile) {
-                setState((prevState) => ({
-                  ...prevState,
+                dispatch(setState({
                   selectedItemFile: {
                     path: itemList.path,
                   },
@@ -109,8 +116,7 @@ const WindowContentIconView = (props: WindowContentIconViewProps): JSX.Element =
                 }));
               }
               if (itemList.isFolder) {
-                setState((prevState) => ({
-                  ...prevState,
+                dispatch(setState({
                   selectedItem: {
                     path: itemList.path,
                   },
@@ -124,9 +130,8 @@ const WindowContentIconView = (props: WindowContentIconViewProps): JSX.Element =
               if (itemList.isFile) {
                 openSelectedFile(itemList.path);
               } else {
-                setState((prevState) => ({
-                  ...prevState!,
-                  ...newState!,
+                dispatch(setState({
+                  ...newState
                 }));
               }
             }
@@ -144,11 +149,6 @@ const WindowContentIconView = (props: WindowContentIconViewProps): JSX.Element =
               permission={itemList.permission}
               onClick={() => onClick()}
               onMouseLeave={onMouseLeave}
-              setState={setState}
-              visitedPaths={visitedPaths}
-              selectedItem={selectedItem}
-              selectedItemFile={selectedItemFile}
-              currentPath={currentPath}
             />
           );
         });
@@ -161,8 +161,7 @@ const WindowContentIconView = (props: WindowContentIconViewProps): JSX.Element =
   const getFolderContentCallBack = useCallback(() => {
     getFolder({ folderPath: currentPath })
       .then((res) => {
-        setState((prevState) => ({
-          ...prevState,
+        dispatch(setState({
           selectedItem: action === "copy" ? selectedItem : null,
           selectedItemFile: action === "copy" ? selectedItemFile : null,
           doubleClick: 0,
@@ -177,25 +176,22 @@ const WindowContentIconView = (props: WindowContentIconViewProps): JSX.Element =
           numOfItemsFolder: 1,
         }));
       }).catch((error) => {
-        setState((prevState) => ({
-          ...prevState,
+        dispatch(setState({
           error,
           action: "",
         }));
       });
-  }, [setState]);
+  }, [currentPath]);
 
   const getHardDrivesFolderContent = () => {
     getHardDrives()
       .then((res) => {
-        setState((prevState) => ({
-          ...prevState,
+        dispatch(setState({
           diskData: res.data.hardDrives,
         }));
       })
       .catch((error) => {
-        setState((prevState) => ({
-          ...prevState,
+        dispatch(setState({
           error,
           action: "",
         }));
@@ -203,13 +199,13 @@ const WindowContentIconView = (props: WindowContentIconViewProps): JSX.Element =
   };
 
   useEffect(() => {
-    if (disksData.length === 0 && currentPath === COMPUTER) {
+    if (diskData.length === 0 && currentPath === COMPUTER) {
       getHardDrivesFolderContent();
     }
   }, [folderData.length, currentPath]);
 
   useEffect(() => {
-    if (folderData.length === 0 || (selectedItem && doubleClick === 2 && currentPath !== COMPUTER)) {
+    if ((folderData.length === 0 && currentPath && currentPath.length > 0) || (selectedItem && doubleClick === 2 && currentPath !== COMPUTER)) {
       getFolderContentCallBack();
     }
   }, [getFolderContentCallBack, currentPath, folderData.length]);

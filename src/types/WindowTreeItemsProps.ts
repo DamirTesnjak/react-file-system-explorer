@@ -11,9 +11,6 @@ export interface WindowTreeItemsProps {
     isDisk?: boolean;
     name: string;
     path: Path["path"];
-    setState: (a: (b: StateApp) => StateApp) => void;
     permission?: boolean;
-    expandedItems: StateApp["expandedItems"];
-    visitedPaths: StateApp["visitedPaths"];
     onClick?: () => void;
 }

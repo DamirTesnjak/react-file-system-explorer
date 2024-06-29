@@ -7,5 +7,4 @@ export interface WindowMoveToProps {
     selectedItem: StateApp["selectedItem"];
     selectedItemFile: StateApp["selectedItemFile"];
     selectedFolder: StateApp["selectedFolder"];
-    setState: (a: (b: StateApp) => StateApp) => void;
 }

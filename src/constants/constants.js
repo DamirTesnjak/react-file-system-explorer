@@ -1,4 +1,5 @@
 const initialValues = {
+  dialogOpened: false,
   oldPath: '',
   currentPath: '',
   itemId: '',        // holds the current path of a visited folder
@@ -17,6 +18,7 @@ const initialValues = {
 };
 
 const resetedValues = {
+  dialogOpened: false,
   selectedItemFile: null,
   selectedItem: null,
   action: "",

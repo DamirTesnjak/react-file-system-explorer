@@ -1,4 +1,4 @@
-import React, { useState, JSX } from "react";
+import { useState, JSX } from "react";
 import {
   Button,
   Dialog,
@@ -8,25 +8,28 @@ import {
   DialogTitle,
   Input,
 } from "@mui/material";
+import { useSelector, useDispatch, shallowEqual } from 'react-redux'
 
 import { createFolder } from "../../data/methods";
 import { resetedValues } from '../../constants/constants';
 import { CreateFolderDialogProps } from "../../types/CreateFolderDialogProps";
+import { setState } from "../../app/appSlice";
+import { StateApp } from "../../types/StateApp";
 
 function CreateFolderDialog(props: CreateFolderDialogProps): JSX.Element {
   const {
     open,
     setOpen,
-    currentPath,
-    setState,
   } = props;
+
+  const currentPath = useSelector((state: { appState: StateApp }) => state.appState.currentPath, shallowEqual);
+  const dispatch = useDispatch();
 
   const [folderName, setFolderName] = useState("");
 
   const handleClose = () => {
     setOpen(false);
-    setState((prevState) => ({
-      ...prevState,
+    dispatch(setState({
       action: "",
     }));
   };
@@ -38,13 +41,11 @@ function CreateFolderDialog(props: CreateFolderDialogProps): JSX.Element {
         .then(() => {
             setOpen(!open);
             setFolderName("");
-            setState((prevState) => ({
-              ...prevState,
+            dispatch(setState({
               ...resetedValues,
             }));
         }).catch((error) => {
-          setState((prevState) => ({
-            ...prevState,
+          dispatch(setState({
             error,
             action: "",
           }));

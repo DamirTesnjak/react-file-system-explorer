@@ -7,17 +7,19 @@ import { useSelector, useDispatch, shallowEqual } from 'react-redux'
 
 import { getHardDrives } from "../../data/methods";
 import { COMPUTER } from "../../constants/constants";
-import WindowTreeItems from "./WindowTreeItems";
-import { setState } from "../../app/appSlice";
+import { setStateMoveItem } from "../../app/moveItemSlice";
 import { StateApp } from "../../types/StateApp";
+import WindowTreeItemsMoveTo from "./WindowTreeItemsMoveTo";
 
-function WindowTreeView(): JSX.Element {
-  const state = useSelector((state: { appState: StateApp }) => ({
-    expandedItems: state.appState.expandedItems,
-    visitedPaths: state.appState.visitedPaths,
-    diskData: state.appState.diskData,
+function WindowTreeViewMoveTo(): JSX.Element {
+  const state = useSelector((state: { moveItemState: StateApp }) => ({
+    expandedItems: state.moveItemState.expandedItems,
+    visitedPaths: state.moveItemState.visitedPaths,
+    diskData: state.moveItemState.diskData,
   }), shallowEqual);
   const dispatch = useDispatch();
+
+  console.log('state2', state);
 
   const {
     expandedItems,
@@ -31,7 +33,7 @@ function WindowTreeView(): JSX.Element {
     getHardDrives().then((res) => {
       setFdisksDatata(res.data.hardDrives);
     }).catch((error) => {
-      dispatch(setState({
+      dispatch(setStateMoveItem({
         error,
         action: "",
       }));
@@ -52,7 +54,7 @@ function WindowTreeView(): JSX.Element {
         borderLeft: "2px solid #020102",
         borderBottom: "2px solid #808080",
         borderRight: "2px solid #808080",
-        height: `calc(100vh - 132px)`,
+        height: `calc(100vh - 170px)`,
         overflow: "scroll",
       }}
     >
@@ -63,14 +65,14 @@ function WindowTreeView(): JSX.Element {
           collapseIcon: IndeterminateCheckBoxIcon,
         }}
       >
-        <WindowTreeItems
+        <WindowTreeItemsMoveTo
           treeViewData={disksData}
           itemId={COMPUTER}
           name={COMPUTER}
           path={COMPUTER}
           isFolder
           onClick={() =>
-            dispatch(setState({
+            dispatch(setStateMoveItem({
               visitedPaths: [...visitedPaths, COMPUTER],
               currentPath: COMPUTER,
               currentPosition: visitedPaths.length,
@@ -82,4 +84,4 @@ function WindowTreeView(): JSX.Element {
   );
 }
 
-export default WindowTreeView;
+export default WindowTreeViewMoveTo;

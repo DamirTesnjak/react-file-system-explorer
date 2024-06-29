@@ -1,5 +1,4 @@
-import React, { JSX } from "react";
-import PropTypes from "prop-types";
+import { JSX } from "react";
 import {
   Button,
   Dialog,
@@ -8,28 +7,38 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
+import { useSelector, useDispatch, shallowEqual } from 'react-redux'
 
 import { removeFile, deleteFolder } from "../../data/methods";
 import { resetedValues } from '../../constants/constants';
 import getItemNameFromPath from '../../utils/getItemNameFromPath';
 import { DeleteDialogProps } from "../../types/DeleteDialogProps";
+import { setState } from "../../app/appSlice";
+import { StateApp } from "../../types/StateApp";
 
 function DeleteDialog(props: DeleteDialogProps): JSX.Element {
+  const state = useSelector((state: { appState: StateApp }) => ({
+    itemType: state.appState.itemType,
+    selectedItem: state.appState.selectedItem,
+    selectedItemFile: state.appState.selectedItemFile,
+  }), shallowEqual);
   const { 
     open,
     setOpen,
+  } = props;
+
+  const {
     itemType,
     selectedItem,
-    selectedItemFile,
-    setState
-  } = props;
+    selectedItemFile
+  } = state;
+  const dispatch = useDispatch();
   const itemName = getItemNameFromPath(selectedItemFile);
   const itemTypeString = itemType === "file" ? 'file' : 'folder';
 
   const handleClose = () => {
     setOpen(false);
-    setState((prevState) => ({
-      ...prevState,
+    dispatch(setState({
       action: "",
     }));
   };
@@ -40,13 +49,11 @@ function DeleteDialog(props: DeleteDialogProps): JSX.Element {
       path: itemType === "file" ? selectedItemFile?.path : selectedItem?.path,
     }).then(() => {
         setOpen(false);
-        setState((prevState) => ({
-          ...prevState,
+        dispatch(setState({
           ...resetedValues,
         }));
     }).catch((error) => {
-      setState((prevState) => ({
-        ...prevState,
+      dispatch(setState({
         error,
         action: "",
       }));
@@ -88,20 +95,3 @@ function DeleteDialog(props: DeleteDialogProps): JSX.Element {
 }
 
 export default DeleteDialog;
-
-DeleteDialog.propTypes = {
-  open: PropTypes.bool,
-  setOpen: PropTypes.func.isRequired,
-  itemType: PropTypes.string.isRequired,
-  selectedItem: PropTypes.shape({
-    path: PropTypes.string,
-  }).isRequired,
-  selectedItemFile: PropTypes.shape({
-    path: PropTypes.string,
-  }).isRequired,
-  setState: PropTypes.func.isRequired,
-};
-
-DeleteDialog.defaultProps = {
-  open: undefined,
-};

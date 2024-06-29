@@ -15,6 +15,7 @@ import displayIcon from "../../utils/displayIcons";
 import { WindowTreeItemsArgs } from "../../types/WindowTreeItemsArgs";
 import { WindowTreeItemsProps } from "../../types/WindowTreeItemsProps";
 import { setState } from "../../app/appSlice";
+import { setStateMoveItem } from "../../app/moveItemSlice";
 import { StateApp } from "../../types/StateApp";
 
 const windowTreeItems = (args: WindowTreeItemsArgs): JSX.Element[] | undefined => {
@@ -26,7 +27,7 @@ const windowTreeItems = (args: WindowTreeItemsArgs): JSX.Element[] | undefined =
     if (folderData && folderData.length > 0) {
       const items = folderData.map((diskItem) => {
         return (
-          <WindowTreeItems
+          <WindowTreeItemsMoveTo
             key={diskItem.mounted + "/"}
             isFolder={diskItem.isDisk}
             isDisk={diskItem.isDisk}
@@ -43,7 +44,7 @@ const windowTreeItems = (args: WindowTreeItemsArgs): JSX.Element[] | undefined =
     if (folderData && folderData.length > 0) {
       const items = folderData.map((itemList) => {
         return (
-          <WindowTreeItems
+          <WindowTreeItemsMoveTo
             key={itemList.path}
             isFolder={itemList.isFolder}
             isFile={itemList.isFile}
@@ -60,7 +61,7 @@ const windowTreeItems = (args: WindowTreeItemsArgs): JSX.Element[] | undefined =
   return undefined;
 };
 
-function WindowTreeItems(props: WindowTreeItemsProps) {
+function WindowTreeItemsMoveTo(props: WindowTreeItemsProps) {
   const {
     itemId,
     treeViewData,
@@ -71,9 +72,9 @@ function WindowTreeItems(props: WindowTreeItemsProps) {
     path,
     permission,
   } = props;
-  const state = useSelector((state: { appState: StateApp }) => ({
-    expandedItems: state.appState.expandedItems,
-    visitedPaths: state.appState.visitedPaths,
+  const state = useSelector((state: { moveItemState: StateApp }) => ({
+    expandedItems: state.moveItemState.expandedItems,
+    visitedPaths: state.moveItemState.visitedPaths,
   }), shallowEqual);
   const {
     expandedItems,
@@ -82,7 +83,6 @@ function WindowTreeItems(props: WindowTreeItemsProps) {
   const dispatch = useDispatch();
 
   const [folderData, setFolderData] = useState(treeViewData);
-
   const getFolderContent = useCallback(() => {
     getFolder({ folderPath: path })
       .then((res) => {
@@ -93,7 +93,7 @@ function WindowTreeItems(props: WindowTreeItemsProps) {
           (e) => e !== itemId
         );
         setFolderData(res.data.folderContent);
-        dispatch(setState({
+        dispatch(setStateMoveItem({
           itemId,
           expandedItems:
             duplicates > 0
@@ -105,7 +105,7 @@ function WindowTreeItems(props: WindowTreeItemsProps) {
           folderData: [],
         }));
     }).catch((error) => {
-      dispatch(setState({
+      dispatch(setStateMoveItem({
         error,
         action: "",
       }));
@@ -155,4 +155,4 @@ function WindowTreeItems(props: WindowTreeItemsProps) {
   );
 }
 
-export default WindowTreeItems;
+export default WindowTreeItemsMoveTo;

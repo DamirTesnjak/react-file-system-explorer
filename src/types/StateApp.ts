@@ -4,6 +4,7 @@ import { FolderData } from "./FolderData";
 import { Path }  from "./Path";
 
 export interface StateApp {
+    dialogOpened: boolean;
     oldPath: string | undefined;
     currentPath: string | null;
     itemId: string;

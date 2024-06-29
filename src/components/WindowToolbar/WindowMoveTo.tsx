@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import { 
   Button,
   Grid,
@@ -6,43 +5,55 @@ import {
   DialogActions,
   DialogContent,
 } from "@mui/material";
+import { useSelector, useDispatch, shallowEqual } from 'react-redux'
 
-import WindowTreeView from "../WindowTreeView/WindowTreeView";
-import WindowTitle from "../WindowTitle/WindowTitle";
 import { moveFile, moveFolder } from "../../data/methods";
-import { initialValues, resetedValues } from '../../constants/constants';
+import { resetedValues } from '../../constants/constants';
 import getItemNameFromPath from '../../utils/getItemNameFromPath';
-import { WindowMoveToProps } from '../../types/WindowMoveTo';
 import { StateApp } from '../../types/StateApp';
+import { setState } from "../../app/appSlice";
+import { setStateMoveItem } from "../../app/moveItemSlice";
+import WindowTreeViewMoveTo from "../WindowTreeViewMoveTo/WindowTreeViewMoveTo";
+import WindowTitleMoveTo from "../WindowTitleMoveTo/WindowTitleMoveTo";
+import { Error } from "../../types/Error";
 
 
-function WindowMoveTo(props: WindowMoveToProps) {
-  const { 
-    open,
-    setOpen,
+function WindowMoveTo() {
+  const state = useSelector((state: { appState: StateApp, moveItemState: StateApp }) => ({
+    dialogOpened: state.appState.dialogOpened,
+    itemType: state.appState.itemType,
+    selectedItem: state.appState.selectedItem,
+    selectedItemFile: state.appState.selectedItemFile,
+    selectedFolder: state.appState.selectedFolder,
+    currentPathMoveItem: state.moveItemState.currentPath,
+  }), shallowEqual);
+  const dispatch = useDispatch();
+
+  const {
+    dialogOpened, 
     itemType,
     selectedItem,
     selectedItemFile,
     selectedFolder,
-    setState,
-  } = props;
-
-  const [stateDialog, setStateDialog] = useState<StateApp>({
-    ...initialValues,
-    oldPath: selectedItem?.path || selectedItemFile?.path,
-  });
-
-  const { 
-    currentPath,
-    expandedItems,
-    visitedPaths,
-    diskData,
-  } = stateDialog;
+    currentPathMoveItem,
+  } = state;
 
   const handleClose = () => {
-    setOpen(false);
-    setState((prevState) => ({
-      ...prevState,
+    dispatch(setState({
+      ...resetedValues,
+    }));
+    dispatch(setStateMoveItem({
+      ...resetedValues,
+    }));
+  };
+
+  const handleError = (error: Error) => {
+    dispatch(setState({
+      error,
+      action: "",
+    }));
+    dispatch(setStateMoveItem({
+      error,
       action: "",
     }));
   };
@@ -51,30 +62,20 @@ function WindowMoveTo(props: WindowMoveToProps) {
     const itemName = getItemNameFromPath(itemType === "file" ? selectedItemFile : { path: selectedFolder})
     const api = itemType === "file" ? moveFile : moveFolder;
     api({
-      oldPath: stateDialog.oldPath,
-      newPath:  `${currentPath}/${itemName}`,
+      oldPath: selectedItem?.path || selectedItemFile?.path,
+      newPath:  `${currentPathMoveItem}/${itemName}`,
     }).then(() => {
-        setOpen(false);
-        setStateDialog((prevState) => ({
-          ...prevState,
-          ...resetedValues,
-        }));
-        setState((prevState) => ({
-          ...prevState,
-          ...resetedValues,
-        }));
+      handleClose();
     }).catch((error) => {
-      setState((prevState) => ({
-        ...prevState,
-        error,
-        action: "",
-      }));
+      handleError(error)
     });
   };
 
+  console.log('state', state);
+
   return (
     <Dialog
-      open={open}
+      open={dialogOpened}
       onClose={handleClose}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
@@ -90,16 +91,10 @@ function WindowMoveTo(props: WindowMoveToProps) {
       <DialogContent sx={{ padding: '2px' }}>
         <Grid container spacing={2} sx={{ backgroundColor: "#c0c7c8" }}>
           <Grid item xs={12}>
-            <WindowTitle currentPath={currentPath} />
+            <WindowTitleMoveTo />
           </Grid>
           <Grid item xs={12}>
-            <WindowTreeView
-              dialogOpened={open}
-              expandedItems={expandedItems}
-              visitedPaths={visitedPaths}
-              disksData={diskData}
-              setState={(s) => setStateDialog(s)}
-            />
+            <WindowTreeViewMoveTo />
           </Grid>
         </Grid>
       </DialogContent>

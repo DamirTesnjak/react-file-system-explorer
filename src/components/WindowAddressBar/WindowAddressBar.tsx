@@ -1,23 +1,32 @@
-import React, { useState, useEffect, JSX } from "react";
-import PropTypes from "prop-types";
+import { useState, JSX } from "react";
 import { Autocomplete, Box, Button, TextField } from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { useSelector, useDispatch, shallowEqual } from 'react-redux'
 import { uniq } from "lodash";
-import { WindowAddressBarProps } from "../../types/WindowAddressBarProps";
 
-function WindowAddressBar(props: WindowAddressBarProps): JSX.Element {
-  const { currentPath, visitedPaths, setState } = props;
-  const [selectedOption, selectOption] = useState<string | null>(currentPath);
+import { setState } from "../../app/appSlice";
+import { StateApp } from "../../types/StateApp";
+
+function WindowAddressBar(): JSX.Element {
+
+  const state = useSelector((state: { appState: StateApp }) => ({
+    currentPath: state.appState.currentPath,
+    selectedItemFile: state.appState.selectedItemFile,
+    selectedItem: state.appState.selectedItem,
+    visitedPaths: state.appState.visitedPaths,
+  }), shallowEqual);
+
+  const { currentPath, visitedPaths } = state;
+  const [selectedOption,selectOption] = useState(currentPath);
+
+  const dispatch = useDispatch()
 
   const selectPath = () => {
-    setState((prevState) => ({
-      ...prevState,
+    dispatch(setState({
       currentPath: selectedOption,
       folderData: [],
     }));
   };
-
-  useEffect(() => selectOption(currentPath), [currentPath]);
 
   return (
     <Box>
@@ -51,9 +60,3 @@ function WindowAddressBar(props: WindowAddressBarProps): JSX.Element {
 }
 
 export default WindowAddressBar;
-
-WindowAddressBar.propTypes = {
-  currentPath: PropTypes.string.isRequired,
-  visitedPaths: PropTypes.arrayOf(PropTypes.string).isRequired,
-  setState: PropTypes.func.isRequired,
-}

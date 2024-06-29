@@ -7,17 +7,19 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
-  GridTypeMap,
 } from "@mui/material";
 import ContentCopy from "@mui/icons-material/ContentCopy";
 import ContentPasteIcon from "@mui/icons-material/ContentPaste";
 import ClearIcon from "@mui/icons-material/Clear";
+import { useSelector, useDispatch, shallowEqual } from 'react-redux'
 
 import { openFile } from "../../data/methods";
 import { COMPUTER } from "../../constants/constants";
 import displayIcon from "../../utils/displayIcons";
 import { IconCardProps } from "../../types/IconCardProps";
 import { ContextMenuType } from "../../types/ContextMenuType";
+import { setState } from "../../app/appSlice";
+import { StateApp } from "../../types/StateApp";
 
 function IconCard(props: IconCardProps): JSX.Element {
   const {
@@ -28,14 +30,24 @@ function IconCard(props: IconCardProps): JSX.Element {
     itemId,
     onClick,
     onMouseLeave,
-    setState,
     path,
     permission,
+  } = props;
+
+  const state = useSelector((state: { appState: StateApp }) => ({
+    visitedPaths: state.appState.visitedPaths,
+    selectedItem: state.appState.selectedItem,
+    selectedItemFile: state.appState.selectedItemFile,
+    currentPath: state.appState.currentPath,
+  }), shallowEqual);
+  const dispatch = useDispatch();
+
+  const {
     visitedPaths,
     selectedItem,
     selectedItemFile,
     currentPath,
-  } = props;
+  } = state;
 
   const [contextMenu, setContextMenu] = useState<ContextMenuType>(null);
 
@@ -86,8 +98,7 @@ function IconCard(props: IconCardProps): JSX.Element {
     event.preventDefault();
     if (contextMenu === null) {
       if (!isFolder) {
-        setState((prevState) => ({
-          ...prevState,
+        dispatch(setState({
           selectedItemFile: {
             path: path,
           },
@@ -95,8 +106,7 @@ function IconCard(props: IconCardProps): JSX.Element {
           itemType: "file",
         }));
       } else {
-        setState((prevState) => ({
-          ...prevState,
+        dispatch(setState({
           selectedItem: {
             path: path,
           },
@@ -124,8 +134,7 @@ function IconCard(props: IconCardProps): JSX.Element {
         console.log(res);
       });
     } else {
-      setState((prevState) => ({
-        ...prevState,
+      dispatch(setState({
         visitedPaths: [...visitedPaths!, path],
         currentPath: path,
         currentPosition: visitedPaths?.length || 0,
@@ -142,24 +151,21 @@ function IconCard(props: IconCardProps): JSX.Element {
   };
 
   function handleCopy() {
-    setState((prevState) => ({
-      ...prevState,
+    dispatch(setState({
       action: "copy",
     }));
     handleClose();
   };
 
   function handlePaste() {
-    setState((prevState) => ({
-      ...prevState,
+    dispatch(setState({
       action: "paste",
     }));
     handleClose();
   };
 
   function handleDelete() {
-    setState((prevState) => ({
-      ...prevState,
+    dispatch(setState({
       action: "delete",
     }));
     handleClose();
