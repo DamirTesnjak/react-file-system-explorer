@@ -1,17 +1,22 @@
-import { useEffect, useCallback, JSX, useMemo } from "react";
-import { Grid, Box } from "@mui/material";
+import { useEffect, useCallback, JSX, useState } from "react";
+import { Grid, Box, MenuItem, ListItemIcon, ListItemText, Menu } from "@mui/material";
+import ContentPasteIcon from "@mui/icons-material/ContentPaste";
+import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 import { useSelector, useDispatch, shallowEqual } from 'react-redux'
 
 import IconCard from "./IconCard";
 import { openFile } from "../../data/methods";
-import { COMPUTER } from "../../constants/constants";
+import { ACTIONS, COMPUTER } from "../../constants/constants";
 import { getFolder, getHardDrives, } from "../../data/methods";
 import { Path } from "../../types/Path";
 import { setState } from "../../app/appSlice";
-import { StateApp } from "../../types/StateApp";
+import { ReducerItems } from "../../types/ReducerItems";
+import { ContextMenuType } from "../../types/ContextMenuType";
+import { HandleContextMenuEvent } from "../../types/HandleContextMenuEvent";
 
 const WindowContentIconView = (): JSX.Element => {
-  const state = useSelector((state: { appState: StateApp }) => ({
+  // getting state variables from react-redux store
+  const state = useSelector((state: { appState: ReducerItems }) => ({
     folderData: state.appState.folderData,
     diskData: state.appState.diskData,
     doubleClick: state.appState.doubleClick,
@@ -22,6 +27,7 @@ const WindowContentIconView = (): JSX.Element => {
     currentPath: state.appState.currentPath,
     action: state.appState.action,
   }), shallowEqual);
+
   const dispatch = useDispatch();
 
   const {
@@ -36,12 +42,77 @@ const WindowContentIconView = (): JSX.Element => {
     action,
   } = state;
 
+  const [contextMenu, setContextMenu] = useState<ContextMenuType>(null);
+
+  const contextMenuItems = [
+    {
+      name: "Paste",
+      action: ACTIONS.paste,
+      icon: <ContentPasteIcon fontSize="small" />,
+      disabled: action !== 'copy',
+    },
+    {
+      name: "Create folder",
+      action: ACTIONS.createFolder,
+      icon: <CreateNewFolderIcon sx={{ color: "#cc6600" }} />,
+    },
+  ];
+
+  function handleClickContextMenu(action: string) {
+    dispatch(
+      setState({ action}),
+    );
+    setContextMenu(null);
+  };
+
+  function displayContexMenuItems() {
+    const menuItems = contextMenuItems.map((item) => {
+      return (
+        <MenuItem
+          key={item.name}
+          onClick={() => handleClickContextMenu(item.action)}
+          disabled={item.disabled}
+        >
+          <ListItemIcon>
+            {item.icon}
+          </ListItemIcon>
+          <ListItemText>{item.name}</ListItemText>
+        </MenuItem>
+      );
+    });
+    return menuItems;
+  }
+
+  const handleContextMenu = (event:HandleContextMenuEvent) => {
+    event.preventDefault();
+    if (
+      event.target === document.getElementById("contentWindow")
+      || event.target === document.getElementById("contentWindowParent")
+      && event.type === "contextMenu"
+  ) {
+      setContextMenu(
+        contextMenu === null
+          ? {
+            mouseX: event.clientX + 2,
+            mouseY: event.clientY - 6,
+          }
+          : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
+          // Other native context menus might behave different.
+          // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
+          null
+      );
+    }
+  };
+
   const openSelectedFile = (path: Path["path"]) => {
     openFile({ path }).then((res) => {
       console.log(res);
     });
   };
 
+  // when user is not hovering with a mouse over an tem
+  // 'doubleClick' count resets to zero, so user can
+  // click or double click on a next item
   const onMouseLeave = () => {
     dispatch(setState({
       doubleClick: 0,
@@ -62,9 +133,7 @@ const WindowContentIconView = (): JSX.Element => {
           const onClick = () => {
             if (doubleClick === 0) {
               dispatch(setState({
-                selectedItem: {
-                  path: diskItem.mounted + "/",
-                },
+                selectedItem: { path: diskItem.mounted + "/" },
                 doubleClick: 1,
               }));
             }
@@ -92,6 +161,7 @@ const WindowContentIconView = (): JSX.Element => {
       }
       return <h2>Please wait...</h2>;
     } else {
+      console.log('folderData', folderData);
       if (folderData && folderData.length > 0) {
         const items = folderData.map((itemList) => {
           const newState = {
@@ -117,9 +187,7 @@ const WindowContentIconView = (): JSX.Element => {
               }
               if (itemList.isFolder) {
                 dispatch(setState({
-                  selectedItem: {
-                    path: itemList.path,
-                  },
+                  selectedItem: { path: itemList.path },
                   itemId: itemList.path,
                   selectedFolder: !selectedFolder ? itemList.path : null,
                   doubleClick: 1,
@@ -161,19 +229,12 @@ const WindowContentIconView = (): JSX.Element => {
   const getFolderContentCallBack = useCallback(() => {
     getFolder({ folderPath: currentPath })
       .then((res) => {
+        const folderContent = res.data.folderContent;
         dispatch(setState({
-          selectedItem: action === "copy" ? selectedItem : null,
-          selectedItemFile: action === "copy" ? selectedItemFile : null,
+          selectedItem: action === ACTIONS.copy ? selectedItem : null,
+          selectedItemFile: action === ACTIONS.copy ? selectedItemFile : null,
           doubleClick: 0,
-          folderData:
-            res.data.folderContent.length === 0
-              ? [
-                {
-                  name: "",
-                },
-              ]
-              : res.data.folderContent,
-          numOfItemsFolder: 1,
+          folderData: folderContent.length === 0 ? [{ name: "" }] : folderContent,
         }));
       }).catch((error) => {
         dispatch(setState({
@@ -222,6 +283,13 @@ const WindowContentIconView = (): JSX.Element => {
     selectedItem,
   ]);
 
+  function anchorPositionCondition() {
+    if (contextMenu) {
+      return { top: contextMenu.mouseY, left: contextMenu.mouseX }
+     }
+     return undefined;
+  }
+
   return (
     <Box
       id="contentWindowParent"
@@ -232,10 +300,29 @@ const WindowContentIconView = (): JSX.Element => {
         borderBottom: "2px solid #808080",
         borderRight: "2px solid #808080",
         height: "calc(100vh - 132px)",
+        width: "calc(100% - 10px)",
         overflow: "scroll",
       }}
+      onContextMenu={handleContextMenu}
     >
-      <Grid container id="contentWindow">{displayItemsAsIcons()}</Grid>
+      <Grid 
+        container
+        direction="row"
+        justifyContent="flex-start"
+        alignContent="flex-start"
+        id="contentWindow"
+        sx={{ width: "100%", height: "100%" }}
+      >
+        {displayItemsAsIcons()}
+      </Grid>
+      <Menu
+        open={contextMenu !== null}
+        onClose={() => setContextMenu(null)}
+        anchorReference="anchorPosition"
+        anchorPosition={anchorPositionCondition()}
+      >
+        {displayContexMenuItems()}
+      </Menu>
     </Box>
   );
 };

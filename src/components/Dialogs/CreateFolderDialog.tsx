@@ -12,17 +12,16 @@ import { useSelector, useDispatch, shallowEqual } from 'react-redux'
 
 import { createFolder } from "../../data/methods";
 import { resetedValues } from '../../constants/constants';
-import { CreateFolderDialogProps } from "../../types/CreateFolderDialogProps";
 import { setState } from "../../app/appSlice";
-import { StateApp } from "../../types/StateApp";
+import { ReducerItems } from "../../types/ReducerItems";
+import { DialogProps } from "../../types/DeleteDialog";
 
-function CreateFolderDialog(props: CreateFolderDialogProps): JSX.Element {
-  const {
-    open,
-    setOpen,
-  } = props;
+function CreateFolderDialog(props: DialogProps): JSX.Element {
+  const { open, setOpen } = props;
 
-  const currentPath = useSelector((state: { appState: StateApp }) => state.appState.currentPath, shallowEqual);
+  // getting state variable from react-redux store
+  const currentPath = useSelector((state: { appState: ReducerItems }) => state.appState.currentPath, shallowEqual);
+  
   const dispatch = useDispatch();
 
   const [folderName, setFolderName] = useState("");
@@ -70,9 +69,11 @@ function CreateFolderDialog(props: CreateFolderDialogProps): JSX.Element {
           fontSize: "15px",
           fontWeight: 600,
           paddingLeft: "20px",
+          paddingTop: "5px",
+          paddingBottom: "5px",
         }}
       >{"Create folder"}</DialogTitle>
-      <DialogContent>
+      <DialogContent sx={{ marginTop: "5px" }}>
         <DialogContentText id="alert-dialog-description">
           New folder name...
         </DialogContentText>

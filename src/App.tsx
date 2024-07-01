@@ -13,7 +13,7 @@ import Window from './components/Window/Window';
 import { getUserHomeFolder } from "./data/methods";
 import { setState } from "./app/appSlice";
 import style from './style/style';
-import { StateApp } from './types/StateApp';
+import { ReducerItems } from './types/ReducerItems';
 import './App.css';
 
 const theme = createTheme(style as ThemeOptions);
@@ -22,7 +22,7 @@ const theme = createTheme(style as ThemeOptions);
 initializeFileTypeIcons();
 
 function App(): JSX.Element {
-  const state = useSelector((state: { appState: StateApp }) => ({
+  const state = useSelector((state: { appState: ReducerItems }) => ({
     currentPath: state.appState.currentPath,
     selectedItemFile: state.appState.selectedItemFile,
     selectedItem: state.appState.selectedItem,
@@ -59,8 +59,22 @@ function App(): JSX.Element {
   }, [currentPath, getHomeDir])
 
   useEffect(() => {
-    function handleClickIconCard(e: MouseEvent) {
-      if (e.target === document.getElementById("contentWindow") || e.target === document.getElementById("contentWindowParent")) {
+    function handleRightClick(e: Event) {
+      console.log('e', e);
+      if (e.target === document.getElementById("contentMain") && e.type === "contextMenu") {
+        console.log("right click");
+      }
+    }
+    if (!state.selectedItem?.path && !state.selectedItemFile?.path) {
+      window.addEventListener('contextMenu', (e) => handleRightClick(e))
+      return window.removeEventListener('contextMenu', (e) => handleRightClick(e))
+    }
+  }, [state.selectedItem?.path, state.selectedItemFile?.path])
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      console.log('e2', e);
+      if (e.target === document.getElementById("contentWindow") || e.target === document.getElementById("contentWindowParent") && e.type === "click") {
         dispatch(setState({
           selectedItemFile: null,
           selectedItem: null,
@@ -71,8 +85,8 @@ function App(): JSX.Element {
       }
     }
     if (state.selectedItem?.path || state.selectedItemFile?.path) {
-      window.addEventListener('mousedown', (e) => handleClickIconCard(e))
-      return window.removeEventListener('mousedown', (e) => handleClickIconCard(e))
+      window.addEventListener('click', (e) => handleClick(e))
+      return window.removeEventListener('click', (e) => handleClick(e))
     }
   }, [state.selectedItem?.path, state.selectedItemFile?.path])
 

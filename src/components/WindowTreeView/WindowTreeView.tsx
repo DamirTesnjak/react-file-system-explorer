@@ -3,20 +3,16 @@ import Box from "@mui/material/Box";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import IndeterminateCheckBoxIcon from "@mui/icons-material/IndeterminateCheckBox";
 import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
-import { useSelector, useDispatch, shallowEqual } from 'react-redux'
+import { useDispatch } from 'react-redux'
 
 import { getHardDrives } from "../../data/methods";
 import { COMPUTER } from "../../constants/constants";
 import WindowTreeItems from "./WindowTreeItems";
-import { setState } from "../../app/appSlice";
-import { StateApp } from "../../types/StateApp";
+import { WindowTreeViewProps } from "../../types/WindowTreeViewProps";
 
-function WindowTreeView(): JSX.Element {
-  const state = useSelector((state: { appState: StateApp }) => ({
-    expandedItems: state.appState.expandedItems,
-    visitedPaths: state.appState.visitedPaths,
-    diskData: state.appState.diskData,
-  }), shallowEqual);
+function WindowTreeView(props: WindowTreeViewProps): JSX.Element {
+  const { setState, state } = props;
+
   const dispatch = useDispatch();
 
   const {
@@ -39,7 +35,7 @@ function WindowTreeView(): JSX.Element {
   };
 
   useEffect(() => {
-    if (disksData.length === 0) {
+    if (disksData?.length === 0) {
       getFolderContent();
     }
   }, [disksData]);
@@ -69,11 +65,14 @@ function WindowTreeView(): JSX.Element {
           name={COMPUTER}
           path={COMPUTER}
           isFolder
+          expandedItems={expandedItems}
+          visitedPaths={visitedPaths}
+          setState={setState}
           onClick={() =>
             dispatch(setState({
               visitedPaths: [...visitedPaths, COMPUTER],
               currentPath: COMPUTER,
-              currentPosition: visitedPaths.length,
+              currentPosition: visitedPaths?.length,
             }))
           }
         />

@@ -1,12 +1,17 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 import { initialValues } from "../constants/constants";
+import { ReducerItems } from '../types/ReducerItems';
 
-export const MoveItemSlice = createSlice({
-  name: 'moveItem',
+interface State extends ReducerItems {
+  [x:string]: any
+}
+
+export const AppSlice = createSlice({
+  name: 'app',
   initialState: initialValues,
   reducers: {
-    setStateMoveItem: (state, action) => {
+    setState: (state: State, action) => {
       const stateKeys = Object.keys(action.payload);
       stateKeys.forEach((key) => state[key] = action.payload[key])
     }
@@ -14,6 +19,6 @@ export const MoveItemSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { setStateMoveItem } = MoveItemSlice.actions
+export const { setState } = AppSlice.actions
 
-export default MoveItemSlice.reducer
+export default AppSlice.reducer

@@ -1,10 +1,11 @@
-import { SetStateAction } from "react";
-import { StateApp } from "./StateApp"
+import { UnknownAction } from "@reduxjs/toolkit";
+import { ReducerItems } from "./ReducerItems"
 
 export interface WindowTreeViewProps {
-    dialogOpened?: boolean;
-    expandedItems: string[];
-    visitedPaths: StateApp["visitedPaths"];
-    disksData: StateApp["diskData"];
-    setState: (value: SetStateAction<StateApp>) => void;
+    state: {
+        visitedPaths: ReducerItems["visitedPaths"],
+        expandedItems: ReducerItems["expandedItems"];
+        diskData: ReducerItems["diskData"];
+    };
+    setState:(state: Partial<ReducerItems>) => UnknownAction;
 }

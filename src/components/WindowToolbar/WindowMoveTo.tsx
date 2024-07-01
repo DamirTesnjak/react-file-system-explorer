@@ -10,16 +10,16 @@ import { useSelector, useDispatch, shallowEqual } from 'react-redux'
 import { moveFile, moveFolder } from "../../data/methods";
 import { resetedValues } from '../../constants/constants';
 import getItemNameFromPath from '../../utils/getItemNameFromPath';
-import { StateApp } from '../../types/StateApp';
+import { ReducerItems } from '../../types/ReducerItems';
 import { setState } from "../../app/appSlice";
 import { setStateMoveItem } from "../../app/moveItemSlice";
-import WindowTreeViewMoveTo from "../WindowTreeViewMoveTo/WindowTreeViewMoveTo";
+import WindowTreeView from "../WindowTreeView/WindowTreeView";
 import WindowTitleMoveTo from "../WindowTitleMoveTo/WindowTitleMoveTo";
 import { Error } from "../../types/Error";
 
 
 function WindowMoveTo() {
-  const state = useSelector((state: { appState: StateApp, moveItemState: StateApp }) => ({
+  const state = useSelector((state: { appState: ReducerItems, moveItemState: ReducerItems }) => ({
     dialogOpened: state.appState.dialogOpened,
     itemType: state.appState.itemType,
     selectedItem: state.appState.selectedItem,
@@ -27,6 +27,13 @@ function WindowMoveTo() {
     selectedFolder: state.appState.selectedFolder,
     currentPathMoveItem: state.moveItemState.currentPath,
   }), shallowEqual);
+
+  const stateTreeView = useSelector((state: { moveItemState: ReducerItems }) => ({
+    expandedItems: state.moveItemState.expandedItems,
+    visitedPaths: state.moveItemState.visitedPaths,
+    diskData: state.moveItemState.diskData,
+  }), shallowEqual);
+  
   const dispatch = useDispatch();
 
   const {
@@ -71,8 +78,6 @@ function WindowMoveTo() {
     });
   };
 
-  console.log('state', state);
-
   return (
     <Dialog
       open={dialogOpened}
@@ -83,7 +88,7 @@ function WindowMoveTo() {
         "& .MuiDialog-container": {
           "& .MuiPaper-root": {
             width: "100%",
-            maxWidth: "500px",  // Set your width here
+            maxWidth: "500px",
           },
         },
       }}
@@ -94,7 +99,10 @@ function WindowMoveTo() {
             <WindowTitleMoveTo />
           </Grid>
           <Grid item xs={12}>
-            <WindowTreeViewMoveTo />
+          <WindowTreeView
+            state={stateTreeView}
+            setState={setStateMoveItem}
+          />
           </Grid>
         </Grid>
       </DialogContent>

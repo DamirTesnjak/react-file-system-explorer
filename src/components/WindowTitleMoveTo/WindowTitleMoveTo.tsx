@@ -1,9 +1,10 @@
 import { Box } from "@mui/material";
 import { shallowEqual, useSelector } from 'react-redux'
-import { StateApp } from "../../types/StateApp";
+import { ReducerItems } from "../../types/ReducerItems";
 
 function WindowTitle() {
-  const currentPath = useSelector((state: { moveItemState: StateApp }) => state.moveItemState.currentPath, shallowEqual);
+  // getting state variables from react-redux store
+  const currentPath = useSelector((state: { moveItemState: ReducerItems }) => state.moveItemState.currentPath, shallowEqual);
 
   return (
     <Box

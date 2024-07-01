@@ -11,11 +11,11 @@ import { useSelector, useDispatch, shallowEqual } from 'react-redux'
 
 import { ErrorDialogProps } from "../../types/ErrorDialogProps";
 import { setState } from "../../app/appSlice";
-import { StateApp } from "../../types/StateApp";
+import { ReducerItems } from "../../types/ReducerItems";
 
 function ErrorDialog(props: ErrorDialogProps): JSX.Element {
   const { open } = props;
-  const error = useSelector((state: { appState: StateApp }) => state.appState.error, shallowEqual);
+  const error = useSelector((state: { appState: ReducerItems }) => state.appState.error, shallowEqual);
   const dispatch = useDispatch();
 
   const handleClose = () => {
@@ -41,9 +41,11 @@ function ErrorDialog(props: ErrorDialogProps): JSX.Element {
           fontSize: "15px",
           fontWeight: 600,
           paddingLeft: "20px",
+          paddingTop: "5px",
+          paddingBottom: "5px",
         }}
       >{"Error"}</DialogTitle>
-      <DialogContent>
+      <DialogContent sx={{ marginTop: "5px" }}>
         <DialogContentText id="alert-dialog-description">
           <p>{`Name: ${error?.code}`}</p>
           <p>{`Message: ${error?.message}`}</p>

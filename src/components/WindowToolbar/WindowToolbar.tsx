@@ -1,4 +1,4 @@
-import React, { useEffect, useState, JSX } from "react";
+import { useEffect, useState, JSX } from "react";
 import { Button, Box } from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -18,10 +18,11 @@ import ErrorDialog from "../Dialogs/ErrorDialog";
 import CreateFolderDialog from "../Dialogs/CreateFolderDialog";
 import WindowMoveTo from "./WindowMoveTo";
 import { setState } from "../../app/appSlice";
-import { StateApp } from "../../types/StateApp";
+import { ReducerItems } from "../../types/ReducerItems";
 
-function WindowToolbar() {
-const state = useSelector((state: { appState: StateApp }) => ({
+function WindowToolbar(): JSX.Element {
+// getting state variables from react-redux store
+const state = useSelector((state: { appState: ReducerItems }) => ({
   dialogOpened: state.appState.dialogOpened,
   currentPath: state.appState.currentPath,
   currentPosition: state.appState.currentPosition,
@@ -50,7 +51,7 @@ const state = useSelector((state: { appState: StateApp }) => ({
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openCreateFolderDialog, setOpenCreateFolderDialog] = useState(false);
 
-  const parentPath = () => {
+  function parentPath(){
     const currentPathArray = currentPath?.split("/");
     currentPathArray?.splice(currentPathArray.length - 1, 1);
 
@@ -60,10 +61,8 @@ const state = useSelector((state: { appState: StateApp }) => ({
     }
   };
 
-  const btnBackCurrentPositionCondition =
-    currentPosition > 0 ? currentPosition - 1 : 0;
-  const btnBackCurrentPathCondition =
-    visitedPaths[currentPosition > 0 ? currentPosition - 1 : 0];
+  const btnBackCurrentPositionCondition = currentPosition > 0 ? currentPosition - 1 : 0;
+  const btnBackCurrentPathCondition = visitedPaths[currentPosition > 0 ? currentPosition - 1 : 0];
 
   const btnNextCondition =
     currentPosition < visitedPaths.length - 1
@@ -171,8 +170,9 @@ const state = useSelector((state: { appState: StateApp }) => ({
   };
 
   useEffect(() => {
+    // when pasting copied selected item in the folder
     if (action === ACTIONS.paste) {
-      const itemName = getItemNameFromPath(itemType === "file" ? selectedItemFile : {path: selectedFolder})
+      const itemName = getItemNameFromPath(itemType === "file" ? selectedItemFile : { path: selectedFolder })
       const api = itemType ? copyFile : copyFolder;
 
       api({
@@ -225,14 +225,8 @@ const state = useSelector((state: { appState: StateApp }) => ({
           setOpen={setOpenCreateFolderDialog}
         />
       )}
-      {error && error.code?.length > 0 && (
-        <ErrorDialog
-          open={error?.code?.length > 0}
-        />
-      )}
-      {dialogOpened && (
-        <WindowMoveTo />
-      )}
+      {error && error.code?.length > 0 && (<ErrorDialog open={error?.code?.length > 0} />)}
+      {dialogOpened && (<WindowMoveTo />)}
       {displayButtons()}
     </Box>
   );

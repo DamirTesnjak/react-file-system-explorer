@@ -1,15 +1,16 @@
-import { useState, JSX } from "react";
+import { useState, JSX, useEffect } from "react";
 import { Autocomplete, Box, Button, TextField } from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useSelector, useDispatch, shallowEqual } from 'react-redux'
 import { uniq } from "lodash";
 
 import { setState } from "../../app/appSlice";
-import { StateApp } from "../../types/StateApp";
+import { ReducerItems } from "../../types/ReducerItems";
 
 function WindowAddressBar(): JSX.Element {
 
-  const state = useSelector((state: { appState: StateApp }) => ({
+  // getting state variables from react-redux store
+  const state = useSelector((state: { appState: ReducerItems }) => ({
     currentPath: state.appState.currentPath,
     selectedItemFile: state.appState.selectedItemFile,
     selectedItem: state.appState.selectedItem,
@@ -17,7 +18,7 @@ function WindowAddressBar(): JSX.Element {
   }), shallowEqual);
 
   const { currentPath, visitedPaths } = state;
-  const [selectedOption,selectOption] = useState(currentPath);
+  const [selectedOption, selectOption] = useState(currentPath);
 
   const dispatch = useDispatch()
 
@@ -28,12 +29,16 @@ function WindowAddressBar(): JSX.Element {
     }));
   };
 
+  // necessary to catch a change in 'currentPath' when user
+  // navigates across folders
+  useEffect(() => selectOption(currentPath), [currentPath]);
+
   return (
     <Box>
       <Box sx={{ display: "inline-block" }}>
         <Button
-          sx={{ marginTop: '12px'}}
-          endIcon={<ArrowForwardIcon sx={{ color: "#66ffff" }}/>} 
+          sx={{ marginTop: '12px' }}
+          endIcon={<ArrowForwardIcon sx={{ color: "#66ffff" }} />}
           onClick={() => selectPath()}>
           Go
         </Button>
@@ -41,7 +46,7 @@ function WindowAddressBar(): JSX.Element {
       <Box sx={{
         display: "inline-block",
         width: 'calc(100% - 70px)'
-    }}>
+      }}>
         <Autocomplete
           freeSolo
           value={selectedOption || currentPath}

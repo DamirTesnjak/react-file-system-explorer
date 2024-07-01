@@ -1,4 +1,4 @@
-import { StateApp } from "./StateApp";
+import { ReducerItems } from "./ReducerItems";
 import { Error } from "./Error";
 
 export interface ErrorDialogProps {

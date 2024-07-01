@@ -12,26 +12,22 @@ import { useSelector, useDispatch, shallowEqual } from 'react-redux'
 import { removeFile, deleteFolder } from "../../data/methods";
 import { resetedValues } from '../../constants/constants';
 import getItemNameFromPath from '../../utils/getItemNameFromPath';
-import { DeleteDialogProps } from "../../types/DeleteDialogProps";
 import { setState } from "../../app/appSlice";
-import { StateApp } from "../../types/StateApp";
+import { ReducerItems } from "../../types/ReducerItems";
+import { DialogProps } from "../../types/DeleteDialog";
 
-function DeleteDialog(props: DeleteDialogProps): JSX.Element {
-  const state = useSelector((state: { appState: StateApp }) => ({
+function DeleteDialog(props: DialogProps): JSX.Element {
+  // getting state variables from react-redux store
+  const state = useSelector((state: { appState: ReducerItems }) => ({
     itemType: state.appState.itemType,
     selectedItem: state.appState.selectedItem,
     selectedItemFile: state.appState.selectedItemFile,
   }), shallowEqual);
-  const { 
-    open,
-    setOpen,
-  } = props;
 
-  const {
-    itemType,
-    selectedItem,
-    selectedItemFile
-  } = state;
+  const { open, setOpen } = props;
+
+  const { itemType, selectedItem, selectedItemFile } = state;
+  
   const dispatch = useDispatch();
   const itemName = getItemNameFromPath(selectedItemFile);
   const itemTypeString = itemType === "file" ? 'file' : 'folder';
@@ -77,11 +73,13 @@ function DeleteDialog(props: DeleteDialogProps): JSX.Element {
           fontSize: "15px",
           fontWeight: 600,
           paddingLeft: "20px",
+          paddingTop: "5px",
+          paddingBottom: "5px",
         }}
       >
         {"Delete..."}
       </DialogTitle>
-      <DialogContent>
+      <DialogContent sx={{ marginTop: "5px" }}>
         <DialogContentText id="alert-dialog-description">
           {`Do you want to delete ${itemTypeString} ${itemName}?`}
         </DialogContentText>

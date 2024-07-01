@@ -1,10 +1,11 @@
+import { UnknownAction } from "@reduxjs/toolkit";
 import { DiskData } from "./DiskData";
 import { FolderData } from "./FolderData";
 import { Path } from "./Path";
-import { StateApp } from "./StateApp";
+import { ReducerItems } from "./ReducerItems";
 
 export interface WindowTreeItemsProps {
-    itemId: StateApp["itemId"];
+    itemId: ReducerItems["itemId"];
     treeViewData?: (DiskData & FolderData)[];
     isFolder: boolean;
     isFile?: boolean;
@@ -13,4 +14,7 @@ export interface WindowTreeItemsProps {
     path: Path["path"];
     permission?: boolean;
     onClick?: () => void;
+    expandedItems: ReducerItems["expandedItems"] ;
+    visitedPaths: ReducerItems["visitedPaths"];
+    setState:(state: Partial<ReducerItems>) => UnknownAction;
 }

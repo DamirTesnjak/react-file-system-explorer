@@ -3,7 +3,8 @@ import { Error } from "./Error";
 import { FolderData } from "./FolderData";
 import { Path }  from "./Path";
 
-export interface StateApp {
+export interface ReducerItems {
+    [x: string]: any,
     dialogOpened: boolean;
     oldPath: string | undefined;
     currentPath: string | null;

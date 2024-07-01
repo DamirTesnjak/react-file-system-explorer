@@ -1,8 +1,12 @@
+import { UnknownAction } from "@reduxjs/toolkit";
 import { DiskData } from "./DiskData";
 import { FolderData } from "./FolderData"
-import { StateApp } from "./StateApp";
+import { ReducerItems } from "./ReducerItems";
 
 export interface WindowTreeItemsArgs {
     folderData: (FolderData & DiskData)[] | undefined;
-    itemId: StateApp["itemId"];
+    itemId: ReducerItems["itemId"];
+    expandedItems: ReducerItems["expandedItems"];
+    visitedPaths: ReducerItems["visitedPaths"];
+    setState:(state: Partial<ReducerItems>) => UnknownAction;
 }

@@ -1,4 +1,4 @@
-import React, { useState, JSX } from "react";
+import { useState, JSX } from "react";
 import {
   Grid,
   Paper,
@@ -9,17 +9,18 @@ import {
   ListItemText,
 } from "@mui/material";
 import ContentCopy from "@mui/icons-material/ContentCopy";
-import ContentPasteIcon from "@mui/icons-material/ContentPaste";
 import ClearIcon from "@mui/icons-material/Clear";
+import DriveFileMoveIcon from "@mui/icons-material/DriveFileMove";
 import { useSelector, useDispatch, shallowEqual } from 'react-redux'
 
 import { openFile } from "../../data/methods";
-import { COMPUTER } from "../../constants/constants";
+import { ACTIONS, COMPUTER } from "../../constants/constants";
 import displayIcon from "../../utils/displayIcons";
 import { IconCardProps } from "../../types/IconCardProps";
 import { ContextMenuType } from "../../types/ContextMenuType";
 import { setState } from "../../app/appSlice";
-import { StateApp } from "../../types/StateApp";
+import { ReducerItems } from "../../types/ReducerItems";
+import { HandleContextMenuEvent } from "../../types/HandleContextMenuEvent";
 
 function IconCard(props: IconCardProps): JSX.Element {
   const {
@@ -34,12 +35,14 @@ function IconCard(props: IconCardProps): JSX.Element {
     permission,
   } = props;
 
-  const state = useSelector((state: { appState: StateApp }) => ({
+  // getting state variables from react-redux store
+  const state = useSelector((state: { appState: ReducerItems }) => ({
     visitedPaths: state.appState.visitedPaths,
     selectedItem: state.appState.selectedItem,
     selectedItemFile: state.appState.selectedItemFile,
     currentPath: state.appState.currentPath,
   }), shallowEqual);
+
   const dispatch = useDispatch();
 
   const {
@@ -49,6 +52,7 @@ function IconCard(props: IconCardProps): JSX.Element {
     currentPath,
   } = state;
 
+  // state var and function for context menu
   const [contextMenu, setContextMenu] = useState<ContextMenuType>(null);
 
   const contextMenuItems = [
@@ -58,27 +62,54 @@ function IconCard(props: IconCardProps): JSX.Element {
     },
     {
       name: "Copy",
-      method: handleCopy,
+      action: ACTIONS.copy,
       icon: <ContentCopy fontSize="small" />
     },
     {
-      name: "Paste",
-      method: handlePaste,
-      icon: <ContentPasteIcon fontSize="small" />
+      name: "Move to",
+      action: ACTIONS.moveTo,
+      disabled: !(selectedItem || selectedItemFile),
+      icon: <DriveFileMoveIcon sx={{ color: "#cc6600" }} />,
     },
     {
       name: "Delete",
-      method: handleDelete,
+      action: ACTIONS.delete,
       icon: <ClearIcon fontSize="small" />
     },
   ];
+
+  function handleOpen() {
+    if (!isFolder) {
+      openFile({ path: path }).then((res) => {
+        console.log(res);
+      });
+    } else {
+      dispatch(setState({
+        visitedPaths: [...visitedPaths!, path],
+        currentPath: path,
+        currentPosition: visitedPaths?.length || 0,
+        selectedItem: { path },
+        selectedFolder: path,
+        doubleClick: 2,
+        folderData: [],
+      }));
+    }
+    setContextMenu(null);;
+  };
+
+  function handleClickContextMenu(action: string) {
+    dispatch(setState({
+      action,
+    }));
+    setContextMenu(null);
+  };
 
   function displayContexMenuItems() {
     const menuItems = contextMenuItems.map((item) => {
       return (
         <MenuItem
           key={item.name}
-          onClick={item.method}
+          onClick={() => {item.method || handleClickContextMenu(item.action)}}
         >
           <ListItemIcon>
             {item.icon}
@@ -90,26 +121,18 @@ function IconCard(props: IconCardProps): JSX.Element {
     return menuItems;
   }
 
-  const handleClose = () => {
-    setContextMenu(null);
-  };
-
-  const handleContextMenu = (event: { preventDefault: () => void; clientX: number; clientY: number; }) => {
+  const handleContextMenu = (event: HandleContextMenuEvent) => {
     event.preventDefault();
     if (contextMenu === null) {
       if (!isFolder) {
         dispatch(setState({
-          selectedItemFile: {
-            path: path,
-          },
+          selectedItemFile: { path },
           doubleClick: 1,
           itemType: "file",
         }));
       } else {
         dispatch(setState({
-          selectedItem: {
-            path: path,
-          },
+          selectedItem: { path },
           selectedFolder: path,
           doubleClick: 1,
         }));
@@ -128,48 +151,16 @@ function IconCard(props: IconCardProps): JSX.Element {
     );
   };
 
-  function handleOpen() {
-    if (!isFolder) {
-      openFile({ path: path }).then((res) => {
-        console.log(res);
-      });
+  const selectionColorItem = (selectedItem?.path || selectedItemFile?.path) === itemId ? "#00134d" : "#ffffff";
+  const fontColorItem = (selectedItem?.path || selectedItemFile?.path) === itemId ? "#ffffff" : "#000000";
+
+  function handleOnClick() {
+    if(!contextMenu && !(!permission && currentPath !== COMPUTER) && onClick) {
+      onClick();
     } else {
-      dispatch(setState({
-        visitedPaths: [...visitedPaths!, path],
-        currentPath: path,
-        currentPosition: visitedPaths?.length || 0,
-        selectedItem: {
-          path: path,
-        },
-        selectedFolder: path,
-        doubleClick: 2,
-        folderData: [],
-        numOfItemsFolder: 1,
-      }));
+      () => {};
     }
-    handleClose();
-  };
-
-  function handleCopy() {
-    dispatch(setState({
-      action: "copy",
-    }));
-    handleClose();
-  };
-
-  function handlePaste() {
-    dispatch(setState({
-      action: "paste",
-    }));
-    handleClose();
-  };
-
-  function handleDelete() {
-    dispatch(setState({
-      action: "delete",
-    }));
-    handleClose();
-  };
+  }
 
   return (
     <Grid
@@ -179,23 +170,19 @@ function IconCard(props: IconCardProps): JSX.Element {
       key={itemId}
       sx={{
         margin: "10px",
+        height: "fit-content",
         cursor: "pointer",
         visibility: !name ? "hidden" : "visible",
       }}
-      onClick={!contextMenu && !(!permission && currentPath !== COMPUTER) ? onClick : ()=> {}}
+      onClick={() => handleOnClick()}
       onMouseLeave={onMouseLeave}
     >
       <Paper
-        elevation={2}
+        elevation={0}
         sx={{
-          backgroundColor:
-            (selectedItem?.path || selectedItemFile?.path) === itemId
-              ? "#00134d"
-              : "#ffffff",
-          color:
-            (selectedItem?.path || selectedItemFile?.path) === itemId
-              ? "#ffffff"
-              : "#000000",
+          backgroundColor: selectionColorItem,
+          color: fontColorItem,
+          border: "0px",
         }}
         onContextMenu={handleContextMenu}
       >
@@ -219,6 +206,8 @@ function IconCard(props: IconCardProps): JSX.Element {
               display: "-webkit-box",
               WebkitLineClamp: "2",
               WebkitBoxOrient: "vertical",
+              WebkitUserSelect: "none", /* Safari */
+              userSelect: "none",
               width: 150,
             }}
           >
@@ -229,10 +218,10 @@ function IconCard(props: IconCardProps): JSX.Element {
         </Typography>
         <Menu
           open={contextMenu !== null}
-          onClose={handleClose}
+          onClose={() => setContextMenu(null)}
           anchorReference="anchorPosition"
           anchorPosition={
-            contextMenu ? { top: contextMenu.mouseY, left: contextMenu.mouseX }: undefined
+            contextMenu ? { top: contextMenu.mouseY, left: contextMenu.mouseX } : undefined
           }
         >
           {displayContexMenuItems()}

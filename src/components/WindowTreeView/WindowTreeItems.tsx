@@ -7,20 +7,21 @@ import {
 import { TreeItem } from "@mui/x-tree-view/TreeItem";
 import { uniq } from "lodash";
 import { Box } from "@mui/material";
-import { useSelector, useDispatch, shallowEqual } from 'react-redux'
+import { useDispatch} from 'react-redux'
 
 import { getFolder, openFile } from "../../data/methods";
 import { COMPUTER } from "../../constants/constants";
 import displayIcon from "../../utils/displayIcons";
 import { WindowTreeItemsArgs } from "../../types/WindowTreeItemsArgs";
 import { WindowTreeItemsProps } from "../../types/WindowTreeItemsProps";
-import { setState } from "../../app/appSlice";
-import { StateApp } from "../../types/StateApp";
 
 const windowTreeItems = (args: WindowTreeItemsArgs): JSX.Element[] | undefined => {
   const {
     folderData,
     itemId,
+    expandedItems,
+    visitedPaths,
+    setState,
   } = args;
   if (itemId === COMPUTER) {
     if (folderData && folderData.length > 0) {
@@ -34,6 +35,9 @@ const windowTreeItems = (args: WindowTreeItemsArgs): JSX.Element[] | undefined =
             name={diskItem.filesystem + " " + diskItem.mounted}
             path={diskItem.mounted + "/"}
             permission={diskItem.permission}
+            expandedItems={expandedItems}
+            visitedPaths={visitedPaths}
+            setState={setState}
           />
         );
       });
@@ -51,6 +55,9 @@ const windowTreeItems = (args: WindowTreeItemsArgs): JSX.Element[] | undefined =
             name={itemList.name}
             path={itemList.path}
             permission={itemList.permission}
+            expandedItems={expandedItems}
+            visitedPaths={visitedPaths}
+            setState={setState}
           />
         );
       });
@@ -70,15 +77,11 @@ function WindowTreeItems(props: WindowTreeItemsProps) {
     name,
     path,
     permission,
-  } = props;
-  const state = useSelector((state: { appState: StateApp }) => ({
-    expandedItems: state.appState.expandedItems,
-    visitedPaths: state.appState.visitedPaths,
-  }), shallowEqual);
-  const {
     expandedItems,
     visitedPaths,
-  } = state;
+    setState
+  } = props;
+
   const dispatch = useDispatch();
 
   const [folderData, setFolderData] = useState(treeViewData);
@@ -86,17 +89,13 @@ function WindowTreeItems(props: WindowTreeItemsProps) {
   const getFolderContent = useCallback(() => {
     getFolder({ folderPath: path })
       .then((res) => {
-        const duplicates = [...expandedItems].filter(
-          (e) => e === itemId
-        ).length;
-        const filteredExpandedItems = [...expandedItems].filter(
-          (e) => e !== itemId
-        );
+        const numOfDuplicates = [...expandedItems].filter((e) => e === itemId).length;
+        const filteredExpandedItems = [...expandedItems]
+          .filter((e) => e !== itemId);
         setFolderData(res.data.folderContent);
         dispatch(setState({
           itemId,
-          expandedItems:
-            duplicates > 0
+          expandedItems: numOfDuplicates > 0
               ? uniq(filteredExpandedItems)
               : [...expandedItems, itemId],
           currentPath: path,
@@ -112,12 +111,14 @@ function WindowTreeItems(props: WindowTreeItemsProps) {
     });;
   }, [itemId, path, setState]);
 
+  // opens any file
   const openSelectedFile = () => {
     openFile({ path: path }).then((res) => {
       console.log(res);
     });
   };
 
+  // on first initialize fetches content of the folder to be later displayed in treeView
   useEffect(() => {
     if (!folderData) {
       getFolder({ folderPath: path }).then((res) => {
@@ -125,11 +126,6 @@ function WindowTreeItems(props: WindowTreeItemsProps) {
       });
     }
   }, [folderData, itemId, path, setState]);
-
-  const expandItemList = () => {
-    getFolderContent();
-  };
-
 
   return (
     <TreeItem
@@ -145,11 +141,15 @@ function WindowTreeItems(props: WindowTreeItemsProps) {
         })}
         {name}
       </Box>}
-      onClick={() => (!isFolder ? openSelectedFile() : expandItemList())}
+      // onClick opens a file or fetch content of the expanded folder to be displayed in treeView
+      onClick={() => (!isFolder ? openSelectedFile() : getFolderContent())}
     >
       {windowTreeItems({
         folderData: folderData && folderData.length > 0 ? folderData : treeViewData,
         itemId,
+        expandedItems,
+        visitedPaths,
+        setState,
       })}
     </TreeItem>
   );

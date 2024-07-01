@@ -1,10 +1,10 @@
-import { StateApp } from "./StateApp";
+import { ReducerItems } from "./ReducerItems";
 
 export interface WindowMoveToProps {
     open: boolean;
     setOpen: (a: boolean) => void;
-    itemType: StateApp["itemType"];
-    selectedItem: StateApp["selectedItem"];
-    selectedItemFile: StateApp["selectedItemFile"];
-    selectedFolder: StateApp["selectedFolder"];
+    itemType: ReducerItems["itemType"];
+    selectedItem: ReducerItems["selectedItem"];
+    selectedItemFile: ReducerItems["selectedItemFile"];
+    selectedFolder: ReducerItems["selectedFolder"];
 }
