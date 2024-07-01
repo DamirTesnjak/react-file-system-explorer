@@ -28,7 +28,7 @@ Download repository and run the command ```npm i``` in command prompt terminal i
 
 ## Video - demo - 50MB
 
-[![Demo video - React File Explorer]](https://github.com/DamirTesnjak/react-file-system-explorer/blob/main/DemoVideo_Damir_Tesnjak.mp4)
+[Demo video - React File Explorer](https://github.com/DamirTesnjak/react-file-system-explorer/blob/main/DemoVideo_Damir_Tesnjak.mp4)
 
 ## Screenshot
 
