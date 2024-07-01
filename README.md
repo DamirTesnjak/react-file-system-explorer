@@ -15,7 +15,7 @@ Download repository and run the command ```npm i``` in command prompt terminal i
 
 **Both backend and frontend must be running to use the application**
 
-## Implemented or in development features on frontend & backend
+## Implemented features on frontend & backend
 - Browsing accross folders by double clicking
 - Copy, paste & delete folders or files
 - Copy. paste & delete folders or files with context menu
