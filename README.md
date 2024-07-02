@@ -15,7 +15,7 @@ Download repository and run the command ```npm i``` in command prompt terminal i
 
 **Both backend and frontend must be running to use the application**
 
-## Implemented or in development features on frontend & backend
+## Implemented features on frontend & backend
 - Browsing accross folders by double clicking
 - Copy, paste & delete folders or files
 - Copy. paste & delete folders or files with context menu
@@ -32,4 +32,4 @@ Download repository and run the command ```npm i``` in command prompt terminal i
 
 ## Screenshot
 
-![sreenshot](https://github.com/DamirTesnjak/react-file-system-explorer/blob/main/Screenshot%202024-06-26%20at%2018-18-16%20React%20App.png)
+![sreenshot](https://github.com/DamirTesnjak/react-file-system-explorer/blob/main/Posnetek%20zaslona%202024-07-01%20153558.png)
