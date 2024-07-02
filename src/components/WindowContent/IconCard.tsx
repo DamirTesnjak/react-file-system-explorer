@@ -58,7 +58,7 @@ function IconCard(props: IconCardProps): JSX.Element {
   const contextMenuItems = [
     {
       name: "Open",
-      method: handleOpen,
+      action: ACTIONS.open,
     },
     {
       name: "Copy",
@@ -80,7 +80,7 @@ function IconCard(props: IconCardProps): JSX.Element {
 
   function handleOpen() {
     if (!isFolder) {
-      openFile({ path: path }).then((res) => {
+      openFile({ path }).then((res) => {
         console.log(res);
       });
     } else {
@@ -109,7 +109,7 @@ function IconCard(props: IconCardProps): JSX.Element {
       return (
         <MenuItem
           key={item.name}
-          onClick={() => {item.method || handleClickContextMenu(item.action)}}
+          onClick={() => {item.action === 'open' ? handleOpen() :  handleClickContextMenu(item.action)}}
         >
           <ListItemIcon>
             {item.icon}

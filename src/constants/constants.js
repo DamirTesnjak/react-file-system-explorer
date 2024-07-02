@@ -28,6 +28,7 @@ const resetedValues = {
 };
 
 const ACTIONS = {
+  open: "open",
   copy: "copy",
   paste: "paste",
   delete: "delete",

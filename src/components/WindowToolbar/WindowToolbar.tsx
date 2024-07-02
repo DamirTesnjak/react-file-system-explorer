@@ -57,6 +57,9 @@ const state = useSelector((state: { appState: ReducerItems }) => ({
 
     const parentPath = currentPathArray?.join("/");
     if (parentPath) {
+      if (!parentPath.includes('/')) {
+        return parentPath + '/';
+      }
       return parentPath;
     }
   };

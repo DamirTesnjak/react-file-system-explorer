@@ -73,7 +73,6 @@ function App(): JSX.Element {
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
-      console.log('e2', e);
       if (e.target === document.getElementById("contentWindow") || e.target === document.getElementById("contentWindowParent") && e.type === "click") {
         dispatch(setState({
           selectedItemFile: null,

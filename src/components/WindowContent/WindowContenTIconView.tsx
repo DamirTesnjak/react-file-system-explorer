@@ -161,7 +161,6 @@ const WindowContentIconView = (): JSX.Element => {
       }
       return <h2>Please wait...</h2>;
     } else {
-      console.log('folderData', folderData);
       if (folderData && folderData.length > 0) {
         const items = folderData.map((itemList) => {
           const newState = {
