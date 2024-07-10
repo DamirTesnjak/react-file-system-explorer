@@ -1,5 +1,17 @@
-import { useEffect, useCallback, JSX, useState } from "react";
-import { Grid, Box, MenuItem, ListItemIcon, ListItemText, Menu } from "@mui/material";
+import {
+  useEffect,
+  useCallback,
+  JSX,
+  useState,
+} from "react";
+import {
+  Grid,
+  Box,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+} from "@mui/material";
 import ContentPasteIcon from "@mui/icons-material/ContentPaste";
 import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 import { useSelector, useDispatch, shallowEqual } from 'react-redux'
@@ -162,10 +174,10 @@ const WindowContentIconView = (): JSX.Element => {
       return <h2>Please wait...</h2>;
     } else {
       if (folderData && folderData.length > 0) {
-        const items = folderData.map((itemList) => {
+        const items = folderData.map((item) => {
           const newState = {
-            visitedPaths: [...visitedPaths, itemList.path],
-            currentPath: itemList.path,
+            visitedPaths: [...visitedPaths, item.path],
+            currentPath: item.path,
             currentPosition: visitedPaths.length,
             doubleClick: 2,
             folderData: [],
@@ -173,29 +185,29 @@ const WindowContentIconView = (): JSX.Element => {
 
           const onClick = () => {
             if (doubleClick === 0) {
-              if (itemList.isFile) {
+              if (item.isFile) {
                 dispatch(setState({
                   selectedItemFile: {
-                    path: itemList.path,
+                    path: item.path,
                   },
                   selectedFolder: null,
                   doubleClick: 1,
-                  itemId: itemList.path,
+                  itemId: item.path,
                   itemType: "file",
                 }));
               }
-              if (itemList.isFolder) {
+              if (item.isFolder) {
                 dispatch(setState({
-                  selectedItem: { path: itemList.path },
-                  itemId: itemList.path,
-                  selectedFolder: !selectedFolder ? itemList.path : null,
+                  selectedItem: { path: item.path },
+                  itemId: item.path,
+                  selectedFolder: !selectedFolder ? item.path : null,
                   doubleClick: 1,
                 }));
               }
             }
             if (doubleClick >= 1) {
-              if (itemList.isFile) {
-                openSelectedFile(itemList.path);
+              if (item.isFile) {
+                openSelectedFile(item.path);
               } else {
                 dispatch(setState({
                   ...newState
@@ -206,14 +218,14 @@ const WindowContentIconView = (): JSX.Element => {
 
           return (
             <IconCard
-              key={itemList.path}
-              isFolder={itemList.isFolder}
-              isFile={itemList.isFile}
+              key={item.path}
+              isFolder={item.isFolder}
+              isFile={item.isFile}
               isDisk={false}
-              itemId={itemList.path}
-              name={itemList.name}
-              path={itemList.path}
-              permission={itemList.permission}
+              itemId={item.path}
+              name={item.name}
+              path={item.path}
+              permission={item.permission}
               onClick={() => onClick()}
               onMouseLeave={onMouseLeave}
             />
