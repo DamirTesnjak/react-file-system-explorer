@@ -14,9 +14,13 @@ import { createFolder } from "../../data/methods";
 import { resetedValues } from '../../constants/constants';
 import { setState } from "../../app/appSlice";
 import { ReducerItems } from "../../types/ReducerItems";
-import { DialogProps } from "../../types/DeleteDialog";
+import { DialogProps } from "../../types/DialogProps";
+import { style } from "../Dialogs/DialogStyle";
 
-function CreateFolderDialog(props: DialogProps): JSX.Element {
+function CreateFolderDialog(props: {
+  open: boolean;
+  setOpen: (a: boolean) => void;
+}): JSX.Element {
   const { open, setOpen } = props;
 
   // getting state variable from react-redux store
@@ -61,17 +65,7 @@ function CreateFolderDialog(props: DialogProps): JSX.Element {
     >
       <DialogTitle
         id="alert-dialog-title"
-        sx={{
-          background:
-            "linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(228,245,255,1) 98%)",
-          height: "25px",
-          color: "#ffffff",
-          fontSize: "15px",
-          fontWeight: 600,
-          paddingLeft: "20px",
-          paddingTop: "5px",
-          paddingBottom: "5px",
-        }}
+        sx={style}
       >{"Create folder"}</DialogTitle>
       <DialogContent sx={{ marginTop: "5px" }}>
         <DialogContentText id="alert-dialog-description">
