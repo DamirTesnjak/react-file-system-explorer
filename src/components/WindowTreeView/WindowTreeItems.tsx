@@ -23,26 +23,24 @@ const windowTreeItems = (args: WindowTreeItemsArgs): JSX.Element[] | undefined =
     visitedPaths,
     setState,
   } = args;
-  if (itemId === COMPUTER) {
-    if (folderData && folderData.length > 0) {
-      const items = folderData.map((diskItem) => {
-        return (
-          <WindowTreeItems
-            key={diskItem.mounted + "/"}
-            isFolder={diskItem.isDisk}
-            isDisk={diskItem.isDisk}
-            itemId={diskItem.mounted + "/"}
-            name={diskItem.filesystem + " " + diskItem.mounted}
-            path={diskItem.mounted + "/"}
-            permission={diskItem.permission}
-            expandedItems={expandedItems}
-            visitedPaths={visitedPaths}
-            setState={setState}
-          />
-        );
-      });
-      return items;
-    }
+  if (itemId === COMPUTER && folderData && folderData.length > 0) {
+    const items = folderData.map((diskItem) => {
+      return (
+        <WindowTreeItems
+          key={diskItem.mounted + "/"}
+          isFolder={diskItem.isDisk}
+          isDisk={diskItem.isDisk}
+          itemId={diskItem.mounted + "/"}
+          name={diskItem.filesystem + " " + diskItem.mounted}
+          path={diskItem.mounted + "/"}
+          permission={diskItem.permission}
+          expandedItems={expandedItems}
+          visitedPaths={visitedPaths}
+          setState={setState}
+        />
+      );
+    });
+    return items;
   } else {
     if (folderData && folderData.length > 0) {
       const items = folderData.map((itemList) => {

@@ -21,6 +21,7 @@ function Window(): JSX.Element {
     <Grid
       container
       spacing={2}
+      id="grid"
       sx={{ backgroundColor: "#c0c7c8" }}
     >
       <Grid item xs={12}>
